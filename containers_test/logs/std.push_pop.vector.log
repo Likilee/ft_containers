@@ -1,0 +1,58 @@
+size: 8
+capacity: 8
+max_size: 768614336404564650
+
+Content is:
+- AAAAAAAA
+- BBBBBBB
+- CCCCCC
+- DDDDD
+- EEEE
+- FFF
+- GG
+- H
+###############################################
+push_back():
+
+size: 9
+capacity: 16
+max_size: 768614336404564650
+
+Content is:
+- AAAAAAAA
+- BBBBBBB
+- CCCCCC
+- DDDDD
+- EEEE
+- FFF
+- GG
+- H
+- One long string
+###############################################
+size: 1
+capacity: 1
+max_size: 768614336404564650
+
+Content is:
+- Another long string
+###############################################
+size: 8
+capacity: 16
+max_size: 768614336404564650
+
+Content is:
+- AAAAAAAA
+- BBBBBBB
+- CCCCCC
+- DDDDD
+- EEEE
+- FFF
+- GG
+- H
+###############################################
+size: 0
+capacity: 1
+max_size: 768614336404564650
+
+Content is:
+###############################################
