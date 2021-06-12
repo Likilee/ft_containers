@@ -236,11 +236,13 @@ public:
 		this->assign(n, val);
 	}
 
-	// template <class InputIterator>
-	// vector(InputIterator first, InputIterator last,const allocator_type& alloc = allocator_type())
-	// {
-
-	// }
+	template <class InputIterator>
+	vector(InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(),
+			typename ft::enable_if<ft::is_iter<InputIterator>::value>::yes = 1)
+		: _array(0), _size(0), _capacity(0), _alloc(alloc)
+	{
+		this->assign(first, last);
+	}
 
 	explicit vector(const vector &from) : _array(0), _size(0), _capacity(0), _alloc(from._alloc) // 깊은 복사가 되어야함.
 	{
