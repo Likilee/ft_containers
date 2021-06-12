@@ -6,6 +6,14 @@
 
 namespace ft
 {
+template <bool B, class T = void>
+struct enable_if;
+
+template <class T>
+struct enable_if<true, T>
+{
+	typedef T type;
+};
 //iterator 콘셉트를 구현하여 알고리즘 오버로딩이 가능하도록
 template<class Iter>
 struct iterator_traits {
@@ -347,8 +355,9 @@ public:
 
 	//새 벡터의 크기가 현재 벡터 용량을 초과하는 경우에만 자동 재할당진행!
 	template <class InputIterator>
-	void assign (InputIterator first, InputIterator last)
+	void assign (InputIterator first, InputIterator last, typename ft::enable_if<ft::iterator_traits<InputIterator>::pointer>::type dummy = 0)
 	{
+		(void)dummy;
 		difference_type gap = last - first;
 		this->clear();
 		this->reserve(gap);
