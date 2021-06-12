@@ -60,7 +60,7 @@ class vector_iterator
 
 		reference operator*()
 		{
-			return (this->*_p);
+			return (*(this->_p));
 		}
 
 		pointer operator->()
@@ -145,9 +145,9 @@ class vector_iterator
 			return (this->_p <= r._p);
 		}
 
-		vector_iterator &operator[](difference_type n)
+		value_type &operator[](difference_type n)
 		{
-			return (*this + n);
+			return (*(*this + n));
 		}
 
 		pointer get_ptr() const
@@ -208,16 +208,22 @@ public:
 
 	// }
 
-	// vector(const vector &from);
+	explicit vector(const vector &from) : _array(0), _size(0), _capacity(0), _alloc(from._alloc) // 깊은 복사가 되어야함.
+	{
+		this->assign(from.begin(), from.end());
+	}
 
 	~vector()//This destroys all container elements, and deallocates all the storage capacity allocated by the vector using its allocator.
 	{
 		this->_alloc.deallocate(this->_array, this->_capacity);
 	}
-	// vector	&operator=(const vector &rvalue)
-	// {
 
-	// }
+	vector	&operator=(const vector &rvalue)
+	{
+		this->assign(rvalue.begin(), rvalue.end());
+		return (*this);
+	}
+
 	iterator begin()
 	{
 		return (iterator(this->_array));
@@ -251,7 +257,24 @@ public:
 		return (std::numeric_limits<size_type>::max() / sizeof(value_type));
 	}
 
-	// void resize (size_type n, value_type val = value_type())
+	void resize(size_type n, value_type val = value_type())
+	{
+		if (n > this->_capacity)
+		{
+			if (n < this->_capacity * 2)
+				this->reserve(this->_capacity * 2);
+			else
+				this->reserve(n);
+		}
+		if (n < this->_size)
+			for (size_type i = n; i < this->_size; ++i)
+				this->_alloc.destroy(&_array[i]);
+		else if (n > this->_size)
+			for (size_type i = this->_size; i < n; ++i)
+				this->put(i, val);
+		this->_size = n;
+	}
+
 	size_type capacity() const
 	{
 		return (this->_capacity);
@@ -268,13 +291,14 @@ public:
 		if (n > this->_capacity)
 		{
 			pointer new_array = this->_alloc.allocate(n);// -2*size 크기의 메모리를 새로 할당
-			this->_capacity = n;
-			for(size_type i; i < this->_size; ++i)// 새로 할당한 메모리로 기존 원소 전부를 복사/이동
+			for(size_type i = 0; i < this->_size; ++i)// 새로 할당한 메모리로 기존 원소 전부를 복사/이동
 			{
 				new_array[i] = this->_array[i];
 				this->_alloc.destroy(&this->_array[i]);
 			}
+			this->_alloc.deallocate(this->_array, this->_capacity);
 			this->_array = new_array; // 데이터 포인터를 새로운 할당메모리로 지정
+			this->_capacity = n;
 		}
 	}
 	reference operator[](size_type n)
@@ -328,15 +352,19 @@ public:
 		difference_type gap = last - first;
 		this->clear();
 		this->reserve(gap);
-		for (difference_type i; i < gap; ++i)
-			this->_array[i] = *first++;
+		for (difference_type i = 0; i < gap; ++i)
+		{
+			this->_array[i] = *first;
+			++first;
+		}
 		this->_size = gap;
 	}
+
 	void assign (size_type n, const value_type& val)
 	{
 		this->clear();
 		this->reserve(n);
-		for (size_type i; i < n; ++i)
+		for (size_type i = 0; i < n; ++i)
 			this->put(i, val);
 		this->_size = n;
 	}
@@ -354,9 +382,9 @@ public:
 		else
 		{
 			this->reserve(this->_size * 2);
-			this->_array[_size] = val; // 마지막 원소 다음에 val 저장하고 벡터 크기를 1만큼 증가
-			++this->_size;
-			// this->push_back(val);
+			// this->_array[_size] = val; // 마지막 원소 다음에 val 저장하고 벡터 크기를 1만큼 증가
+			// ++this->_size;
+			this->push_back(val);
 		}
 	}
 	// void pop_back();
@@ -375,6 +403,7 @@ public:
 			++target;
 		}
 		--this->_size;
+		return (position);
 	}
 
 	iterator erase (iterator first, iterator last)
@@ -384,10 +413,12 @@ public:
 		while (target != last)
 		{
 			this->_alloc.destroy(target.get_ptr());
-			*target = *(target + gap);
+			if (target + gap != this->end())
+				*target = *(target + gap);
 			++target;
 		}
 		this->_size -= gap;
+		return (first);
 	}
 	// void swap (vector& x);
 	void clear()

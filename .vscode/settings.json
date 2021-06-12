@@ -71,6 +71,13 @@
 		"any": "cpp",
 		"set": "cpp",
 		"variant": "cpp",
-		"iomanip": "cpp"
+		"iomanip": "cpp",
+		"*.tcc": "cpp",
+		"clocale": "cpp",
+		"compare": "cpp",
+		"concepts": "cpp",
+		"numeric": "cpp",
+		"random": "cpp",
+		"ranges": "cpp"
 	}
 }
