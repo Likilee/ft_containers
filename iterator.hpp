@@ -2,9 +2,67 @@
 # define ITERATOR_HPP
 
 # include "iterator_traits.hpp"
+# include <iostream>
 
 namespace ft
 {
+	template <bool B, class T = void>
+struct enable_if;
+
+template <class T>
+struct enable_if<true, T>
+{
+	typedef T type;
+	typedef int yes;
+};
+
+template <typename T, typename U>
+struct is_same
+{
+	static const bool value = false;
+};
+
+template <typename T>
+struct is_same<T,T>
+{
+	static const bool value = true;
+};
+
+template <typename T, typename Enable = void>
+struct is_iter
+{
+	static const bool value = false;
+};
+
+template <typename T>
+struct is_iter<T, typename ft::enable_if<ft::is_same<typename T::value_type, typename ft::iterator_traits<T>::value_type>::value>::type>
+{
+	static const bool value = true;
+};
+
+template <typename InputItr>
+typename InputItr::difference_type distance_random(InputItr first, InputItr last)
+{
+	return (last - first);
+};
+
+template <typename InputItr>
+typename InputItr::difference_type distance(InputItr first, InputItr last)
+{
+	// if (ft::is_same<typename ft::random_access_iterator_tag, typename InputItr::iterator_category>::value)
+	// {
+	// 	return (ft::distance_random(first, last));
+	// }
+	// else
+	// {
+		typename InputItr::difference_type dist = 0;
+
+		while (first++ != last)
+			++dist;
+		return (dist);
+	// }
+};
+
 template <typename T, typename Pointer = T*, typename Reference = T&,
 		typename Category = ft::random_access_iterator_tag, typename Distance = ptrdiff_t>
 class random_access_iter
@@ -33,7 +91,7 @@ public:
 	const this_type_iterator &operator=(const random_access_iter<T2, A, B, C> &r)
 	{
 		this->_p = r.get_ptr();
-		return (this);
+		return (*this);
 	}
 
 	reference operator*()

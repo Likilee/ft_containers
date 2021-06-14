@@ -24,40 +24,6 @@ namespace ft
 // struct bidirectional_iterator_tag : public forward_iterator_tag {};
 // struct random_access_iterator_tag : public bidirectional_iterator_tag {};
 
-template <bool B, class T = void>
-struct enable_if;
-
-template <class T>
-struct enable_if<true, T>
-{
-	typedef T type;
-	typedef int yes;
-};
-
-template <typename T, typename U>
-struct is_same
-{
-	static const bool value = false;
-};
-
-template <typename T>
-struct is_same<T,T>
-{
-	static const bool value = true;
-};
-
-template <typename T, typename Enable = void>
-struct is_iter
-{
-	static const bool value = false;
-};
-
-template <typename T>
-struct is_iter<T, typename ft::enable_if<ft::is_same<typename T::value_type, typename ft::iterator_traits<T>::value_type>::value>::type>
-{
-	static const bool value = true;
-};
-
 template <typename T, typename Alloc = std::allocator<T> >
 class vector
 {
@@ -256,7 +222,7 @@ public:
 	template <class InputIterator>
 	void assign (InputIterator first, InputIterator last, typename ft::enable_if<ft::is_iter<InputIterator>::value>::yes = 1)
 	{
-		difference_type gap = last - first;
+		difference_type gap = ft::distance(first, last);
 		this->clear();
 		this->reserve(gap);
 		for (difference_type i = 0; i < gap; ++i)
@@ -326,7 +292,7 @@ public:
 				typename ft::enable_if<ft::is_iter<InputIterator>::value>::yes = 1)
 	{
 		ft::vector<T> temp(position, this->end());
-		size_type n = last - first; // 이거 계산하는 거 공용 함수 만들어야할 듯(iterate_traits에 맞춰서)
+		size_type n = ft::distance(first, last); // 이거 계산하는 거 공용 함수 만들어야할 듯(iterate_traits에 맞춰서)
 		size_type pos = position - this->begin();
 
 		this->resize(this->_size + n);
