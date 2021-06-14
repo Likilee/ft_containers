@@ -29,7 +29,8 @@ public:
 
 	~random_access_iter() {}
 
-	this_type_iterator &operator=(const iterator &r)
+	template <typename T2, typename A, typename B, typename C>
+	const this_type_iterator &operator=(const random_access_iter<T2, A, B, C> &r)
 	{
 		this->_p = r.get_ptr();
 		return (this);

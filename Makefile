@@ -13,8 +13,8 @@ at_const :
 	cd ./containers_test && ./$(COMMAND) srcs/$(CONTAINER)/at_const.cpp $(NS)
 bidirect_it :
 	cd ./containers_test && ./$(COMMAND) srcs/$(CONTAINER)/bidirect_it.cpp $(NS)
-copy_construct.cpp :
-	cd ./containers_test && ./$(COMMAND) srcs/$(CONTAINER)/copy_construct.cpp.cpp $(NS)
+copy_construct :
+	cd ./containers_test && ./$(COMMAND) srcs/$(CONTAINER)/copy_construct.cpp $(NS)
 erase :
 	cd ./containers_test && ./$(COMMAND) srcs/$(CONTAINER)/erase.cpp $(NS)
 insert :
