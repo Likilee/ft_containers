@@ -423,7 +423,11 @@ public:
 			this->push_back(val);
 		}
 	}
-	// void pop_back();
+	void pop_back()
+	{
+		//맨 뒤 원소 제거(원소가 없으면 아무일도 안함)
+		this->erase(this->end() - 1);
+	}
 	// iterator insert (iterator position, const value_type& val);
 	// void insert (iterator position, size_type n, const value_type& val);
 	// template <class InputIterator>
