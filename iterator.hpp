@@ -156,6 +156,13 @@ public:
 		this->_p = p;
 	}
 };
+
+template <typename T, typename P, typename R, typename C>
+random_access_iter<T, P, R, C>	operator+(typename random_access_iter<T, P, R, C>::difference_type n, const random_access_iter<T,P,R,C>& x)
+{
+	return (x + n);
+};
+
 }
 
 #endif
