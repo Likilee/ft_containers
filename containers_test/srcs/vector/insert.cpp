@@ -22,7 +22,7 @@ int		main(void)
 	for (unsigned long int i = 0; i < vct.size(); ++i)
 		vct[i] = (vct.size() - i) * 3;
 	printSize(vct);
-
+	
 	vct2.insert(vct2.end(), 42);
 	vct2.insert(vct2.begin(), 2, 21);
 	printSize(vct2);

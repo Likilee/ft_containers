@@ -3,24 +3,26 @@
 
 # include <memory>
 # include <exception>
+# include "iterator.hpp"
+# include <iostream>
 
 namespace ft
 {
 //iterator 콘셉트를 구현하여 알고리즘 오버로딩이 가능하도록
-template<class Iter>
-struct iterator_traits {
-	typedef typename Iter::value_type value_type;
-	typedef typename Iter::iterator_category iterator_category;
-	typedef typename Iter::difference_type difference_type;
-	typedef typename Iter::pointer pointer;
-	typedef typename Iter::reference reference;
-};
+// template<class Iter>
+// struct iterator_traits {
+// 	typedef typename Iter::value_type value_type;
+// 	typedef typename Iter::iterator_category iterator_category;
+// 	typedef typename Iter::difference_type difference_type;
+// 	typedef typename Iter::pointer pointer;
+// 	typedef typename Iter::reference reference;
+// };
 
-struct input_iterator_tag {};
-struct output_iterator_tag {};
-struct forward_iterator_tag : public input_iterator_tag {};
-struct bidirectional_iterator_tag : public forward_iterator_tag {};
-struct random_access_iterator_tag : public bidirectional_iterator_tag {};
+// struct input_iterator_tag {};
+// struct output_iterator_tag {};
+// struct forward_iterator_tag : public input_iterator_tag {};
+// struct bidirectional_iterator_tag : public forward_iterator_tag {};
+// struct random_access_iterator_tag : public bidirectional_iterator_tag {};
 
 template <bool B, class T = void>
 struct enable_if;
@@ -56,145 +58,6 @@ struct is_iter<T, typename ft::enable_if<ft::is_same<typename T::value_type, typ
 	static const bool value = true;
 };
 
-template <typename T>
-class vector_iterator
-{
-	public:
-		typedef T value_type;
-		typedef random_access_iterator_tag iterator_category;
-		typedef ptrdiff_t difference_type;
-		typedef value_type* pointer;
-		typedef value_type& reference;
-	private:
-		pointer _p;
-	public:
-		vector_iterator() : _p(0) {}
-
-		vector_iterator(pointer x) : _p(x) {}
-
-		vector_iterator(const vector_iterator<value_type>& vec_itr) : _p(vec_itr._p) {}
-
-		~vector_iterator() {}
-
-		vector_iterator &operator=(const vector_iterator &r)
-		{
-			this->_p = r._p;
-			return (this);
-		}
-
-		bool operator==(const vector_iterator &r) const
-		{
-			return (this->_p == r._p);
-		}
-
-		bool operator!=(const vector_iterator &r) const
-		{
-			return (this->_p != r._p);
-		}
-
-		reference operator*()
-		{
-			return (*(this->_p));
-		}
-
-		pointer operator->()
-		{
-			return (_p);
-		}
-
-		vector_iterator& operator++()
-		{
-			++_p;
-			return (*this);
-		}
-
-		vector_iterator operator++(int)
-		{
-			vector_iterator temp(*this);
-			this->operator++();
-			return (temp);
-		}
-
-		vector_iterator& operator--()
-		{
-			--_p;
-			return (*this);
-		}
-
-		vector_iterator operator--(int)
-		{
-			vector_iterator temp(*this);
-			this->operator--();
-			return (temp);
-		}
-
-		vector_iterator operator+(difference_type n) const
-		{
-			vector_iterator temp(*this);
-			temp._p += n;
-			return (temp);
-		}
-
-		vector_iterator operator-(difference_type n) const
-		{
-			vector_iterator temp(*this);
-			temp._p -= n;
-			return (temp);
-		}
-
-		difference_type operator-(const vector_iterator &r) const
-		{
-			return (this->_p - r._p);
-		}
-
-		vector_iterator &operator+=(difference_type n)
-		{
-			this->_p += n;
-			return (*this);
-		}
-
-		vector_iterator &operator-=(difference_type n)
-		{
-			this->_p -= n;
-			return (*this);
-		}
-
-		bool operator<(const vector_iterator &r) const
-		{
-			return (this->_p < r._p);
-		}
-
-		bool operator>(const vector_iterator &r) const
-		{
-			return (this->_p > r._p);
-		}
-
-		bool operator>=(const vector_iterator &r) const
-		{
-			return (this->_p >= r._p);
-		}
-
-		bool operator<=(const vector_iterator &r) const
-		{
-			return (this->_p <= r._p);
-		}
-
-		value_type &operator[](difference_type n)
-		{
-			return (*(*this + n));
-		}
-
-		pointer get_ptr() const
-		{
-			return (this->_p);
-		}
-
-		void set_ptr(pointer p)
-		{
-			this->_p = p;
-		}
-};
-
 template <typename T, typename Alloc = std::allocator<T> >
 class vector
 {
@@ -207,8 +70,8 @@ public:
 	typedef const pointer const_pointer;
 	typedef size_t size_type; // 사이즈 타입
 	typedef ptrdiff_t difference_type;  // 이터레이터 간극 반환 타입
-	typedef vector_iterator<T> iterator;
-	typedef vector_iterator<const T> const_iterator;
+	typedef random_access_iter<T, T*, T&> iterator;
+	typedef random_access_iter<T, const T*, const T&> const_iterator;
 	// typedef ~ reverse_iterator;
 	// typedef ~ const_reverse_iterator;
 private:
@@ -222,6 +85,14 @@ private:
 	{
 		(*this)[idx] = val;
 	}
+	void copy_right(iterator position, size_type gap)
+	{
+		if (position + gap > this->end())
+			this->reserve(this->_size * 2);
+		*(position + gap) = *position;
+		++this->_size;
+	}
+
 public:
 	explicit vector(const allocator_type& alloc = allocator_type())
 		: _array(0), _size(0), _capacity(0), _alloc(alloc) // vector<value_type>() 기본 생성자
@@ -428,10 +299,44 @@ public:
 		//맨 뒤 원소 제거(원소가 없으면 아무일도 안함)
 		this->erase(this->end() - 1);
 	}
-	// iterator insert (iterator position, const value_type& val);
-	// void insert (iterator position, size_type n, const value_type& val);
-	// template <class InputIterator>
-	// void insert (iterator position, InputIterator first, InputIterator last);
+
+	iterator insert(iterator position, const value_type& val)
+	{
+		insert(position, 1, val);
+		return (position);
+	}
+	// vct2.insert(vct2.end(), 42);
+	// vct2.insert(vct2.begin(), 2, 21);
+	// printSize(vct2);
+	void insert(iterator position, size_type n, const value_type& val)
+	{
+		ft::vector<T> temp(position, this->end());
+		size_type pos = position - this->begin();
+
+		this->resize(this->_size + n);
+
+		while (n--)
+			this->put(pos++, val);
+		for (iterator itr = temp.begin(); itr != temp.end(); ++itr)
+			this->put(pos++, *itr);
+	}
+
+	template <class InputIterator>
+	void insert (iterator position, InputIterator first, InputIterator last,
+				typename ft::enable_if<ft::is_iter<InputIterator>::value>::yes = 1)
+	{
+		ft::vector<T> temp(position, this->end());
+		size_type n = last - first; // 이거 계산하는 거 공용 함수 만들어야할 듯(iterate_traits에 맞춰서)
+		size_type pos = position - this->begin();
+
+		this->resize(this->_size + n);
+
+		while (first != last)
+			this->put(pos++, *first++);
+		for (iterator itr = temp.begin(); itr != temp.end(); ++itr)
+			this->put(pos++, *itr);
+	}
+
 	iterator erase (iterator position) // 범위 밖의 이터레이터 들어오는거 테스트해보니 segfault
 	{
 		iterator target = position;
@@ -453,8 +358,11 @@ public:
 		while (target != last)
 		{
 			this->_alloc.destroy(target.get_ptr());
-			if (target + gap != this->end())
-				*target = *(target + gap);
+			++target;
+		}
+		while (target != this->end())
+		{
+			*(target - gap) = *target;
 			++target;
 		}
 		this->_size -= gap;
