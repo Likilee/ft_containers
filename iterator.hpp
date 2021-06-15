@@ -204,6 +204,11 @@ public:
 		return (*(*this + n));
 	}
 
+	value_type &operator[](difference_type n) const
+	{
+		return (*(*this + n));
+	}
+
 	pointer get_ptr() const
 	{
 		return (this->_p);

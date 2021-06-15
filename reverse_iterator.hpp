@@ -101,7 +101,6 @@ public:
 	}
 };
 
-//덧셈 연산자 n + iter 오버로딩
 template <typename Iterator>
 reverse_iterator<Iterator> operator+(typename reverse_iterator<Iterator>::difference_type n,
 									const reverse_iterator<Iterator>& x)
@@ -109,51 +108,52 @@ reverse_iterator<Iterator> operator+(typename reverse_iterator<Iterator>::differ
 	return (x + n);
 }
 
-template <class Iterator>
+template <typename Iterator, typename Iterator2>
 typename reverse_iterator<Iterator>::difference_type operator- (const reverse_iterator<Iterator>& lhs,
-															const reverse_iterator<Iterator>& rhs)
+															const reverse_iterator<Iterator2>& rhs)
 {
-	return (lhs.base() - rhs.base());
+	return (rhs.base() - lhs.base());
 }
+//덧셈 연산자 n + iter 오버로딩
 
 //비교 연산자 정의
-template <class Iterator>
+template <typename Iterator, typename Iterator2>
 bool operator== (const reverse_iterator<Iterator>& lhs,
-				const reverse_iterator<Iterator>& rhs)
+				const reverse_iterator<Iterator2>& rhs)
 {
 	return (lhs.base() == rhs.base());
 }
 
-template <class Iterator>
+template <typename Iterator, typename Iterator2>
 bool operator!= (const reverse_iterator<Iterator>& lhs,
-			const reverse_iterator<Iterator>& rhs)
+			const reverse_iterator<Iterator2>& rhs)
 {
 	return (lhs.base() != rhs.base());
 }
 
-template <class Iterator>
-bool operator<  (const reverse_iterator<Iterator>& lhs,
-			const reverse_iterator<Iterator>& rhs)
+template <typename Iterator, typename Iterator2>
+bool operator<(const reverse_iterator<Iterator>& lhs,
+			const reverse_iterator<Iterator2>& rhs)
 {
 	return (lhs.base() > rhs.base());
 }
 
-template <class Iterator>
+template <typename Iterator, typename Iterator2>
 bool operator<=(const reverse_iterator<Iterator>& lhs,
-			const reverse_iterator<Iterator>& rhs)
+			const reverse_iterator<Iterator2>& rhs)
 {
 	return (lhs.base() >= rhs.base());
 }
 
-template <class Iterator>
+template <typename Iterator, typename Iterator2>
 bool operator>(const reverse_iterator<Iterator>& lhs,
-				const reverse_iterator<Iterator>& rhs)
+				const reverse_iterator<Iterator2>& rhs)
 {
 	return (lhs.base() < rhs.base());
 }
-template <class Iterator>
+template <typename Iterator, typename Iterator2>
 bool operator>= (const reverse_iterator<Iterator>& lhs,
-				const reverse_iterator<Iterator>& rhs)
+				const reverse_iterator<Iterator2>& rhs)
 {
 	return (lhs.base() <= rhs.base());
 }
