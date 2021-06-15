@@ -3,27 +3,12 @@
 
 # include <memory>
 # include <exception>
-# include "iterator.hpp"
+# include "utils.hpp"
+# include "random_access_iter.hpp"
 # include "reverse_iterator.hpp"
-# include <iostream>
 
 namespace ft
 {
-//iterator 콘셉트를 구현하여 알고리즘 오버로딩이 가능하도록
-// template<class Iter>
-// struct iterator_traits {
-// 	typedef typename Iter::value_type value_type;
-// 	typedef typename Iter::iterator_category iterator_category;
-// 	typedef typename Iter::difference_type difference_type;
-// 	typedef typename Iter::pointer pointer;
-// 	typedef typename Iter::reference reference;
-// };
-
-// struct input_iterator_tag {};
-// struct output_iterator_tag {};
-// struct forward_iterator_tag : public input_iterator_tag {};
-// struct bidirectional_iterator_tag : public forward_iterator_tag {};
-// struct random_access_iterator_tag : public bidirectional_iterator_tag {};
 
 template <typename T, typename Alloc = std::allocator<T> >
 class vector
@@ -47,12 +32,12 @@ private:
 	size_type _size;
 	size_type _capacity;
 	Alloc _alloc;
-	// 삭제
-	// 제할당
+
 	void put(size_type idx, const value_type &val)
 	{
 		(*this)[idx] = val;
 	}
+
 	void copy_right(iterator position, size_type gap)
 	{
 		if (position + gap > this->end())
@@ -62,6 +47,7 @@ private:
 	}
 
 public:
+	// 1. Constructors, Destructor, operator=
 	explicit vector(const allocator_type& alloc = allocator_type())
 		: _array(0), _size(0), _capacity(0), _alloc(alloc) // vector<value_type>() 기본 생성자
 	{
@@ -99,6 +85,7 @@ public:
 		return (*this);
 	}
 
+	// 2. Iterators
 	iterator begin()
 	{
 		return (iterator(this->_array));
@@ -136,6 +123,7 @@ public:
 		return (const_reverse_iterator(this->begin()));
 	}
 
+	// 3. Capacity
 	size_type size() const
 	{
 		return (this->_size);
@@ -190,6 +178,8 @@ public:
 			this->_capacity = n;
 		}
 	}
+
+	// 4. Element access
 	reference operator[](size_type n)
 	{
 		return this->_array[n];
@@ -234,6 +224,7 @@ public:
 		return (_array[this->_size - 1]);
 	}
 
+	// 5. Modifiers
 	//새 벡터의 크기가 현재 벡터 용량을 초과하는 경우에만 자동 재할당진행!
 	template <class InputIterator>
 	void assign (InputIterator first, InputIterator last, typename ft::enable_if<ft::is_iter<InputIterator>::value>::yes = 1)
@@ -260,9 +251,6 @@ public:
 
 	void push_back (const value_type& val)
 	{
-		//마지막 원소 다음에 val 저장
-		//벡터 크기를 1만큼 증가
-		//끝
 		if (this->_size < this->_capacity)
 		{
 			this->_array[_size] = val;
@@ -271,14 +259,12 @@ public:
 		else
 		{
 			this->reserve(this->_size * 2);
-			// this->_array[_size] = val; // 마지막 원소 다음에 val 저장하고 벡터 크기를 1만큼 증가
-			// ++this->_size;
 			this->push_back(val);
 		}
 	}
+
 	void pop_back()
 	{
-		//맨 뒤 원소 제거(원소가 없으면 아무일도 안함)
 		this->erase(this->end() - 1);
 	}
 
@@ -317,7 +303,7 @@ public:
 			this->put(pos++, *itr);
 	}
 
-	iterator erase (iterator position) // 범위 밖의 이터레이터 들어오는거 테스트해보니 segfault
+	iterator erase (iterator position) // 범위 밖의 이터레이터 들어오는거 테스트해보니 segfault, 디펜스 안해도 될듯.
 	{
 		iterator target = position;
 
@@ -349,8 +335,7 @@ public:
 		return (first);
 	}
 
-//all iterators, references and pointers remain valid for the swapped objects.
-	void swap (vector& x)
+	void swap (vector& x) // // All iterators, references and pointers remain valid for the swapped objects.
 	{
 		pointer temp_array = x._array;
 		size_type temp_size = x.size();
@@ -372,40 +357,7 @@ public:
 
 };
 
-//두 구간의 대응되는 요소를 차례대로 비교하는데 첫 번째 요소가 두 번째 요소보다 작으면
-//true를 리턴하고 크면 false를 리턴하며 즉시 종료한다.
-// 만약 같다면 다음 요소를 똑같은 방식으로 계속 비교하기를 구간끝까지 반복한다.
-//디폴트 비교 함수 객체가 less이므로 첫 번째 구간이 두 번째 구간보다 작아야만 true를 리턴하며 같을 경우는 작지 않으므로 false가 리턴된다.
-//만약 첫 번째 구간이 먼저 끝나고 두 번째 구간은 아직 값이 남았으면 이 경우는 true를 리턴한다.
-template <class InputIterator1, class InputIterator2>
-bool lexicographical_compare (InputIterator1 first1, InputIterator1 last1,
-							InputIterator2 first2, InputIterator2 last2)
-{
-	while (first1 != last1)
-	{
-		if (first2 == last2 || *first2 < *first1)
-			return (false);
-		else if (*first1 < *first2)
-			return (true);
-		++first1;
-		++first2;
-	}
-	return (first2 != last2);
-}
-
-template <class InputIterator1, class InputIterator2>
-bool equal(InputIterator1 first1, InputIterator1 last1,
-			InputIterator2 first2)
-{
-	while (first1!=last1)
-	{
-		if (!(*first1 == *first2))	// or: if (!pred(*first1,*first2)), for version 2
-			return (false);
-		++first1;
-		++first2;
-	}
-	return (true);
-}
+// 6. Relational operators
 
 template <class T, class Alloc>
 bool operator==(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
@@ -429,26 +381,26 @@ template <class T, class Alloc>
 bool operator<=(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
 {
 	return (!(rhs < lhs));
-	// return ((lhs == rhs) || (lhs < rhs));
 }
+
 template <class T, class Alloc>
 bool operator>(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
 {
 	return (rhs < lhs);
-	// return (ft::lexicographical_compare(rhs.begin(), rhs.end(), lhs.begin(), lhs.end()));
 }
 
 template <class T, class Alloc>
 bool operator>=(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
 {
 	return (!(lhs < rhs));
-	// return ((lhs == rhs) || (lhs > rhs));
 }
 
+// 7. Exchange contents of vectors
 template <class T, class Alloc>
 void swap (vector<T,Alloc> &x, vector<T,Alloc> &y)
 {
 	x.swap(y);
 }
 }
+
 #endif
