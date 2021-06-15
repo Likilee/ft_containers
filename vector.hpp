@@ -348,12 +348,28 @@ public:
 		this->_size -= gap;
 		return (first);
 	}
-	// void swap (vector& x);
+
+//all iterators, references and pointers remain valid for the swapped objects.
+	void swap (vector& x)
+	{
+		pointer temp_array = x._array;
+		size_type temp_size = x.size();
+		size_type temp_capacity = x.capacity();
+
+		x._array = this->_array;
+		x._size = this->_size;
+		x._capacity = this->_capacity;
+		this->_array = temp_array;
+		this->_size = temp_size;
+		this->_capacity = temp_capacity;
+	}
+
 	void clear()
 	{
 		this->erase(this->begin(), this->end());
 		this->_size = 0;
 	}
+
 };
 
 //두 구간의 대응되는 요소를 차례대로 비교하는데 첫 번째 요소가 두 번째 요소보다 작으면
@@ -429,7 +445,10 @@ bool operator>=(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
 	// return ((lhs == rhs) || (lhs > rhs));
 }
 
-// template <class T, class Alloc>
-// void swap (vector<T,Alloc>& x, vector<T,Alloc>& y);
+template <class T, class Alloc>
+void swap (vector<T,Alloc> &x, vector<T,Alloc> &y)
+{
+	x.swap(y);
+}
 }
 #endif

@@ -109,7 +109,7 @@ reverse_iterator<Iterator> operator+(typename reverse_iterator<Iterator>::differ
 }
 
 template <typename Iterator, typename Iterator2>
-typename reverse_iterator<Iterator>::difference_type operator- (const reverse_iterator<Iterator>& lhs,
+typename reverse_iterator<Iterator>::difference_type operator-(const reverse_iterator<Iterator>& lhs,
 															const reverse_iterator<Iterator2>& rhs)
 {
 	return (rhs.base() - lhs.base());
@@ -118,14 +118,14 @@ typename reverse_iterator<Iterator>::difference_type operator- (const reverse_it
 
 //비교 연산자 정의
 template <typename Iterator, typename Iterator2>
-bool operator== (const reverse_iterator<Iterator>& lhs,
+bool operator==(const reverse_iterator<Iterator>& lhs,
 				const reverse_iterator<Iterator2>& rhs)
 {
 	return (lhs.base() == rhs.base());
 }
 
 template <typename Iterator, typename Iterator2>
-bool operator!= (const reverse_iterator<Iterator>& lhs,
+bool operator!=(const reverse_iterator<Iterator>& lhs,
 			const reverse_iterator<Iterator2>& rhs)
 {
 	return (lhs.base() != rhs.base());
@@ -152,7 +152,7 @@ bool operator>(const reverse_iterator<Iterator>& lhs,
 	return (lhs.base() < rhs.base());
 }
 template <typename Iterator, typename Iterator2>
-bool operator>= (const reverse_iterator<Iterator>& lhs,
+bool operator>=(const reverse_iterator<Iterator>& lhs,
 				const reverse_iterator<Iterator2>& rhs)
 {
 	return (lhs.base() <= rhs.base());
