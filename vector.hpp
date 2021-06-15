@@ -38,14 +38,6 @@ private:
 		(*this)[idx] = val;
 	}
 
-	void copy_right(iterator position, size_type gap)
-	{
-		if (position + gap > this->end())
-			this->reserve(this->_size * 2);
-		*(position + gap) = *position;
-		++this->_size;
-	}
-
 public:
 	// 1. Constructors, Destructor, operator=
 	explicit vector(const allocator_type& alloc = allocator_type())
@@ -288,7 +280,7 @@ public:
 	}
 
 	template <class InputIterator>
-	void insert (iterator position, InputIterator first, InputIterator last,
+	void insert(iterator position, InputIterator first, InputIterator last,
 				typename ft::enable_if<ft::is_iter<InputIterator>::value>::yes = 1)
 	{
 		ft::vector<T> temp(position, this->end());
@@ -303,7 +295,7 @@ public:
 			this->put(pos++, *itr);
 	}
 
-	iterator erase (iterator position) // 범위 밖의 이터레이터 들어오는거 테스트해보니 segfault, 디펜스 안해도 될듯.
+	iterator erase(iterator position) // 범위 밖의 이터레이터 들어오는거 테스트해보니 segfault, 디펜스 안해도 될듯.
 	{
 		iterator target = position;
 
@@ -317,7 +309,7 @@ public:
 		return (position);
 	}
 
-	iterator erase (iterator first, iterator last)
+	iterator erase(iterator first, iterator last)
 	{
 		iterator target = first;
 		difference_type gap = last - first;
@@ -335,7 +327,7 @@ public:
 		return (first);
 	}
 
-	void swap (vector& x) // // All iterators, references and pointers remain valid for the swapped objects.
+	void swap(vector& x) // // All iterators, references and pointers remain valid for the swapped objects.
 	{
 		pointer temp_array = x._array;
 		size_type temp_size = x.size();

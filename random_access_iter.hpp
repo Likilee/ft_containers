@@ -1,8 +1,7 @@
-#ifndef ITERATOR_HPP
-# define ITERATOR_HPP
+#ifndef RANDOM_ACCESS_ITER_HPP
+# define RANDOM_ACCESS_ITER_HPP
 
 # include "iterator_traits.hpp"
-# include <iostream>
 
 namespace ft
 {
@@ -105,7 +104,7 @@ public:
 		return (*this);
 	}
 
-	//*Comparison
+	// Comparison
 	template <typename T2, typename A, typename B, typename C>
 	bool operator==(const random_access_iter<T2, A, B, C> &r) const
 	{
@@ -168,7 +167,6 @@ random_access_iter<T, P, R, C>	operator+(typename random_access_iter<T, P, R, C>
 {
 	return (x + n);
 };
-
 }
 
 #endif

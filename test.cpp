@@ -6,7 +6,7 @@
 /*   By: kilee <kilee@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/11 14:10:31 by kilee             #+#    #+#             */
-/*   Updated: 2021/06/15 16:35:55 by kilee            ###   ########.fr       */
+/*   Updated: 2021/06/15 20:53:53 by kilee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,35 +30,14 @@ class Test {
 
 int 		main()
 {
-// 	std::map<int,int> stdmap;
-// 	stdmap[3] = 3;
-// 	stdmap[1] = 1;
-// 	stdmap[2] = 2;
+	std::list<char> lst;
 
-// 	std::vector<int> intvec;
+	lst.push_back('2');
+	lst.push_back('a');
+	lst.push_back('#');
+	lst.push_back('*');
+	std::list<char>::iterator itr = lst.begin();
 
-// 	intvec.pop_back();
-// 	intvec.pop_back();
-// 	intvec.pop_back();
-// 	intvec.pop_back();
-// 	intvec.pop_back();
-// 	// std::cout << std::iterator_traits<std::map<int,int>::iterator>::iterator_category << std::endl;
-
-// 	std::vector<int>::iterator itr;
-// 	std::vector<int>::const_iterator itr2;
-// 	// std::vector<int>::reverse_iterator itr3;
-// 	// std::vector<int>::const_reverse_iterator itr4;
-// 	if (itr - itr2 == 0)
-// 		std::cout << "done" << std::endl;
-
-	ft::vector<int> vct2;
-
-	vct2.insert(vct2.end(), 42);
-	vct2.insert(vct2.begin(), 2, 21);
-
-	std::vector<int>::reverse_iterator riter;
-	std::list<int>::reverse_iterator riter2;
-
-	for (ft::vector<int>::iterator iter = vct2.begin(); iter != vct2.end(); iter++)
-		std::cout << *iter << ' ';
+	for(int i = 0; i < 10; ++i)
+		std::cout << *itr++ << std::endl;
 }
