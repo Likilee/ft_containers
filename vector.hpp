@@ -4,6 +4,7 @@
 # include <memory>
 # include <exception>
 # include "iterator.hpp"
+# include "reverse_iterator.hpp"
 # include <iostream>
 
 namespace ft
@@ -38,8 +39,9 @@ public:
 	typedef ptrdiff_t difference_type;  // 이터레이터 간극 반환 타입
 	typedef random_access_iter<T, T*, T&> iterator;
 	typedef random_access_iter<T, const T*, const T&> const_iterator;
-	// typedef ~ reverse_iterator;
-	// typedef ~ const_reverse_iterator;
+	typedef reverse_iterator<const_iterator > const_reverse_iterator;
+	typedef reverse_iterator<iterator> reverse_iterator; // 이거 위아래 순서 바꾸면 컴파일 안됨 왜지?
+
 private:
 	pointer _array;
 	size_type _size;
@@ -115,10 +117,24 @@ public:
 	{
 		return (const_iterator(this->_array + this->_size));
 	}
-	// reverse_iterator rbegin();
-	// const_reverse_iterator rbegin() const;
-	// reverse_iterator rend();
-	// const_reverse_iterator rend() const;
+	reverse_iterator rbegin()
+	{
+		return (reverse_iterator(this->end()));
+	}
+
+	const_reverse_iterator rbegin() const
+	{
+		return (const_reverse_iterator(this->end()));
+	}
+
+	reverse_iterator rend()
+	{
+		return (reverse_iterator(this->begin()));
+	}
+	const_reverse_iterator rend() const
+	{
+		return (const_reverse_iterator(this->begin()));
+	}
 
 	size_type size() const
 	{
@@ -271,9 +287,7 @@ public:
 		insert(position, 1, val);
 		return (position);
 	}
-	// vct2.insert(vct2.end(), 42);
-	// vct2.insert(vct2.begin(), 2, 21);
-	// printSize(vct2);
+
 	void insert(iterator position, size_type n, const value_type& val)
 	{
 		ft::vector<T> temp(position, this->end());
@@ -342,23 +356,78 @@ public:
 	}
 };
 
-// template <class T, class Alloc>
-// bool operator== (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
+//두 구간의 대응되는 요소를 차례대로 비교하는데 첫 번째 요소가 두 번째 요소보다 작으면
+//true를 리턴하고 크면 false를 리턴하며 즉시 종료한다.
+// 만약 같다면 다음 요소를 똑같은 방식으로 계속 비교하기를 구간끝까지 반복한다.
+//디폴트 비교 함수 객체가 less이므로 첫 번째 구간이 두 번째 구간보다 작아야만 true를 리턴하며 같을 경우는 작지 않으므로 false가 리턴된다.
+//만약 첫 번째 구간이 먼저 끝나고 두 번째 구간은 아직 값이 남았으면 이 경우는 true를 리턴한다.
+template <class InputIterator1, class InputIterator2>
+bool lexicographical_compare (InputIterator1 first1, InputIterator1 last1,
+							InputIterator2 first2, InputIterator2 last2)
+{
+	while (first1 != last1)
+	{
+		if (first2 == last2 || *first2 < *first1)
+			return (false);
+		else if (*first1 < *first2)
+			return (true);
+		++first1;
+		++first2;
+	}
+	return (first2 != last2);
+}
 
-// template <class T, class Alloc>
-// bool operator!= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
+template <class InputIterator1, class InputIterator2>
+bool equal(InputIterator1 first1, InputIterator1 last1,
+			InputIterator2 first2)
+{
+	while (first1!=last1)
+	{
+		if (!(*first1 == *first2))	// or: if (!pred(*first1,*first2)), for version 2
+			return (false);
+		++first1;
+		++first2;
+	}
+	return (true);
+}
 
-// template <class T, class Alloc>
-// bool operator<  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
+template <class T, class Alloc>
+bool operator==(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+{
+	return (lhs.size() == rhs.size() && ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
+}
 
-// template <class T, class Alloc>
-// bool operator<= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
+template <class T, class Alloc>
+bool operator!=(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+{
+	return (!(lhs == rhs));
+}
 
-// template <class T, class Alloc>
-// bool operator>  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
+template <class T, class Alloc>
+bool operator<(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+{
+	return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
+}
 
-// template <class T, class Alloc>
-// bool operator>= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
+template <class T, class Alloc>
+bool operator<=(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+{
+	return (!(rhs < lhs));
+	// return ((lhs == rhs) || (lhs < rhs));
+}
+template <class T, class Alloc>
+bool operator>(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+{
+	return (rhs < lhs);
+	// return (ft::lexicographical_compare(rhs.begin(), rhs.end(), lhs.begin(), lhs.end()));
+}
+
+template <class T, class Alloc>
+bool operator>=(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+{
+	return (!(lhs < rhs));
+	// return ((lhs == rhs) || (lhs > rhs));
+}
 
 // template <class T, class Alloc>
 // void swap (vector<T,Alloc>& x, vector<T,Alloc>& y);

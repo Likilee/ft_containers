@@ -6,11 +6,12 @@
 /*   By: kilee <kilee@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/11 14:10:31 by kilee             #+#    #+#             */
-/*   Updated: 2021/06/14 16:19:09 by kilee            ###   ########.fr       */
+/*   Updated: 2021/06/15 16:35:55 by kilee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <vector>
+#include <list>
 #include <map>
 #include <iostream>
 #include "vector.hpp"
@@ -54,6 +55,9 @@ int 		main()
 
 	vct2.insert(vct2.end(), 42);
 	vct2.insert(vct2.begin(), 2, 21);
+
+	std::vector<int>::reverse_iterator riter;
+	std::list<int>::reverse_iterator riter2;
 
 	for (ft::vector<int>::iterator iter = vct2.begin(); iter != vct2.end(); iter++)
 		std::cout << *iter << ' ';
