@@ -6,7 +6,7 @@
 /*   By: kilee <kilee@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/11 14:10:31 by kilee             #+#    #+#             */
-/*   Updated: 2021/06/16 14:29:33 by kilee            ###   ########.fr       */
+/*   Updated: 2021/06/16 16:41:42 by kilee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,17 +48,19 @@ int 		main()
 	// 	std::cout << *itr++ << std::endl;
 	// 	// std::cout << "size: " << lst.size() << std::endl;
 	// }
-	unsigned long long arr[] = {2232131312313, 1, 2, 3, 4};
-	unsigned long long a = (unsigned long long)&arr[0];
-	unsigned long long b = (unsigned long long)&arr[4];
-	std::vector<int> vec2(arr, &arr[5]);
-	ft::vector<int> vec(arr, &arr[5]);
-	// ft::vector<int> vec(arr, arr + 5);
+	int arr[] = {3, 1, 2, 3, 4, 9};
+	int arr2[] = {5, 9, 7, 8, 4, 9};
 
-	// // std::cout << vec2.size()<< std::endl;
-	for(int i = 0; i < 5; ++i)
-		std::cout << vec2[i] << std::endl;
+	std::list<int> list2(arr, &arr[6]);
+	std::list<int> list(arr2, &arr2[6]);
+	// ft::vector<int> list(arr, arr + 5);
+	// list.sort();
+	// list2.sort();
+	list.merge(list2);
+	// // std::cout << list2.size()<< std::endl;
+	for(std::list<int>::iterator itr = list.begin(); itr != list.end(); ++itr)
+		std::cout << *itr << std::endl;
 	std::cout << std::endl;
-	for(int i = 0; i < 5; ++i)
-		std::cout << vec[i] << std::endl;
+	for(std::list<int>::iterator itr = list2.begin(); itr != list2.end(); ++itr)
+		std::cout << *itr << std::endl;
 }
