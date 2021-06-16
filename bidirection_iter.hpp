@@ -8,11 +8,15 @@ namespace ft
 {
 
 template <typename T>
-struct list_node
+class list_node
 {
+public:
 	T data;
 	list_node *prev;
 	list_node *next;
+	list_node() : data(T()), prev(NULL), next(NULL) {}
+	list_node(const T &val) : data(val), prev(NULL), next(NULL) {}
+	~list_node() {}
 };
 
 template <typename T, typename Pointer = T*, typename Reference = T&, typename NodePtr = ft::list_node<T>*,
@@ -49,12 +53,12 @@ public:
 
 	reference operator*()
 	{
-		return (*(this->_p->data));
+		return (this->_p->data);
 	}
 
 	pointer operator->()
 	{
-		return (this->_p);
+		return (&(this->_p->data));
 	}
 
 	this_type_iterator& operator++()
@@ -96,12 +100,12 @@ public:
 		return (this->_p != r.get_ptr());
 	}
 
-	pointer get_ptr() const
+	node_ptr get_ptr() const
 	{
 		return (this->_p);
 	}
 
-	void set_ptr(pointer p)
+	void set_ptr(node_ptr p)
 	{
 		this->_p = p;
 	}

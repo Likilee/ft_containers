@@ -21,18 +21,20 @@
 namespace ft
 {
 
-template <typename T, typename Alloc = std::allocator<T>() >
+template <typename T, typename Alloc = std::allocator<T> >
 class list
 {
 public:
 	typedef T value_type;
-	typedef Alloc allocator_type;
 	typedef value_type& reference;
 	typedef const value_type& const_reference;
 	typedef value_type* pointer;
-	typedef list_node<T>* node_ptr;
+	typedef list_node<T> node;
+	typedef node* node_ptr;
 	typedef const pointer const_pointer;
 	typedef size_t size_type; // 사이즈 타입
+	typedef Alloc allocator_type;
+	typedef typename Alloc::template rebind<node>::other node_allocator_type;
 	typedef ptrdiff_t difference_type;  // 이터레이터 간극 반환 타입
 	typedef bidirection_iter<T, T*, T&> iterator;
 	typedef bidirection_iter<T, const T*, const T&> const_iterator;
@@ -40,365 +42,312 @@ public:
 	typedef reverse_iterator<iterator> reverse_iterator; // 이거 위아래 순서 바꾸면 컴파일 안됨 왜지?
 
 private:
-	node_ptr _head;
 	node_ptr _tail;
 	size_type _size;
+	allocator_type _alloc;
+	node_allocator_type _node_alloc;
 
+	// template <typename Integral>
+	// void set_tail_value()
+	// {
+
+	// }
 public:
 	// 1. Constructors, Destructor, operator=
-	explicit list(const allocator_type& alloc = allocator_type())
-		: _head(0), _tail(0), _size(0), _alloc(alloc) // list<value_type>() 기본 생성자
+	explicit list(const allocator_type& alloc = allocator_type(), const node_allocator_type node_alloc = node_allocator_type())
+		: _tail(0), _size(0), _alloc(alloc), _node_alloc(node_alloc) // list<value_type>() 기본 생성자
 	{
-		this->_array = this->_alloc.allocate(0);
+		// this->_head = this->_node_alloc.allocate(1);
+		// this->_node_alloc.construct(this->_head, node());
+		this->_tail = this->_node_alloc.allocate(1);
+		this->_node_alloc.construct(this->_tail, node());
+
+		this->_tail->prev = this->_tail;
+		this->_tail->next = this->_tail;
 	}
 
-	explicit list(size_type n, const value_type& val = value_type(),
-					const allocator_type& alloc = allocator_type()) // list<value_type>(n) 사이즈 넣고 생성
-		: _array(0), _size(0), _capacity(0), _alloc(alloc)
+	explicit list(size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type(),
+				const node_allocator_type node_alloc = node_allocator_type()) // list<value_type>(n) 사이즈 넣고 생성
+		: _tail(0), _size(0), _alloc(alloc), _node_alloc(node_alloc)
 	{
 		this->assign(n, val);
 	}
 
-	template <class InputIterator>
-	list(InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(),
-			typename ft::enable_if<ft::is_iter<InputIterator>::value>::yes = 1)
-		: _array(0), _size(0), _capacity(0), _alloc(alloc)
-	{
-		this->assign(first, last);
-	}
+// 	template <class InputIterator>
+// 	list(InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(),
+// 			typename ft::enable_if<ft::is_iter<InputIterator>::value>::yes = 1)
+// 		: _array(0), _size(0), _capacity(0), _alloc(alloc)
+// 	{
+// 		this->assign(first, last);
+// 	}
 
-	explicit list(const list &from) : _array(0), _size(0), _capacity(0), _alloc(from._alloc) // 깊은 복사가 되어야함.
-	{
-		this->assign(from.begin(), from.end());
-	}
+// 	explicit list(const list &from) : _array(0), _size(0), _capacity(0), _alloc(from._alloc) // 깊은 복사가 되어야함.
+// 	{
+// 		this->assign(from.begin(), from.end());
+// 	}
 
-	~list()//This destroys all container elements, and deallocates all the storage capacity allocated by the list using its allocator.
-	{
-		this->_alloc.deallocate(this->_array, this->_capacity);
-	}
+// 	~list()//This destroys all container elements, and deallocates all the storage capacity allocated by the list using its allocator.
+// 	{
+// 		this->_alloc.deallocate(this->_array, this->_capacity);
+// 	}
 
-	list	&operator=(const list &rvalue)
-	{
-		this->assign(rvalue.begin(), rvalue.end());
-		return (*this);
-	}
+// 	list	&operator=(const list &rvalue)
+// 	{
+// 		this->assign(rvalue.begin(), rvalue.end());
+// 		return (*this);
+// 	}
 
-	// 2. Iterators
-	iterator begin()
-	{
-		return (iterator(this->_array));
-	}
+// 2. Iterators
+iterator begin()
+{
+	return (iterator(this->_tail->next));
+}
 
-	const_iterator begin() const
-	{
-		return (const_iterator(this->_array));
-	}
+const_iterator begin() const
+{
+	return (const_iterator(this->_tail->next));
+}
 
-	iterator end()
-	{
-		return (iterator(this->_array + this->_size));
-	}
-	const_iterator end() const
-	{
-		return (const_iterator(this->_array + this->_size));
-	}
-	reverse_iterator rbegin()
-	{
-		return (reverse_iterator(this->end()));
-	}
+iterator end()
+{
+	return (iterator(this->_tail));
+}
+const_iterator end() const
+{
+	return (const_iterator(this->_tail));
+}
+reverse_iterator rbegin()
+{
+	return (reverse_iterator(this->end()));
+}
 
-	const_reverse_iterator rbegin() const
-	{
-		return (const_reverse_iterator(this->end()));
-	}
+const_reverse_iterator rbegin() const
+{
+	return (const_reverse_iterator(this->end()));
+}
 
-	reverse_iterator rend()
-	{
-		return (reverse_iterator(this->begin()));
-	}
-	const_reverse_iterator rend() const
-	{
-		return (const_reverse_iterator(this->begin()));
-	}
+reverse_iterator rend()
+{
+	return (reverse_iterator(this->begin()));
+}
+const_reverse_iterator rend() const
+{
+	return (const_reverse_iterator(this->begin()));
+}
 
-	// 3. Capacity
-	size_type size() const
-	{
-		return (this->_size);
-	}
+// 3. Capacity
+size_type size() const
+{
+	return (this->_size);
+}
 
-	size_type max_size() const
-	{
-		return (std::numeric_limits<size_type>::max() / sizeof(value_type));
-	}
+size_type max_size() const
+{
+	return (std::numeric_limits<size_type>::max() / sizeof(value_type));
+}
 
-	void resize(size_type n, value_type val = value_type())
-	{
-		if (n > this->_capacity)
-		{
-			if (n < this->_capacity * 2)
-				this->reserve(this->_capacity * 2);
-			else
-				this->reserve(n);
-		}
-		if (n < this->_size)
-			for (size_type i = n; i < this->_size; ++i)
-				this->_alloc.destroy(&_array[i]);
-		else if (n > this->_size)
-			for (size_type i = this->_size; i < n; ++i)
-				this->put(i, val);
-		this->_size = n;
-	}
-
-	size_type capacity() const
-	{
-		return (this->_capacity);
-	}
-
-	bool empty() const
-	{
-		return (this->_size == 0);
-	}
-	void reserve (size_type n)
-	{
-		if (n == 0)
-			n = 1;
-		if (n > this->_capacity)
-		{
-			pointer new_array = this->_alloc.allocate(n);// -2*size 크기의 메모리를 새로 할당
-			for(size_type i = 0; i < this->_size; ++i)// 새로 할당한 메모리로 기존 원소 전부를 복사/이동
-			{
-				new_array[i] = this->_array[i];
-				this->_alloc.destroy(&this->_array[i]);
-			}
-			this->_alloc.deallocate(this->_array, this->_capacity);
-			this->_array = new_array; // 데이터 포인터를 새로운 할당메모리로 지정
-			this->_capacity = n;
-		}
-	}
-
-	// 4. Element access
-	reference operator[](size_type n)
-	{
-		return this->_array[n];
-	}
-
-	const_reference operator[](size_type n) const
-	{
-		return this->_array[n];
-	}
-
-	reference at(size_type n)
-	{
-		if (n >= this->_size)
-			throw std::out_of_range("kilee");
-		return (this->_array[n]);
-	}
-
-	const_reference at(size_type n) const
-	{
-		if (n >= this->_size)
-			throw std::out_of_range("kilee");
-		return (this->_array[n]);
-	}
-
-	reference front()
-	{
-		return (_array[0]);
-	}
-
-	const_reference front() const
-	{
-		return (_array[0]);
-	}
-
-	reference back()
-	{
-		return (_array[this->_size - 1]);
-	}
-
-	const_reference back() const
-	{
-		return (_array[this->_size - 1]);
-	}
-
-	// 5. Modifiers
-	//새 벡터의 크기가 현재 벡터 용량을 초과하는 경우에만 자동 재할당진행!
-	template <class InputIterator>
-	void assign (InputIterator first, InputIterator last, typename ft::enable_if<ft::is_iter<InputIterator>::value>::yes = 1)
-	{
-		difference_type gap = ft::distance(first, last);
-		this->clear();
-		this->reserve(gap);
-		for (difference_type i = 0; i < gap; ++i)
-		{
-			this->_array[i] = *first;
-			++first;
-		}
-		this->_size = gap;
-	}
-
-	void assign (size_type n, const value_type& val)
-	{
-		this->clear();
-		this->reserve(n);
-		for (size_type i = 0; i < n; ++i)
-			this->put(i, val);
-		this->_size = n;
-	}
-
-	void push_back (const value_type& val)
-	{
-		if (this->_size < this->_capacity)
-		{
-			this->_array[_size] = val;
-			++(this->_size);
-		}
-		else
-		{
-			this->reserve(this->_size * 2);
+void resize(size_type n, value_type val = value_type())
+{
+	if (n < this->_size)
+		for (;n < this->_size; ++n)
+			this->pop_back();
+	else if (n > this->_size)
+		for (;this->_size < n; --n)
 			this->push_back(val);
-		}
-	}
+}
 
-	void pop_back()
+bool empty() const
+{
+	return (this->_size == 0);
+}
+
+// 	// 4. Element access
+
+// 	reference front()
+// 	{
+// 		return (_array[0]);
+// 	}
+
+// 	const_reference front() const
+// 	{
+// 		return (_array[0]);
+// 	}
+
+// 	reference back()
+// 	{
+// 		return (_array[this->_size - 1]);
+// 	}
+
+// 	const_reference back() const
+// 	{
+// 		return (_array[this->_size - 1]);
+// 	}
+
+// 5. Modifiers
+//새 벡터의 크기가 현재 벡터 용량을 초과하는 경우에만 자동 재할당진행!
+template <class InputIterator>
+void assign (InputIterator first, InputIterator last, typename ft::enable_if<ft::is_iter<InputIterator>::value>::yes = 1)
+{
+	this->clear();
+	this->insert(this->begin(), first, last);
+}
+
+void assign (size_type n, const value_type& val)
+{
+	this->clear();
+	this->insert(this->begin(), n, val);
+}
+
+void push_front(const value_type& val)
+{
+	this->insert(this->_tail->next, val);
+}
+
+void pop_front()
+{
+	this->erase(this->begin());
+}
+
+void push_back(const value_type& val)
+{
+	this->insert(this->_tail, val);
+}
+
+void pop_back()
+{
+	iterator temp = this->end();
+	--temp;
+	this->erase(temp);
+}
+
+//An iterator that points to the first of the newly inserted elements.
+iterator insert(iterator position, const value_type& val)
+{
+	node_ptr target = position.get_ptr();
+	node_ptr new_node = this->_node_alloc.allocate(1);
+	this->_node_alloc.construct(new_node, val);
+
+	// if(this->empty())
+	// {
+	// 	this->_head = new_node;
+	// 	this->_head->next = this->_tail;
+	// 	this->_head->prev = this->_tail;
+	// 	this->_tail->next = this->_head;
+	// 	this->_tail->prev = this->_head;
+	// }
+	// else
+		target->prev->next = new_node;
+		new_node->prev = target->prev;
+		target->prev = new_node;
+		new_node->next = target;
+	++this->_size;
+	return (new_node);
+}
+
+void insert(iterator position, size_type n, const value_type& val)
+{
+	for (size_type i = 0; i < n; ++i)
+		insert(position, val);
+}
+
+template <class InputIterator>
+void insert(iterator position, InputIterator first, InputIterator last,
+			typename ft::enable_if<ft::is_iter<InputIterator>::value>::yes = 1)
+{
+	for (;first != last; ++first)
+		insert(position, *first);
+}
+
+//지우면 타겟의 넥스트를 리턴
+iterator erase(iterator position) // 범위 밖의 이터레이터 들어오는거 테스트해보니 segfault, 디펜스 안해도 될듯.
+{
+	node_ptr target = position.get_ptr();
+	target->prev->next = target->next;
+	target->next->prev = target->prev;
+	++position;
+	this->_node_alloc.destroy(target);
+	this->_node_alloc.deallocate(target, 1);
+	--this->_size;
+	return (position);
+}
+
+iterator erase (iterator first, iterator last)
+{
+	while (first != last)
 	{
-		this->erase(this->end() - 1);
+		erase(first);
+		++first;
 	}
+	return (first);
+}
 
-	iterator insert(iterator position, const value_type& val)
-	{
-		insert(position, 1, val);
-		return (position);
-	}
+// 	void swap (list& x) // // All iterators, references and pointers remain valid for the swapped objects.
+// 	{
+// 		pointer temp_array = x._array;
+// 		size_type temp_size = x.size();
+// 		size_type temp_capacity = x.capacity();
 
-	void insert(iterator position, size_type n, const value_type& val)
-	{
-		ft::list<T> temp(position, this->end());
-		size_type pos = position - this->begin();
+// 		x._array = this->_array;
+// 		x._size = this->_size;
+// 		x._capacity = this->_capacity;
+// 		this->_array = temp_array;
+// 		this->_size = temp_size;
+// 		this->_capacity = temp_capacity;
+// 	}
 
-		this->resize(this->_size + n);
+void clear()
+{
+	this->erase(this->begin(), this->end());
+	// this->_size = 0;
+}
 
-		while (n--)
-			this->put(pos++, val);
-		for (iterator itr = temp.begin(); itr != temp.end(); ++itr)
-			this->put(pos++, *itr);
-	}
+// };
 
-	template <class InputIterator>
-	void insert (iterator position, InputIterator first, InputIterator last,
-				typename ft::enable_if<ft::is_iter<InputIterator>::value>::yes = 1)
-	{
-		ft::list<T> temp(position, this->end());
-		size_type n = ft::distance(first, last); // 이거 계산하는 거 공용 함수 만들어야할 듯(iterate_traits에 맞춰서)
-		size_type pos = position - this->begin();
+// // 6. Relational operators
 
-		this->resize(this->_size + n);
+// template <class T, class Alloc>
+// bool operator==(const list<T,Alloc>& lhs, const list<T,Alloc>& rhs)
+// {
+// 	return (lhs.size() == rhs.size() && ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
+// }
 
-		while (first != last)
-			this->put(pos++, *first++);
-		for (iterator itr = temp.begin(); itr != temp.end(); ++itr)
-			this->put(pos++, *itr);
-	}
+// template <class T, class Alloc>
+// bool operator!=(const list<T,Alloc>& lhs, const list<T,Alloc>& rhs)
+// {
+// 	return (!(lhs == rhs));
+// }
 
-	iterator erase (iterator position) // 범위 밖의 이터레이터 들어오는거 테스트해보니 segfault, 디펜스 안해도 될듯.
-	{
-		iterator target = position;
+// template <class T, class Alloc>
+// bool operator<(const list<T,Alloc>& lhs, const list<T,Alloc>& rhs)
+// {
+// 	return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
+// }
 
-		this->_alloc.destroy(target.get_ptr());
-		while(target != this->end())
-		{
-			*target = *(target + 1);
-			++target;
-		}
-		--this->_size;
-		return (position);
-	}
+// template <class T, class Alloc>
+// bool operator<=(const list<T,Alloc>& lhs, const list<T,Alloc>& rhs)
+// {
+// 	return (!(rhs < lhs));
+// }
 
-	iterator erase (iterator first, iterator last)
-	{
-		iterator target = first;
-		difference_type gap = last - first;
-		while (target != last)
-		{
-			this->_alloc.destroy(target.get_ptr());
-			++target;
-		}
-		while (target != this->end())
-		{
-			*(target - gap) = *target;
-			++target;
-		}
-		this->_size -= gap;
-		return (first);
-	}
+// template <class T, class Alloc>
+// bool operator>(const list<T,Alloc>& lhs, const list<T,Alloc>& rhs)
+// {
+// 	return (rhs < lhs);
+// }
 
-	void swap (list& x) // // All iterators, references and pointers remain valid for the swapped objects.
-	{
-		pointer temp_array = x._array;
-		size_type temp_size = x.size();
-		size_type temp_capacity = x.capacity();
+// template <class T, class Alloc>
+// bool operator>=(const list<T,Alloc>& lhs, const list<T,Alloc>& rhs)
+// {
+// 	return (!(lhs < rhs));
+// }
 
-		x._array = this->_array;
-		x._size = this->_size;
-		x._capacity = this->_capacity;
-		this->_array = temp_array;
-		this->_size = temp_size;
-		this->_capacity = temp_capacity;
-	}
-
-	void clear()
-	{
-		this->erase(this->begin(), this->end());
-		this->_size = 0;
-	}
-
+// // 7. Exchange contents of vectors
+// template <class T, class Alloc>
+// void swap (list<T,Alloc> &x, list<T,Alloc> &y)
+// {
+// 	x.swap(y);
+// }
 };
-
-// 6. Relational operators
-
-template <class T, class Alloc>
-bool operator==(const list<T,Alloc>& lhs, const list<T,Alloc>& rhs)
-{
-	return (lhs.size() == rhs.size() && ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
-}
-
-template <class T, class Alloc>
-bool operator!=(const list<T,Alloc>& lhs, const list<T,Alloc>& rhs)
-{
-	return (!(lhs == rhs));
-}
-
-template <class T, class Alloc>
-bool operator<(const list<T,Alloc>& lhs, const list<T,Alloc>& rhs)
-{
-	return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
-}
-
-template <class T, class Alloc>
-bool operator<=(const list<T,Alloc>& lhs, const list<T,Alloc>& rhs)
-{
-	return (!(rhs < lhs));
-}
-
-template <class T, class Alloc>
-bool operator>(const list<T,Alloc>& lhs, const list<T,Alloc>& rhs)
-{
-	return (rhs < lhs);
-}
-
-template <class T, class Alloc>
-bool operator>=(const list<T,Alloc>& lhs, const list<T,Alloc>& rhs)
-{
-	return (!(lhs < rhs));
-}
-
-// 7. Exchange contents of vectors
-template <class T, class Alloc>
-void swap (list<T,Alloc> &x, list<T,Alloc> &y)
-{
-	x.swap(y);
-}
 }
 
 #endif

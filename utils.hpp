@@ -46,7 +46,61 @@ typename InputItr::difference_type distance(InputItr first, InputItr last)
 	return (dist);
 }
 
+template <typename Pointer>
+size_t distance(Pointer first, Pointer last)
+{
+	return (last - first);
+}
 // 2. For template overloading
+// is_pointer
+template <typename T>
+struct remove_const
+{
+	typedef T type;
+};
+
+template <typename T>
+struct remove_const<const T>
+{
+	typedef T type;
+};
+
+template <typename T>
+struct remove_volatile
+{
+	typedef T type;
+};
+
+template <typename T>
+struct remove_volatile<volatile T>
+{
+	typedef T type;
+};
+
+template <typename T>
+struct remove_cv : remove_const<typename remove_volatile<T>::type> {};
+
+template <typename T>
+struct is_unqualified_pointer
+{
+	enum { value = false };
+};
+
+template <typename T>
+struct is_unqualified_pointer<T*>
+{
+	enum { value = true };
+};
+
+template <typename T>
+struct is_pointer_type : is_unqualified_pointer<typename remove_cv<T>::type> {};
+
+template <typename T>
+bool is_pointer(const T&)
+{
+	return is_pointer_type<T>::value;
+}
+
 template <bool B, class T = void>
 struct enable_if;
 
@@ -80,5 +134,12 @@ struct is_iter<T, typename ft::enable_if<ft::is_same<typename T::value_type, typ
 {
 	static const bool value = true;
 };
+
+template <typename T>
+struct is_iter<T, typename ft::enable_if<ft::is_pointer_type<T>::value>::type>
+{
+	static const bool value = true;
+};
+
 }
 #endif

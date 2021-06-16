@@ -53,6 +53,13 @@ public:
 		this->assign(n, val);
 	}
 
+	// vector(pointer first, pointer last,
+	// 				const allocator_type& alloc = allocator_type()) // array 할당자.
+	// 	: _array(0), _size(0), _capacity(0), _alloc(alloc)
+	// {
+	// 	this->assign(first, last);
+	// }
+
 	template <class InputIterator>
 	vector(InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(),
 			typename ft::enable_if<ft::is_iter<InputIterator>::value>::yes = 1)
@@ -222,6 +229,19 @@ public:
 	void assign (InputIterator first, InputIterator last, typename ft::enable_if<ft::is_iter<InputIterator>::value>::yes = 1)
 	{
 		difference_type gap = ft::distance(first, last);
+		this->clear();
+		this->reserve(gap);
+		for (difference_type i = 0; i < gap; ++i)
+		{
+			this->_array[i] = *first;
+			++first;
+		}
+		this->_size = gap;
+	}
+
+	void assign (pointer first, pointer last)
+	{
+		difference_type gap = last - first;
 		this->clear();
 		this->reserve(gap);
 		for (difference_type i = 0; i < gap; ++i)
