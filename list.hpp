@@ -73,8 +73,10 @@ private:
 		node_ptr front = position.get_ptr()->prev;
 		node_ptr back = position.get_ptr();
 		front->next = first.get_ptr();
-		back->prev = last.get_ptr()->prev;
-		this->_size += ft::distance(first, last);
+		first.get_ptr()->prev = front;
+		back->prev = last.get_ptr();
+		last.get_ptr()->next = back;
+		this->_size += ft::distance(first, last) + 1;
 	}
 
 	void sub_node(iterator position)
@@ -307,12 +309,15 @@ public:
 		return (position);
 	}
 
-	iterator erase (iterator first, iterator last)
+	iterator erase(iterator first, iterator last)
 	{
+		iterator temp;
+
 		while (first != last)
 		{
-			erase(first);
+			temp = first;
 			++first;
+			erase(temp);
 		}
 		return (first);
 	}
@@ -324,18 +329,20 @@ public:
 
 		x._tail = this->_tail;
 		x._size = this->_size;
-		
+
 		this->_tail = temp_tail;
 		this->_size = temp_size;
 	}
 
 	void resize(size_type n, value_type val = value_type())
 	{
-		if (n < this->_size)
-			for (;n < this->_size; ++n)
+		size_type origin_size = this->_size;
+
+		if (n < origin_size )
+			for (;n < origin_size; ++n)
 				this->pop_back();
-		else if (n > this->_size)
-			for (;this->_size < n; --n)
+		else if (n > origin_size)
+			for (;origin_size < n; --n)
 				this->push_back(val);
 	}
 
@@ -363,8 +370,17 @@ public:
 
 	void splice (iterator position, list& x, iterator first, iterator last)
 	{
+		iterator temp = last;
+		--temp;
 		x.sub_node(first, last);
-		this->add_node(position, first, last);
+		// std::cout << "After sub from :" << std::endl;
+		// for (iterator i = x.begin(); i != x.end(); ++i)
+		// 	std::cout << *i << std::endl;
+		this->add_node(position, first, temp);
+		// std::cout << "After add to :" << std::endl;
+		// for (iterator i2 = this->begin(); i2 != this->end(); ++i2)
+		// 	std::cout << *i2 << std::endl;
+
 	}
 
 	void remove(const value_type& val)
@@ -428,6 +444,8 @@ public:
 	//The function does nothing if (&x == this).
 	void merge(list& x)
 	{
+		if (this == &x)
+			return ;
 		iterator to = this->begin();
 		iterator from = x.begin();
 		iterator temp;
@@ -436,12 +454,20 @@ public:
 		{
 			if (*from < *to)
 			{
-				temp = from.get_ptr()->next;
-				splice(to, x, from);
-				from = temp;
+				temp = from;
+				++from;
+				splice(to, x, temp);
+				std::cout << "To :" << std::endl;
+				for (iterator i = this->begin(); i != this->end(); ++i)
+					std::cout << *i << std::endl;
+				std::cout << "From :" << std::endl;
+				for (iterator j = x.begin(); j != x.end(); ++j)
+					std::cout << *j << std::endl;
 			}
 			else
 				++to;
+			std::cout << "From:" << *from << std::endl;
+			std::cout << "To:" << *to << std::endl;
 			if (to == this->end())
 			{
 				splice(to, x, from, x.end());
@@ -451,8 +477,11 @@ public:
 	}
 
 	template <class Compare>
-	void merge (list& x, Compare comp)
+	void merge(list& x, Compare comp)
 	{
+		if (this == &x)
+			return ;
+
 		iterator to = this->begin();
 		iterator from = x.begin();
 		iterator temp;
@@ -461,9 +490,9 @@ public:
 		{
 			if (comp(*from, *to))
 			{
-				temp = from->next;
-				splice(to, x, from);
-				from = temp;
+				temp = from;
+				++from;
+				splice(to, x, temp);
 			}
 			else
 				++to;
@@ -487,7 +516,7 @@ public:
 			j = i;
 			++i;
 			--j;
-			while (j != this->end() && *j > *key)
+			while (j != this->end() && *key <*j)
 				--j;
 			++j;
 			if (j != key)
@@ -511,7 +540,7 @@ public:
 			j = i;
 			++i;
 			--j;
-			while (j != this->end() && comp(*j, *key))
+			while (j != this->end() && comp(*key, *j))
 				--j;
 			++j;
 			if (j != key)
