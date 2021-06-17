@@ -48,7 +48,7 @@ int		main(void)
 	printSize(lst2);
 
 	// Enable verbose for all
-	for (it = lst.begin(); it != lst.end(); ++it)
+	for (it = lst.begin(); it != lst.end(); ++it)	
 		it->switchVerbose();
 	for (it = lst2.begin(); it != lst2.end(); ++it)
 		it->switchVerbose();

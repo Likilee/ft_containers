@@ -6,7 +6,7 @@
 /*   By: kilee <kilee@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/11 14:10:31 by kilee             #+#    #+#             */
-/*   Updated: 2021/06/17 13:50:38 by kilee            ###   ########.fr       */
+/*   Updated: 2021/06/17 15:09:46 by kilee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,8 +78,8 @@ int 		main()
 	// 	std::cout << "FUCK" << std::endl;
 	// std::cout << *itr4 << std::endl << std::endl;
 
-	// for(ft::list<int>::iterator itr3 = list.begin(); itr3 != list.end(); ++itr3)
-	// 	std::cout << *itr3 << std::endl;
+	for(ft::list<int>::iterator itr3 = list.begin(); itr3 != list.end(); ++itr3)
+		std::cout << *itr3 << std::endl;
 	std::cout << std::endl;
 	// for(std::list<int>::iterator itr2 = list2.begin(); itr2 != list2.end(); ++itr2)
 	// 	std::cout << *itr2 << std::endl;

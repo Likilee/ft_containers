@@ -136,13 +136,15 @@ bool equal(InputIterator1 first1, InputIterator1 last1,
 // 	return (dist);
 // }
 
-template <typename Pointer>
-size_t distance(Pointer first, Pointer last)
+template <typename InputItr>
+size_t distance(InputItr first, InputItr last)
 {
 	size_t dist = 0;
 
 	while (first++ != last)
+	{
 		++dist;
+	}
 	return (dist);
 }
 }

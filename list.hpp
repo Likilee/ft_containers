@@ -70,13 +70,13 @@ private:
 
 	void add_node(iterator position, iterator first, iterator last)
 	{
+		// this->_size += ft::distance(first, last) + 1;
 		node_ptr front = position.get_ptr()->prev;
 		node_ptr back = position.get_ptr();
 		front->next = first.get_ptr();
 		first.get_ptr()->prev = front;
 		back->prev = last.get_ptr();
 		last.get_ptr()->next = back;
-		this->_size += ft::distance(first, last) + 1;
 	}
 
 	void sub_node(iterator position)
@@ -96,7 +96,8 @@ private:
 		node_ptr back = last.get_ptr();
 		front->next = back;
 		back->prev = front;
-		this->_size -= ft::distance(first, last);
+		// this->_size -= ft::distance(first, last);
+		// std::cout << "Sub distance" << ft::distance(first, last) << std::endl;
 	}
 
 	// void swap(node_ptr a, node_ptr b)
@@ -354,33 +355,60 @@ public:
 
 	// Operations
 	// Splice 는 전송, 노드 그자체를 이동시키는 거구먼 오케잉~
+	// void splice (iterator position, list& x)
+	// {
+	// 	iterator first = x.begin();
+	// 	iterator last = x.end();
+	// 	iterator temp = last;
+	// 	--temp;
+	// 	x.sub_node(first, last);
+	// 	this->add_node(position, first, temp);
+	// }
+
 	void splice (iterator position, list& x)
 	{
-		iterator first = x.begin();
-		iterator last = x.end();
-		x.sub_node(first, last);
-		this->add_node(position, first, last);
+		splice (position, x, x.begin(), x.end());
 	}
+	// void splice(iterator position, list& x, iterator i)
+	// {
+	// 	iterator temp = i;
+	// 	--temp;
+	// 	x.sub_node(i);
+	// 	this->add_node(position, temp);
+	// }
 
 	void splice(iterator position, list& x, iterator i)
 	{
-		x.sub_node(i);
-		this->add_node(position, i);
+		splice(position, x, i, ++i);
 	}
 
-	void splice (iterator position, list& x, iterator first, iterator last)
-	{
-		iterator temp = last;
-		--temp;
-		x.sub_node(first, last);
-		// std::cout << "After sub from :" << std::endl;
-		// for (iterator i = x.begin(); i != x.end(); ++i)
-		// 	std::cout << *i << std::endl;
-		this->add_node(position, first, temp);
-		// std::cout << "After add to :" << std::endl;
-		// for (iterator i2 = this->begin(); i2 != this->end(); ++i2)
-		// 	std::cout << *i2 << std::endl;
+	// void splice (iterator position, list& x, iterator first, iterator last)
+	// {
+	// 	iterator temp = last;
+	// 	--temp;
+	// 	x.sub_node(first, last);
+	// 	this->add_node(position, first, temp);
+	// }
 
+	void splice(iterator position, list& x, iterator first, iterator last)
+	{
+		difference_type gap = ft::distance(first, last);
+		if (first == last)
+			return ;
+		node_ptr x_first = first.get_ptr();
+		node_ptr x_last = last.get_ptr()->prev;
+		node_ptr pos = position.get_ptr();
+		node_ptr first_prev = pos->prev;
+		x_first->prev->next = x_last->next;
+		x_last->next->prev = x_first->prev;
+
+		pos->prev->next = x_first;
+		pos->prev = x_last;
+		x_first->prev = first_prev;
+		x_last->next = pos;
+
+		x._size -= gap;
+		this->_size += gap;
 	}
 
 	void remove(const value_type& val)
@@ -528,7 +556,7 @@ public:
 	}
 
 	template <class Compare>
-	void sort (Compare comp)
+	void sort(Compare comp)
 	{
 		iterator i, j, key;
 
