@@ -58,6 +58,8 @@ private:
 
 	void add_node(iterator position, iterator element)
 	{
+		if (position == element)
+			return ;
 		node_ptr target = position.get_ptr();
 		node_ptr src = element.get_ptr();
 
@@ -68,16 +70,16 @@ private:
 		++this->_size;
 	}
 
-	void add_node(iterator position, iterator first, iterator last)
-	{
-		// this->_size += ft::distance(first, last) + 1;
-		node_ptr front = position.get_ptr()->prev;
-		node_ptr back = position.get_ptr();
-		front->next = first.get_ptr();
-		first.get_ptr()->prev = front;
-		back->prev = last.get_ptr();
-		last.get_ptr()->next = back;
-	}
+	// void add_node(iterator position, iterator first, iterator last)
+	// {
+	// 	// this->_size += ft::distance(first, last) + 1;
+	// 	node_ptr front = position.get_ptr()->prev;
+	// 	node_ptr back = position.get_ptr();
+	// 	front->next = first.get_ptr();
+	// 	first.get_ptr()->prev = front;
+	// 	back->prev = last.get_ptr();
+	// 	last.get_ptr()->next = back;
+	// }
 
 	void sub_node(iterator position)
 	{
@@ -90,31 +92,16 @@ private:
 		--this->_size;
 	}
 
-	void sub_node(iterator first, iterator last)
-	{
-		node_ptr front = first.get_ptr()->prev;
-		node_ptr back = last.get_ptr();
-		front->next = back;
-		back->prev = front;
-		// this->_size -= ft::distance(first, last);
-		// std::cout << "Sub distance" << ft::distance(first, last) << std::endl;
-	}
-
-	// void swap(node_ptr a, node_ptr b)
+	// void sub_node(iterator first, iterator last)
 	// {
-	// 	node_ptr temp_prev = a.prev;
-	// 	node_ptr temp_next = a.next;
-
-	// 	a.prev = b.prev;
-	// 	a.next = b.next;
-	// 	b.prev->next = a;
-	// 	b.next->prev = a;
-
-	// 	b.prev = temp_prev;
-	// 	b.next = temp_next;
-	// 	temp_prev->next = b;
-	// 	temp_next->prev = b;
+	// 	node_ptr front = first.get_ptr()->prev;
+	// 	node_ptr back = last.get_ptr();
+	// 	front->next = back;
+	// 	back->prev = front;
+	// 	// this->_size -= ft::distance(first, last);
+	// 	// std::cout << "Sub distance" << ft::distance(first, last) << std::endl;
 	// }
+
 public:
 	// 1. Constructors, Destructor, operator=
 	explicit list(const allocator_type& alloc = allocator_type(), const node_allocator_type node_alloc = node_allocator_type())
@@ -350,45 +337,20 @@ public:
 	void clear()
 	{
 		this->erase(this->begin(), this->end());
-		// this->_size = 0;
 	}
 
 	// Operations
 	// Splice 는 전송, 노드 그자체를 이동시키는 거구먼 오케잉~
-	// void splice (iterator position, list& x)
-	// {
-	// 	iterator first = x.begin();
-	// 	iterator last = x.end();
-	// 	iterator temp = last;
-	// 	--temp;
-	// 	x.sub_node(first, last);
-	// 	this->add_node(position, first, temp);
-	// }
 
 	void splice (iterator position, list& x)
 	{
 		splice (position, x, x.begin(), x.end());
 	}
-	// void splice(iterator position, list& x, iterator i)
-	// {
-	// 	iterator temp = i;
-	// 	--temp;
-	// 	x.sub_node(i);
-	// 	this->add_node(position, temp);
-	// }
 
 	void splice(iterator position, list& x, iterator i)
 	{
 		splice(position, x, i, ++i);
 	}
-
-	// void splice (iterator position, list& x, iterator first, iterator last)
-	// {
-	// 	iterator temp = last;
-	// 	--temp;
-	// 	x.sub_node(first, last);
-	// 	this->add_node(position, first, temp);
-	// }
 
 	void splice(iterator position, list& x, iterator first, iterator last)
 	{
@@ -485,17 +447,9 @@ public:
 				temp = from;
 				++from;
 				splice(to, x, temp);
-				std::cout << "To :" << std::endl;
-				for (iterator i = this->begin(); i != this->end(); ++i)
-					std::cout << *i << std::endl;
-				std::cout << "From :" << std::endl;
-				for (iterator j = x.begin(); j != x.end(); ++j)
-					std::cout << *j << std::endl;
 			}
 			else
 				++to;
-			std::cout << "From:" << *from << std::endl;
-			std::cout << "To:" << *to << std::endl;
 			if (to == this->end())
 			{
 				splice(to, x, from, x.end());
