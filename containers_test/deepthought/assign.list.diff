@@ -69,40 +69,40 @@
 < ###############################################
 ---
 > =================================================================
-> ==22851==ERROR: AddressSanitizer: heap-use-after-free on address 0x603000001730 at pc 0x00010823e6f4 bp 0x7ffee79c6d40 sp 0x7ffee79c6d38
+> ==19848==ERROR: AddressSanitizer: heap-use-after-free on address 0x603000001730 at pc 0x000105d19784 bp 0x7ffee9eebd40 sp 0x7ffee9eebd38
 > READ of size 8 at 0x603000001730 thread T0
->     #0 0x10823e6f3 in ft::bidirection_iter<int, int*, int&, ft::list_node<int>*, ft::bidirectional_iterator_tag, long>::operator++() bidirection_iter.hpp:66
->     #1 0x10823fff7 in ft::list<int, std::__1::allocator<int> >::erase(ft::bidirection_iter<int, int*, int&, ft::list_node<int>*, ft::bidirectional_iterator_tag, long>, ft::bidirection_iter<int, int*, int&, ft::list_node<int>*, ft::bidirectional_iterator_tag, long>) list.hpp:284
->     #2 0x10823fa72 in ft::list<int, std::__1::allocator<int> >::clear() list.hpp:305
->     #3 0x10823e0ce in void ft::list<int, std::__1::allocator<int> >::assign<ft::bidirection_iter<int, int*, int&, ft::list_node<int>*, ft::bidirectional_iterator_tag, long> >(ft::bidirection_iter<int, int*, int&, ft::list_node<int>*, ft::bidirectional_iterator_tag, long>, ft::bidirection_iter<int, int*, int&, ft::list_node<int>*, ft::bidirectional_iterator_tag, long>, ft::enable_if<ft::is_iter<ft::bidirection_iter<int, int*, int&, ft::list_node<int>*, ft::bidirectional_iterator_tag, long> >::value, void>::yes) list.hpp:196
->     #4 0x10823cf9e in main assign.cpp:26
+>     #0 0x105d19783 in ft::bidirection_iter<int, int*, int&, ft::list_node<int>*, ft::bidirectional_iterator_tag, long>::operator++() bidirection_iter.hpp:66
+>     #1 0x105d1a4b7 in ft::list<int, std::__1::allocator<int> >::erase(ft::bidirection_iter<int, int*, int&, ft::list_node<int>*, ft::bidirectional_iterator_tag, long>, ft::bidirection_iter<int, int*, int&, ft::list_node<int>*, ft::bidirectional_iterator_tag, long>) list.hpp:315
+>     #2 0x105d1a1d2 in ft::list<int, std::__1::allocator<int> >::clear() list.hpp:344
+>     #3 0x105d1915e in void ft::list<int, std::__1::allocator<int> >::assign<ft::bidirection_iter<int, int*, int&, ft::list_node<int>*, ft::bidirectional_iterator_tag, long> >(ft::bidirection_iter<int, int*, int&, ft::list_node<int>*, ft::bidirectional_iterator_tag, long>, ft::bidirection_iter<int, int*, int&, ft::list_node<int>*, ft::bidirectional_iterator_tag, long>, ft::enable_if<ft::is_iter<ft::bidirection_iter<int, int*, int&, ft::list_node<int>*, ft::bidirectional_iterator_tag, long> >::value, void>::yes) list.hpp:241
+>     #4 0x105d17f1f in main assign.cpp:26
 >     #5 0x7fff68b60cc8 in start+0x0 (libdyld.dylib:x86_64+0x1acc8)
 > 
 > 0x603000001730 is located 16 bytes inside of 24-byte region [0x603000001720,0x603000001738)
 > freed by thread T0 here:
->     #0 0x1082b2c0d in wrap__ZdlPv+0x7d (libclang_rt.asan_osx_dynamic.dylib:x86_64h+0x55c0d)
->     #1 0x108240564 in std::__1::_DeallocateCaller::__do_call(void*) new:334
->     #2 0x108240548 in std::__1::_DeallocateCaller::__do_deallocate_handle_size(void*, unsigned long) new:292
->     #3 0x108240520 in std::__1::_DeallocateCaller::__do_deallocate_handle_size_align(void*, unsigned long, unsigned long) new:262
->     #4 0x1082404f4 in std::__1::__libcpp_deallocate(void*, unsigned long, unsigned long) new:340
->     #5 0x10824049d in std::__1::allocator<ft::list_node<int> >::deallocate(ft::list_node<int>*, unsigned long) memory:1872
->     #6 0x108240392 in ft::list<int, std::__1::allocator<int> >::erase(ft::bidirection_iter<int, int*, int&, ft::list_node<int>*, ft::bidirectional_iterator_tag, long>) list.hpp:274
->     #7 0x10823ffd2 in ft::list<int, std::__1::allocator<int> >::erase(ft::bidirection_iter<int, int*, int&, ft::list_node<int>*, ft::bidirectional_iterator_tag, long>, ft::bidirection_iter<int, int*, int&, ft::list_node<int>*, ft::bidirectional_iterator_tag, long>) list.hpp:283
->     #8 0x10823fa72 in ft::list<int, std::__1::allocator<int> >::clear() list.hpp:305
->     #9 0x10823e0ce in void ft::list<int, std::__1::allocator<int> >::assign<ft::bidirection_iter<int, int*, int&, ft::list_node<int>*, ft::bidirectional_iterator_tag, long> >(ft::bidirection_iter<int, int*, int&, ft::list_node<int>*, ft::bidirectional_iterator_tag, long>, ft::bidirection_iter<int, int*, int&, ft::list_node<int>*, ft::bidirectional_iterator_tag, long>, ft::enable_if<ft::is_iter<ft::bidirection_iter<int, int*, int&, ft::list_node<int>*, ft::bidirectional_iterator_tag, long> >::value, void>::yes) list.hpp:196
->     #10 0x10823cf9e in main assign.cpp:26
+>     #0 0x105d8bc0d in wrap__ZdlPv+0x7d (libclang_rt.asan_osx_dynamic.dylib:x86_64h+0x55c0d)
+>     #1 0x105d1aa24 in std::__1::_DeallocateCaller::__do_call(void*) new:334
+>     #2 0x105d1aa08 in std::__1::_DeallocateCaller::__do_deallocate_handle_size(void*, unsigned long) new:292
+>     #3 0x105d1a9e0 in std::__1::_DeallocateCaller::__do_deallocate_handle_size_align(void*, unsigned long, unsigned long) new:262
+>     #4 0x105d1a9b4 in std::__1::__libcpp_deallocate(void*, unsigned long, unsigned long) new:340
+>     #5 0x105d1a95d in std::__1::allocator<ft::list_node<int> >::deallocate(ft::list_node<int>*, unsigned long) memory:1872
+>     #6 0x105d1a852 in ft::list<int, std::__1::allocator<int> >::erase(ft::bidirection_iter<int, int*, int&, ft::list_node<int>*, ft::bidirectional_iterator_tag, long>) list.hpp:305
+>     #7 0x105d1a492 in ft::list<int, std::__1::allocator<int> >::erase(ft::bidirection_iter<int, int*, int&, ft::list_node<int>*, ft::bidirectional_iterator_tag, long>, ft::bidirection_iter<int, int*, int&, ft::list_node<int>*, ft::bidirectional_iterator_tag, long>) list.hpp:314
+>     #8 0x105d1a1d2 in ft::list<int, std::__1::allocator<int> >::clear() list.hpp:344
+>     #9 0x105d1915e in void ft::list<int, std::__1::allocator<int> >::assign<ft::bidirection_iter<int, int*, int&, ft::list_node<int>*, ft::bidirectional_iterator_tag, long> >(ft::bidirection_iter<int, int*, int&, ft::list_node<int>*, ft::bidirectional_iterator_tag, long>, ft::bidirection_iter<int, int*, int&, ft::list_node<int>*, ft::bidirectional_iterator_tag, long>, ft::enable_if<ft::is_iter<ft::bidirection_iter<int, int*, int&, ft::list_node<int>*, ft::bidirectional_iterator_tag, long> >::value, void>::yes) list.hpp:241
+>     #10 0x105d17f1f in main assign.cpp:26
 >     #11 0x7fff68b60cc8 in start+0x0 (libdyld.dylib:x86_64+0x1acc8)
 > 
 > previously allocated by thread T0 here:
->     #0 0x1082b27ed in wrap__Znwm+0x7d (libclang_rt.asan_osx_dynamic.dylib:x86_64h+0x557ed)
->     #1 0x10823edf8 in std::__1::__libcpp_allocate(unsigned long, unsigned long) new:253
->     #2 0x10823ecc4 in std::__1::allocator<ft::list_node<int> >::allocate(unsigned long, void const*) memory:1869
->     #3 0x1082405c5 in ft::list<int, std::__1::allocator<int> >::insert(ft::bidirection_iter<int, int*, int&, ft::list_node<int>*, ft::bidirectional_iterator_tag, long>, int const&) list.hpp:232
->     #4 0x108240b67 in ft::list<int, std::__1::allocator<int> >::insert(ft::bidirection_iter<int, int*, int&, ft::list_node<int>*, ft::bidirectional_iterator_tag, long>, unsigned long, int const&) list.hpp:255
->     #5 0x10823e43c in ft::list<int, std::__1::allocator<int> >::assign(unsigned long, int const&) list.hpp:203
->     #6 0x10823eb3b in ft::list<int, std::__1::allocator<int> >::list(unsigned long, int const&, std::__1::allocator<int> const&, std::__1::allocator<ft::list_node<int> >) list.hpp:78
->     #7 0x10823d81c in ft::list<int, std::__1::allocator<int> >::list(unsigned long, int const&, std::__1::allocator<int> const&, std::__1::allocator<ft::list_node<int> >) list.hpp:72
->     #8 0x10823c914 in main assign.cpp:7
+>     #0 0x105d8b7ed in wrap__Znwm+0x7d (libclang_rt.asan_osx_dynamic.dylib:x86_64h+0x557ed)
+>     #1 0x105d19ec8 in std::__1::__libcpp_allocate(unsigned long, unsigned long) new:253
+>     #2 0x105d19d94 in std::__1::allocator<ft::list_node<int> >::allocate(unsigned long, void const*) memory:1869
+>     #3 0x105d1b3a2 in ft::list<int, std::__1::allocator<int> >::insert(ft::bidirection_iter<int, int*, int&, ft::list_node<int>*, ft::bidirectional_iterator_tag, long>, int const&) list.hpp:276
+>     #4 0x105d1bb07 in ft::list<int, std::__1::allocator<int> >::insert(ft::bidirection_iter<int, int*, int&, ft::list_node<int>*, ft::bidirectional_iterator_tag, long>, unsigned long, int const&) list.hpp:286
+>     #5 0x105d194cc in ft::list<int, std::__1::allocator<int> >::assign(unsigned long, int const&) list.hpp:248
+>     #6 0x105d198e9 in ft::list<int, std::__1::allocator<int> >::list(unsigned long, int const&, std::__1::allocator<int> const&, std::__1::allocator<ft::list_node<int> >) list.hpp:128
+>     #7 0x105d188ac in ft::list<int, std::__1::allocator<int> >::list(unsigned long, int const&, std::__1::allocator<int> const&, std::__1::allocator<ft::list_node<int> >) list.hpp:126
+>     #8 0x105d17814 in main assign.cpp:7
 >     #9 0x7fff68b60cc8 in start+0x0 (libdyld.dylib:x86_64+0x1acc8)
 > 
 > SUMMARY: AddressSanitizer: heap-use-after-free bidirection_iter.hpp:66 in ft::bidirection_iter<int, int*, int&, ft::list_node<int>*, ft::bidirectional_iterator_tag, long>::operator++()
@@ -138,4 +138,4 @@
 >   Left alloca redzone:     ca
 >   Right alloca redzone:    cb
 >   Shadow gap:              cc
-> ==22851==ABORTING
+> ==19848==ABORTING

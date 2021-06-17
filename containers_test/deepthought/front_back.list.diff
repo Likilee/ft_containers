@@ -1,27 +1,74 @@
-1,26d0
-< size: 7
-< max_size: 768614336404564650
-< 
-< Content is:
-< - 21
-< - 18
-< - 15
-< - 12
-< - 9
-< - 6
-< - 3
-< ###############################################
-< front(): 21 21
-< back(): 3 3
-< size: 7
-< max_size: 768614336404564650
-< 
-< Content is:
-< - 42
-< - 18
-< - 15
-< - 12
-< - 9
-< - 6
-< - 404
-< ###############################################
+26a27,99
+> =================================================================
+> ==19936==ERROR: AddressSanitizer: heap-use-after-free on address 0x6030000018b0 at pc 0x00010cee2584 bp 0x7ffee2d24160 sp 0x7ffee2d24158
+> READ of size 8 at 0x6030000018b0 thread T0
+>     #0 0x10cee2583 in ft::bidirection_iter<int, int*, int&, ft::list_node<int>*, ft::bidirectional_iterator_tag, long>::operator++() bidirection_iter.hpp:66
+>     #1 0x10cee2067 in ft::list<int, std::__1::allocator<int> >::erase(ft::bidirection_iter<int, int*, int&, ft::list_node<int>*, ft::bidirectional_iterator_tag, long>, ft::bidirection_iter<int, int*, int&, ft::list_node<int>*, ft::bidirectional_iterator_tag, long>) list.hpp:315
+>     #2 0x10cee1ae2 in ft::list<int, std::__1::allocator<int> >::clear() list.hpp:344
+>     #3 0x10cee2f34 in ft::list<int, std::__1::allocator<int> >::~list() list.hpp:148
+>     #4 0x10cee0f34 in ft::list<int, std::__1::allocator<int> >::~list() list.hpp:147
+>     #5 0x10cedfa0f in main front_back.cpp:23
+>     #6 0x7fff68b60cc8 in start+0x0 (libdyld.dylib:x86_64+0x1acc8)
+> 
+> 0x6030000018b0 is located 16 bytes inside of 24-byte region [0x6030000018a0,0x6030000018b8)
+> freed by thread T0 here:
+>     #0 0x10cf56c0d in wrap__ZdlPv+0x7d (libclang_rt.asan_osx_dynamic.dylib:x86_64h+0x55c0d)
+>     #1 0x10cee2734 in std::__1::_DeallocateCaller::__do_call(void*) new:334
+>     #2 0x10cee2718 in std::__1::_DeallocateCaller::__do_deallocate_handle_size(void*, unsigned long) new:292
+>     #3 0x10cee26f0 in std::__1::_DeallocateCaller::__do_deallocate_handle_size_align(void*, unsigned long, unsigned long) new:262
+>     #4 0x10cee26c4 in std::__1::__libcpp_deallocate(void*, unsigned long, unsigned long) new:340
+>     #5 0x10cee266d in std::__1::allocator<ft::list_node<int> >::deallocate(ft::list_node<int>*, unsigned long) memory:1872
+>     #6 0x10cee2472 in ft::list<int, std::__1::allocator<int> >::erase(ft::bidirection_iter<int, int*, int&, ft::list_node<int>*, ft::bidirectional_iterator_tag, long>) list.hpp:305
+>     #7 0x10cee2042 in ft::list<int, std::__1::allocator<int> >::erase(ft::bidirection_iter<int, int*, int&, ft::list_node<int>*, ft::bidirectional_iterator_tag, long>, ft::bidirection_iter<int, int*, int&, ft::list_node<int>*, ft::bidirectional_iterator_tag, long>) list.hpp:314
+>     #8 0x10cee1ae2 in ft::list<int, std::__1::allocator<int> >::clear() list.hpp:344
+>     #9 0x10cee2f34 in ft::list<int, std::__1::allocator<int> >::~list() list.hpp:148
+>     #10 0x10cee0f34 in ft::list<int, std::__1::allocator<int> >::~list() list.hpp:147
+>     #11 0x10cedfa0f in main front_back.cpp:23
+>     #12 0x7fff68b60cc8 in start+0x0 (libdyld.dylib:x86_64+0x1acc8)
+> 
+> previously allocated by thread T0 here:
+>     #0 0x10cf567ed in wrap__Znwm+0x7d (libclang_rt.asan_osx_dynamic.dylib:x86_64h+0x557ed)
+>     #1 0x10cee17f8 in std::__1::__libcpp_allocate(unsigned long, unsigned long) new:253
+>     #2 0x10cee16c4 in std::__1::allocator<ft::list_node<int> >::allocate(unsigned long, void const*) memory:1869
+>     #3 0x10cee2972 in ft::list<int, std::__1::allocator<int> >::insert(ft::bidirection_iter<int, int*, int&, ft::list_node<int>*, ft::bidirectional_iterator_tag, long>, int const&) list.hpp:276
+>     #4 0x10cee3aed in void ft::list<int, std::__1::allocator<int> >::insert<ft::bidirection_iter<int, int const*, int const&, ft::list_node<int>*, ft::bidirectional_iterator_tag, long> >(ft::bidirection_iter<int, int*, int&, ft::list_node<int>*, ft::bidirectional_iterator_tag, long>, ft::bidirection_iter<int, int const*, int const&, ft::list_node<int>*, ft::bidirectional_iterator_tag, long>, ft::bidirection_iter<int, int const*, int const&, ft::list_node<int>*, ft::bidirectional_iterator_tag, long>, ft::enable_if<ft::is_iter<ft::bidirection_iter<int, int const*, int const&, ft::list_node<int>*, ft::bidirectional_iterator_tag, long> >::value, void>::yes) list.hpp:294
+>     #5 0x10cee37f0 in void ft::list<int, std::__1::allocator<int> >::assign<ft::bidirection_iter<int, int const*, int const&, ft::list_node<int>*, ft::bidirectional_iterator_tag, long> >(ft::bidirection_iter<int, int const*, int const&, ft::list_node<int>*, ft::bidirectional_iterator_tag, long>, ft::bidirection_iter<int, int const*, int const&, ft::list_node<int>*, ft::bidirectional_iterator_tag, long>, ft::enable_if<ft::is_iter<ft::bidirection_iter<int, int const*, int const&, ft::list_node<int>*, ft::bidirectional_iterator_tag, long> >::value, void>::yes) list.hpp:242
+>     #6 0x10cee34fc in ft::list<int, std::__1::allocator<int> >::list(ft::list<int, std::__1::allocator<int> > const&) list.hpp:143
+>     #7 0x10cee042c in ft::list<int, std::__1::allocator<int> >::list(ft::list<int, std::__1::allocator<int> > const&) list.hpp:141
+>     #8 0x10cedf660 in main front_back.cpp:14
+>     #9 0x7fff68b60cc8 in start+0x0 (libdyld.dylib:x86_64+0x1acc8)
+> 
+> SUMMARY: AddressSanitizer: heap-use-after-free bidirection_iter.hpp:66 in ft::bidirection_iter<int, int*, int&, ft::list_node<int>*, ft::bidirectional_iterator_tag, long>::operator++()
+> Shadow bytes around the buggy address:
+>   0x1c06000002c0: 00 00 00 00 fa fa 00 00 00 00 fa fa 00 00 00 00
+>   0x1c06000002d0: fa fa 00 00 00 00 fa fa 00 00 00 00 fa fa 00 00
+>   0x1c06000002e0: 00 fa fa fa 00 00 00 fa fa fa 00 00 00 fa fa fa
+>   0x1c06000002f0: 00 00 00 fa fa fa 00 00 00 fa fa fa 00 00 00 fa
+>   0x1c0600000300: fa fa 00 00 00 fa fa fa 00 00 00 fa fa fa 00 00
+> =>0x1c0600000310: 00 fa fa fa fd fd[fd]fa fa fa 00 00 00 fa fa fa
+>   0x1c0600000320: 00 00 00 fa fa fa 00 00 00 fa fa fa 00 00 00 fa
+>   0x1c0600000330: fa fa 00 00 00 fa fa fa 00 00 00 fa fa fa fa fa
+>   0x1c0600000340: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+>   0x1c0600000350: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+>   0x1c0600000360: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+> Shadow byte legend (one shadow byte represents 8 application bytes):
+>   Addressable:           00
+>   Partially addressable: 01 02 03 04 05 06 07 
+>   Heap left redzone:       fa
+>   Freed heap region:       fd
+>   Stack left redzone:      f1
+>   Stack mid redzone:       f2
+>   Stack right redzone:     f3
+>   Stack after return:      f5
+>   Stack use after scope:   f8
+>   Global redzone:          f9
+>   Global init order:       f6
+>   Poisoned by user:        f7
+>   Container overflow:      fc
+>   Array cookie:            ac
+>   Intra object redzone:    bb
+>   ASan internal:           fe
+>   Left alloca redzone:     ca
+>   Right alloca redzone:    cb
+>   Shadow gap:              cc
+> ==19936==ABORTING

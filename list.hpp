@@ -61,10 +61,10 @@ private:
 		node_ptr target = position.get_ptr();
 		node_ptr src = element.get_ptr();
 
-		target->prev->next = element;
-		element->prev = target->prev;
-		target->prev = element;
-		element->next = target;
+		target->prev->next = src;
+		src->prev = target->prev;
+		target->prev = src;
+		src->next = target;
 		++this->_size;
 	}
 
@@ -96,6 +96,22 @@ private:
 		back->prev = front;
 		this->_size -= ft::distance(first, last);
 	}
+
+	// void swap(node_ptr a, node_ptr b)
+	// {
+	// 	node_ptr temp_prev = a.prev;
+	// 	node_ptr temp_next = a.next;
+
+	// 	a.prev = b.prev;
+	// 	a.next = b.next;
+	// 	b.prev->next = a;
+	// 	b.next->prev = a;
+
+	// 	b.prev = temp_prev;
+	// 	b.next = temp_next;
+	// 	temp_prev->next = b;
+	// 	temp_next->prev = b;
+	// }
 public:
 	// 1. Constructors, Destructor, operator=
 	explicit list(const allocator_type& alloc = allocator_type(), const node_allocator_type node_alloc = node_allocator_type())
@@ -130,7 +146,6 @@ public:
 	~list()//This destroys all container elements, and deallocates all the storage capacity allocated by the list using its allocator.
 	{
 		this->clear();
-		this->_alloc.deallocate(this->_array, this->_capacity);
 	}
 
 	list	&operator=(const list &rvalue)
@@ -309,9 +324,9 @@ public:
 
 		x._tail = this->_tail;
 		x._size = this->_size;
-
-		this->_tail = x._tail;
-		this->_size = x._size;
+		
+		this->_tail = temp_tail;
+		this->_size = temp_size;
 	}
 
 	void resize(size_type n, value_type val = value_type())
@@ -409,62 +424,166 @@ public:
 	}
 
 	// merge 양쪽 포인터 이동하면서 가르키고있는거 비교 합치고, 포인터 이동~, Splice 잘 쓰면 될 듯
+	// 실험 해보니 이전에 있던 이터레이터 들은 해당 노드를 그대로 가리키고 있음.
+	//The function does nothing if (&x == this).
 	void merge(list& x)
 	{
+		iterator to = this->begin();
+		iterator from = x.begin();
+		iterator temp;
 
+		while (from != x.end())
+		{
+			if (*from < *to)
+			{
+				temp = from.get_ptr()->next;
+				splice(to, x, from);
+				from = temp;
+			}
+			else
+				++to;
+			if (to == this->end())
+			{
+				splice(to, x, from, x.end());
+				break ;
+			}
+		}
 	}
-	// template <class Compare>
-	// void merge (list& x, Compare comp);
-	// void sort();
-	// template <class Compare>
-	// void sort (Compare comp);
-	// void reverse();
+
+	template <class Compare>
+	void merge (list& x, Compare comp)
+	{
+		iterator to = this->begin();
+		iterator from = x.begin();
+		iterator temp;
+
+		while (from != x.end())
+		{
+			if (comp(*from, *to))
+			{
+				temp = from->next;
+				splice(to, x, from);
+				from = temp;
+			}
+			else
+				++to;
+			if (to == this->end())
+			{
+				splice(to, x, from, x.end());
+				break ;
+			}
+		}
+	}
+
+	// Node have to stable after sort
+	void sort()
+	{
+		iterator i, j, key;
+		i = this->begin();
+		++i;
+		while (i != this->end())
+		{
+			key = i;
+			j = i;
+			++i;
+			--j;
+			while (j != this->end() && *j > *key)
+				--j;
+			++j;
+			if (j != key)
+			{
+				sub_node(key);
+				add_node(j, key);
+			}
+		}
+	}
+
+	template <class Compare>
+	void sort (Compare comp)
+	{
+		iterator i, j, key;
+
+		i = this->begin();
+		++i;
+		while (i != this->end())
+		{
+			key = i;
+			j = i;
+			++i;
+			--j;
+			while (j != this->end() && comp(*j, *key))
+				--j;
+			++j;
+			if (j != key)
+			{
+				sub_node(key);
+				add_node(j, key);
+			}
+		}
+	}
+
+	void reverse()
+	{
+		iterator i = this->begin();
+		iterator current;
+		node_ptr temp;
+		while (1)
+		{
+			current = i;
+			++i;
+			temp = current.get_ptr()->next;
+			current.get_ptr()->next = current.get_ptr()->prev;
+			current.get_ptr()->prev = temp;
+			if (current == this->end())
+				break ;
+		}
+	}
 
 };
 
-// // 6. Relational operators
-// template <class T, class Alloc>
-// bool operator==(const list<T,Alloc>& lhs, const list<T,Alloc>& rhs)
-// {
-// 	return (lhs.size() == rhs.size() && ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
-// }
+// 6. Relational operators
+template <class T, class Alloc>
+bool operator==(const list<T,Alloc>& lhs, const list<T,Alloc>& rhs)
+{
+	return (lhs.size() == rhs.size() && ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
+}
 
-// template <class T, class Alloc>
-// bool operator!=(const list<T,Alloc>& lhs, const list<T,Alloc>& rhs)
-// {
-// 	return (!(lhs == rhs));
-// }
+template <class T, class Alloc>
+bool operator!=(const list<T,Alloc>& lhs, const list<T,Alloc>& rhs)
+{
+	return (!(lhs == rhs));
+}
 
-// template <class T, class Alloc>
-// bool operator<(const list<T,Alloc>& lhs, const list<T,Alloc>& rhs)
-// {
-// 	return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
-// }
+template <class T, class Alloc>
+bool operator<(const list<T,Alloc>& lhs, const list<T,Alloc>& rhs)
+{
+	return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
+}
 
-// template <class T, class Alloc>
-// bool operator<=(const list<T,Alloc>& lhs, const list<T,Alloc>& rhs)
-// {
-// 	return (!(rhs < lhs));
-// }
+template <class T, class Alloc>
+bool operator<=(const list<T,Alloc>& lhs, const list<T,Alloc>& rhs)
+{
+	return (!(rhs < lhs));
+}
 
-// template <class T, class Alloc>
-// bool operator>(const list<T,Alloc>& lhs, const list<T,Alloc>& rhs)
-// {
-// 	return (rhs < lhs);
-// }
+template <class T, class Alloc>
+bool operator>(const list<T,Alloc>& lhs, const list<T,Alloc>& rhs)
+{
+	return (rhs < lhs);
+}
 
-// template <class T, class Alloc>
-// bool operator>=(const list<T,Alloc>& lhs, const list<T,Alloc>& rhs)
-// {
-// 	return (!(lhs < rhs));
-// }
+template <class T, class Alloc>
+bool operator>=(const list<T,Alloc>& lhs, const list<T,Alloc>& rhs)
+{
+	return (!(lhs < rhs));
+}
 
-// // 7. Exchange contents of vectors
-// template <class T, class Alloc>
-// void swap (list<T,Alloc> &x, list<T,Alloc> &y)
-// {
-// 	x.swap(y);
-// }
+// 7. Exchange contents of vectors
+template <class T, class Alloc>
+void swap (list<T,Alloc> &x, list<T,Alloc> &y)
+{
+	x.swap(y);
+}
 }
 
 #endif
