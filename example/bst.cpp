@@ -173,6 +173,30 @@ private:
 		else
 			target->parent->right = NULL;
 	}
+
+	void erase_has_one_child_node(tree_node* target)
+	{
+		if (target->left == NULL)
+		{
+			if (target->is_root())
+				this->root = target->right;
+			else if (target->is_left())
+				target->parent->left = target->right;
+			else
+				target->parent->right = target->right;
+			target->right->parent = target->parent;
+		}
+		else
+		{
+			if (target->is_root())
+				this->root = target->left;
+			else if (target->is_right())
+				target->parent->right = target->left;
+			else
+				target->parent->left = target->left;
+			target->left->parent = target->parent;
+		}
+	}
 public:
 	tree() : root(NULL) {}
 	~tree() { } // root 바닥부터 싹 지워주는거 만들어야함.(재귀로 짜면될 듯)
@@ -261,28 +285,7 @@ public:
 		if (target->is_leaf()) // case1 -자식이 없는 리프노드
 			erase_leaf_node(target);
 		else if (target->has_one_child()) // case2 - 자식이 하나인 노드
-		{
-			if (target->left == NULL)
-			{
-				if (target->is_root())
-					this->root = target->right;
-				else if (target->is_left())
-					target->parent->left = target->right;
-				else
-					target->parent->right = target->right;
-				target->right->parent = target->parent;
-			}
-			else
-			{
-				if (target->is_root())
-					this->root = target->left;
-				else if (target->is_right())
-					target->parent->right = target->left;
-				else
-					target->parent->left = target->left;
-				target->left->parent = target->parent;
-			}
-		}
+			erase_has_one_child_node(target);
 		else // case 3 - 자식이 둘인 노드
 		{
 			tree_node *node = getLeftBiggest(target->left);
