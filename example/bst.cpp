@@ -222,7 +222,7 @@ private:
 		}
 		else //노드가 타겟에서 2depth 이상 떨어져 있다.
 		{
-			//step1. 노드의 부모와 노드의 자식을 연결해준다 ( 지가 빠져나온다. )
+			//step1. 노드의 부모와 노드의 자식을 연결해준다 (노드가 원래 위치에서 빠져나온다. )
 			node->parent->right = node->left;
 			if (node->left != NULL)
 				node->left->parent = node->parent;
@@ -414,51 +414,6 @@ public:
 
 int main()
 {
-	// ft::tree<int> tree;
-	// // ft::tree_node<int>* root_pointer = &root;
-	// // std::cout << root.getData() << std::endl;
-	// // std::cout << root.getRight() << std::endl;
-	// tree.insert(32);
-	// tree.insert(15);
-	// tree.insert(61);
-	// tree.insert(7);
-	// tree.insert(10);
-	// tree.insert(4);
-	// tree.insert(9);
-	// tree.insert(73);
-	// tree.insert(8);
-	// tree.insert(27);
-	// tree.insert(5);
-	// tree.insert(18);
-	// tree.insert(16);
-	// tree.insert(6);
-	// tree.insert(26);
-	// tree.insert(16);
-	// tree.insert(89);
-	// tree.insert(1);
-	// tree.insert(3);
-	// tree.insert(20);
-	// tree.search(3);
-	// std::cout << " ===== BEFORE =====" << std::endl;
-	// tree.print();
-	// int irase = 5;
-	// tree.erase(irase); // earser
-	// tree.erase(1); // earser
-	// tree.erase(20); // earser
-	// tree.erase(89); // earser
-	// tree.erase(18); // earser
-	// std::cout << "\n ===== AFTER erase " << irase << " =====" << std::endl;
-	// tree.print();
-
-	// std::cout << " ===== CHAR TREE BEFORE =====" << std::endl;
-	// ft::tree<char> tree2;
-	// for (int i = 97; i < 125; ++i)
-	// 	tree2.insert(i);
-	// tree2.print();
-	// std::cout << " ===== CHAR TREE CLEAR =====" << std::endl;
-	// tree2.clear();
-	// tree2.print();
-
 	srand(clock());
 	ft::tree<int> tree;
 	for (int i = 0; i < 1000; ++i)
@@ -476,8 +431,4 @@ int main()
 	tree.clear();
 	std::cout << "CLEAR" << std::endl;
 	tree.print();
-	// tree.print();
-
-
-
 }
