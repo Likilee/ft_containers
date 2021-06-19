@@ -197,6 +197,54 @@ private:
 			target->left->parent = target->parent;
 		}
 	}
+	void erase_has_two_child_node(tree_node* target)
+	{
+		tree_node *node = getLeftBiggest(target->left);
+		if (node->parent == target) // left_node의 오른쪽 자식이 아예 없다.
+		{
+			node->right = target->right;
+			target->right->parent = node;
+			if (target->is_root()) // target이 root 이면
+			{
+				this->root = node;
+				node->parent = NULL;
+			}
+			else
+			{
+				if (target->is_left())
+					target->parent->left = node;
+				else
+					target->parent->right = node;
+				node->parent = target->parent;
+				target->left = NULL;
+				target->right = NULL;
+			}
+		}
+		else
+		{
+			node->parent->right = node->left;
+			if (node->left != NULL)
+				node->left->parent = node->parent;
+			node->parent = target->parent;
+			node->right = target->right;
+			target->right->parent = node;
+			node->left = target->left;
+			target->left->parent = node;
+			if (target->is_root()) // target이 root 이면
+				this->root = node;
+			else if (target->is_left())
+			{
+				target->parent->left = node;
+				node->parent = target->parent;
+			}
+			else
+			{
+				target->parent->right = node;
+				node->parent = target->parent;
+			}
+		}
+	}
+
 public:
 	tree() : root(NULL) {}
 	~tree() { } // root 바닥부터 싹 지워주는거 만들어야함.(재귀로 짜면될 듯)
@@ -287,59 +335,8 @@ public:
 		else if (target->has_one_child()) // case2 - 자식이 하나인 노드
 			erase_has_one_child_node(target);
 		else // case 3 - 자식이 둘인 노드
-		{
-			tree_node *node = getLeftBiggest(target->left);
-			if (node->parent == target) // left_node의 오른쪽 자식이 아예 없다.
-			{
-				node->right = target->right;
-				target->right->parent = node;
-				if (target->is_root()) // target이 root 이면
-				{
-					this->root = node;
-					node->parent = NULL;
-				}
-				else
-				{
-					if (target->is_left())
-						target->parent->left = node;
-					else
-						target->parent->right = node;
-					node->parent = target->parent;
-					target->left = NULL;
-					target->right = NULL;
-				}
-			}
-			else
-			{
-				node->parent->right = node->left;
-				if (node->left != NULL)
-					node->left->parent = node->parent;
-				node->parent = target->parent;
-				node->right = target->right;
-				target->right->parent = node;
-				node->left = target->left;
-				target->left->parent = node;
-				if (target->is_root()) // target이 root 이면
-					this->root = node;
-				else if (target->is_left())
-				{
-					target->parent->left = node;
-					node->parent = target->parent;
-				}
-				else
-				{
-					target->parent->right = node;
-					node->parent = target->parent;
-				}
-			}
-		}
-		delete_node(target);
-	}
-
-	void delete_node(tree_node *node)
-	{
-		if (node != NULL)
-			delete (node);
+			erase_has_two_child_node(target);
+		delete (target);
 	}
 
 	void clear()
@@ -362,7 +359,7 @@ public:
 			node->parent->left = NULL;
 		else
 			node->parent->right = NULL;
-		delete_node(node);
+		delete (node);
 	}
 
 	void print()
