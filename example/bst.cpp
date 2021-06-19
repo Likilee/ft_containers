@@ -137,7 +137,7 @@ private:
 	tree_node *root;
 
 public:
-	tree() : root(new tree_node) {}
+	tree() : root(NULL) {}
 	~tree() { } // root 바닥부터 싹 지워주는거 만들어야함.(재귀로 짜면될 듯)
 
 	tree_node *getRoot()
@@ -169,14 +169,14 @@ public:
 
 	void delete_root()
 	{
-		delete this->root->key;
-		this->root->key = NULL;
-		this->root->left = NULL;
-		this->root->right = NULL;
+		delete (this->root);
+		this->root = NULL;
 	}
 
 	void insert(const T& key)
 	{
+		if (this->root == NULL)
+			this->root = new tree_node(key);
 		tree_node *node = this->root;
 		if (node->key == NULL)
 		{
@@ -217,14 +217,14 @@ public:
 	// case 2 자식이 둘인 노드 : 왼쪽 서브트리의 최대 노드를 가져오거나, 오른쪽 서브트리의 최소 노드를 가져온다.
 	void erase(const T& key)
 	{
-		std::cout << "Try erase : " << key << std::endl;
+		// std::cout << "Try erase : " << key << std::endl;
 		tree_node *node = this->root;
 		if (node == NULL )//|| node->empty())
 			return ;
 		tree_node *target = search(key);
 		if (target == NULL)
 		{
-			std::cout << "No key in tree" << std::endl;
+			// std::cout << "No key in tree" << std::endl;
 			return ;
 		}
 		else if (target->left == NULL && target->right == NULL) // case1 -자식이 없는 리프노드
@@ -327,7 +327,10 @@ public:
 		clear(node->left);
 		clear(node->right);
 		if (node->is_root())
-			delete_root(this->root);
+		{
+			delete_root();
+			return ;
+		}
 		else if (node->is_left())
 			node->parent->left = NULL;
 		else
@@ -447,9 +450,10 @@ int main()
 		tree.check_traversal();
 	}
 	tree.print();
-		tree.insert(rand() % 500);
+	tree.insert(rand() % 500);
 	tree.print();
-
+	tree.clear();
+	tree.print();
 	// tree.print();
 
 
