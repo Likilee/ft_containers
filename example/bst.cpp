@@ -77,6 +77,20 @@ public:
 			return (true);
 		return (false);
 	}
+
+	bool has_one_child()
+	{
+		if (!is_leaf() && (this->left == NULL || this->right == NULL))
+			return (true);
+		return (false);
+	}
+
+	bool has_two_child()
+	{
+		if (this->left != NULL && this->right != NULL)
+			return (true);
+		return (false);
+	}
 };
 
 struct Trunk
@@ -150,6 +164,15 @@ private:
 		return (this->root == NULL);
 	}
 
+	void erase_leaf_node(tree_node* target)
+	{
+		if (target->is_root())
+			this->root = NULL;
+		else if (target->is_left())
+			target->parent->left = NULL;
+		else
+			target->parent->right = NULL;
+	}
 public:
 	tree() : root(NULL) {}
 	~tree() { } // root 바닥부터 싹 지워주는거 만들어야함.(재귀로 짜면될 듯)
@@ -235,16 +258,9 @@ public:
 		if (NULL == (target = this->search(key)))
 			return ;
 		//비어 있지 않다면 해당 키값의 노드를 찾음.
-		else if (target->is_leaf()) // case1 -자식이 없는 리프노드
-		{
-			if (target->is_root())
-				this->root = NULL;
-			else if (target->is_left())
-				target->parent->left = NULL;
-			else
-				target->parent->right = NULL;
-		}
-		else if (target->left == NULL || target->right == NULL) // case2 - 자식이 하나인 노드
+		if (target->is_leaf()) // case1 -자식이 없는 리프노드
+			erase_leaf_node(target);
+		else if (target->has_one_child()) // case2 - 자식이 하나인 노드
 		{
 			if (target->left == NULL)
 			{
