@@ -201,7 +201,7 @@ private:
 	void erase_has_two_child_node(tree_node* target)
 	{
 		tree_node *node = get_left_biggest_node(target->left);
-		if (node->parent == target) // left_node의 오른쪽 자식이 아예 없다.
+		if (node->parent == target) // node가 타겟의 바로 왼쪽노드이다.
 		{
 			// target의 오른쪽 브랜치를 node 로 가져온다.
 			node->right = target->right;
@@ -220,28 +220,25 @@ private:
 				node->parent = target->parent;
 			}
 		}
-		else
+		else //노드가 타겟에서 2depth 이상 떨어져 있다.
 		{
+			//step1. 노드의 부모와 노드의 자식을 연결해준다 ( 지가 빠져나온다. )
 			node->parent->right = node->left;
 			if (node->left != NULL)
 				node->left->parent = node->parent;
+			//노드를 타겟 자리로 옮긴다.
 			node->parent = target->parent;
 			node->right = target->right;
 			target->right->parent = node;
 			node->left = target->left;
 			target->left->parent = node;
+			//타겟의 부모의 브랜치에 node를 연결한다.
 			if (target->is_root()) // target이 root 이면
 				this->root = node;
 			else if (target->is_left())
-			{
 				target->parent->left = node;
-				node->parent = target->parent;
-			}
 			else
-			{
 				target->parent->right = node;
-				node->parent = target->parent;
-			}
 		}
 	}
 
