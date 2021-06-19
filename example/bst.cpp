@@ -135,7 +135,6 @@ public:
 	typedef tree_node<T> tree_node;
 private:
 	tree_node *root;
-
 public:
 	tree() : root(NULL) {}
 	~tree() { } // root 바닥부터 싹 지워주는거 만들어야함.(재귀로 짜면될 듯)
@@ -175,14 +174,10 @@ public:
 
 	void insert(const T& key)
 	{
+		//빈 트리면, key를 루트노드로 추가한다.
 		if (this->root == NULL)
 			this->root = new tree_node(key);
 		tree_node *node = this->root;
-		if (node->key == NULL)
-		{
-			node->key = new T(key);
-			return ;
-		}
 		tree_node *parent = NULL;
 		while (node != NULL)
 		{
