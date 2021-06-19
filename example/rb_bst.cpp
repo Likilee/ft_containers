@@ -309,7 +309,6 @@ public:
 			this->root = new rb_node(key);
 			return ;
 		}
-
 		//트리를 루트 노드부터 key값과 비교하며 같은게 있는지 찾는다.
 		rb_node *current = this->root;
 		rb_node *parent = NULL;
@@ -318,7 +317,7 @@ public:
 			parent = current;
 			if (current->getData() == key)
 			{
-				std::cout << "Key is already in" << std::endl;
+				// std::cout << "Key is already in" << std::endl;
 				return ;
 			}
 			else if (current->getData() > key)
@@ -333,6 +332,9 @@ public:
 			parent->left = current;
 		else
 			parent->right = current;
+		//마지막에 Root color Black으로 바꿔주기
+		if (this->root->color == RED)
+			this->root->color = BLACK;
 	}
 
 	rb_node *get_left_biggest_node(rb_node *left)
@@ -469,7 +471,7 @@ int main()
 	//Insert after clear test
 	std::cout << "*====== INSERT AFTER CLEAR TEST ======*" << std::endl;
 	rbtree.insert(1004);
-	// rbtree.print();
+	rbtree.print();
 
 	return (0);
 }
