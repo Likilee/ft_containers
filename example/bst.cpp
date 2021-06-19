@@ -177,27 +177,30 @@ public:
 		//빈 트리면, key를 루트노드로 추가한다.
 		if (this->root == NULL)
 			this->root = new tree_node(key);
-		tree_node *node = this->root;
+
+		//트리를 루트 노드부터 key값과 비교하며 같은게 있는지 찾는다.
+		tree_node *current = this->root;
 		tree_node *parent = NULL;
-		while (node != NULL)
+		while (current != NULL)
 		{
-			parent = node;
-			if (node->getData() == key)
+			parent = current;
+			if (current->getData() == key)
 			{
 				std::cout << "Key is already in" << std::endl;
 				return ;
 			}
-			else if (node->getData() > key)
-				node = node->left;
-			else //if(node->getData() < key)
-				node = node->right;
+			else if (current->getData() > key)
+				current = current->left;
+			else //if(current->getData() < key)
+				current = current->right;
 		}
-		node = new tree_node(key);
-		node->parent = parent;
+		// wile문을 빠져나왔으면 = 트리에 키가 존재하지 않음 아래 실행
+		current = new tree_node(key);
+		current->parent = parent;
 		if (parent->getData() > key)
-			parent->left = node;
+			parent->left = current;
 		else
-			parent->right = node;
+			parent->right = current;
 	}
 
 	tree_node *getLeftBiggest(tree_node *left)
