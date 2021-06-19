@@ -176,7 +176,7 @@ private:
 
 	void erase_has_one_child_node(tree_node* target)
 	{
-		if (target->left == NULL)
+		if (target->left == NULL) // 오른쪽 자식이 있음
 		{
 			if (target->is_root())
 				this->root = target->right;
@@ -186,7 +186,7 @@ private:
 				target->parent->right = target->right;
 			target->right->parent = target->parent;
 		}
-		else
+		else // 왼쪽 자식이 있음
 		{
 			if (target->is_root())
 				this->root = target->left;
@@ -197,27 +197,27 @@ private:
 			target->left->parent = target->parent;
 		}
 	}
+
 	void erase_has_two_child_node(tree_node* target)
 	{
 		tree_node *node = get_left_biggest_node(target->left);
 		if (node->parent == target) // left_node의 오른쪽 자식이 아예 없다.
 		{
+			// target의 오른쪽 브랜치를 node 로 가져온다.
 			node->right = target->right;
 			target->right->parent = node;
-			if (target->is_root()) // target이 root 이면
+			if (target->is_root()) // target이 root 이면 node를 root로 세팅
 			{
 				this->root = node;
 				node->parent = NULL;
 			}
 			else
 			{
-				if (target->is_left())
+				if (target->is_left()) // target이 left 였으면 target의 부모의 왼쪽 브랜치와 node를 연결
 					target->parent->left = node;
 				else
 					target->parent->right = node;
 				node->parent = target->parent;
-				target->left = NULL;
-				target->right = NULL;
 			}
 		}
 		else
