@@ -23,7 +23,7 @@ public:
 	rb_node *parent;
 	Color color;
 
-	rb_node() : key(NULL), left(NULL), right(NULL), parent(NULL), color(RED) {};
+	rb_node() : key(NULL), left(NULL), right(NULL), parent(NULL), color(BLACK) {}; // nil_node
 	rb_node(const T& val) : left(NULL), right(NULL), parent(NULL), color(RED)
 	{
 		this->key = new T(val);
@@ -65,14 +65,14 @@ public:
 
 	bool is_root()
 	{
-		if (this->parent == NULL)
+		if (this->parent->empty())
 			return (true);
 		return (false);
 	}
 
 	bool is_left()
 	{
-		if (this->parent == NULL)
+		if (this->parent->empty())
 			std::cout << "is_left Error: target :" << this->getData() << std::endl;
 		if (this->parent->left == this)
 			return (true);
@@ -82,7 +82,7 @@ public:
 
 	bool is_right()
 	{
-		if (this->parent == NULL)
+		if (this->parent->empty())
 			std::cout << "is_right Error: target :" << this->getData() << std::endl;
 		if (this->parent->right == this)
 			return (true);
@@ -92,21 +92,21 @@ public:
 
 	bool is_leaf()
 	{
-		if (this->left == NULL && this->right == NULL)
+		if (this->left->empty() && this->right->empty())
 			return (true);
 		return (false);
 	}
 
 	bool has_one_child()
 	{
-		if (!is_leaf() && (this->left == NULL || this->right == NULL))
+		if (!is_leaf() && (this->left->empty() || this->right->empty()))
 			return (true);
 		return (false);
 	}
 
 	bool has_two_child()
 	{
-		if (this->left != NULL && this->right != NULL)
+		if (!this->left->empty() && this->right->empty())
 			return (true);
 		return (false);
 	}
@@ -138,7 +138,7 @@ void showTrunks(Trunk *p)
 template<typename T>
 void printTree(rb_node<T>* root, Trunk *prev, bool isLeft)
 {
-    if (root == NULL) {
+    if (root->empty()) {
         return;
     }
     std::string prev_str = "    ";
@@ -180,25 +180,26 @@ public:
 	typedef rb_node<T> rb_node;
 private:
 	rb_node *root;
+	rb_node *nil;
 
 	bool empty()
 	{
-		return (this->root == NULL);
+		return (this->root == this->nil);
 	}
 
 	void erase_leaf_node(rb_node* target)
 	{
 		if (target->is_root())
-			this->root = NULL;
+			this->root = this->nil;
 		else if (target->is_left())
-			target->parent->left = NULL;
+			target->parent->left = this->nil;
 		else
-			target->parent->right = NULL;
+			target->parent->right = this->nil;
 	}
 
 	void erase_has_one_child_node(rb_node* target)
 	{
-		if (target->left == NULL) // 오른쪽 자식이 있음
+		if (target->left == this->nil) // 오른쪽 자식이 있음
 		{
 			if (target->is_root())
 				this->root = target->right;
@@ -231,7 +232,7 @@ private:
 			if (target->is_root()) // target이 root 이면 node를 root로 세팅
 			{
 				this->root = node;
-				node->parent = NULL;
+				node->parent = this->nil;
 			}
 			else
 			{
@@ -246,7 +247,7 @@ private:
 		{
 			//step1. 노드의 부모와 노드의 자식을 연결해준다 (노드가 원래 위치에서 빠져나온다. )
 			node->parent->right = node->left;
-			if (node->left != NULL)
+			if (node->left != this->nil)
 				node->left->parent = node->parent;
 			//노드를 타겟 자리로 옮긴다.
 			node->parent = target->parent;
@@ -265,8 +266,16 @@ private:
 	}
 
 public:
-	rbtree() : root(NULL) {}
-	~rbtree() { this->clear(); } // root 바닥부터 싹 지워주는거 만들어야함.(재귀로 짜면될 듯)
+	rbtree()
+	{
+		nil = new rb_node;
+		root = nil;
+	}
+	~rbtree()  // root 바닥부터 싹 지워주는거 만들어야함.(재귀로 짜면될 듯)
+	{
+		this->clear();
+		delete this->nil;
+	}
 
 	rb_node *getRoot()
 	{
@@ -279,10 +288,10 @@ public:
 
 	rb_node *search(rb_node *node, const T& key)
 	{
-		if (node == NULL)
+		if (node == this->nil)
 		{
 			// std::cout << "Failed search" << std::endl;
-			return (NULL);
+			return (this->nil);
 		}
 		else if (node->getData() == key)
 		{
@@ -298,7 +307,7 @@ public:
 	void delete_root()
 	{
 		delete (this->root);
-		this->root = NULL;
+		this->root = this->nil;
 	}
 
 	void insert(const T& key)
@@ -307,12 +316,16 @@ public:
 		if (this->empty())
 		{
 			this->root = new rb_node(key);
+			this->root->parent = this->nil;
+			this->root->left = this->nil;
+			this->root->right = this->nil;
+			this->root->color = BLACK;
 			return ;
 		}
 		//트리를 루트 노드부터 key값과 비교하며 같은게 있는지 찾는다.
 		rb_node *current = this->root;
-		rb_node *parent = NULL;
-		while (current != NULL)
+		rb_node *parent = this->nil;
+		while (current != this->nil)
 		{
 			parent = current;
 			if (current->getData() == key)
@@ -327,11 +340,15 @@ public:
 		}
 		// wile문을 빠져나왔으면 = 트리에 키가 존재하지 않음 아래 실행
 		current = new rb_node(key);
+		current->left = this->nil;
+		current->right = this->nil;
 		current->parent = parent;
 		if (parent->getData() > key)
 			parent->left = current;
 		else
 			parent->right = current;
+		// **** 여기부터 RBTREE 기능 추가
+		// 장애발생! : 신규노드와 부모가 연속으로 red 일 경우!
 		//마지막에 Root color Black으로 바꿔주기
 		if (this->root->color == RED)
 			this->root->color = BLACK;
@@ -339,19 +356,19 @@ public:
 
 	rb_node *get_left_biggest_node(rb_node *left)
 	{
-		while (left->right != NULL)
+		while (left->right != this->nil)
 			left = left->right;
 		return (left);
 	}
 
-	// case 1 자식이 없는 리프노드 : 부모노드의 해당 링크를 NULL로
+	// case 1 자식이 없는 리프노드 : 부모노드의 해당 링크를 this->nil로
 	// case 2 자식이 하나인 노드 : 삭제되는 자리에 하나밖에 없는 그 노드를 위치시키면 됨
 	// case 2 자식이 둘인 노드 : 왼쪽 서브트리의 최대 노드를 가져오거나, 오른쪽 서브트리의 최소 노드를 가져온다.
 	void erase(const T& key)
 	{
 		//트리에 key가 없으면 아무 것도 안함.
 		rb_node *target;
-		if (NULL == (target = this->search(key)))
+		if (this->nil == (target = this->search(key)))
 			return ;
 		//비어 있지 않다면 해당 키값의 노드를 찾음.
 		if (target->is_leaf()) // case1 -자식이 없는 리프노드
@@ -370,7 +387,7 @@ public:
 
 	void clear(rb_node *node)
 	{
-		if (node == NULL)
+		if (node == this->nil)
 			return ;
 		clear(node->left);
 		clear(node->right);
@@ -380,9 +397,9 @@ public:
 			return ;
 		}
 		else if (node->is_left())
-			node->parent->left = NULL;
+			node->parent->left = this->nil;
 		else
-			node->parent->right = NULL;
+			node->parent->right = this->nil;
 		delete (node);
 	}
 
@@ -394,15 +411,15 @@ public:
 	void check_traversal()
 	{
 		rb_node* curr = this->root;
-		rb_node* prev = NULL;
-		if (curr == NULL)
+		rb_node* prev = this->nil;
+		if (curr == this->nil)
 			return ;
 		while (1)
 		{
 			if (prev == curr->right)
 			{
 				prev = curr;
-				if (curr->parent != NULL)
+				if (curr->parent != this->nil)
 					curr = curr->parent;
 				else
 					return ;
@@ -411,19 +428,19 @@ public:
 			else if (prev == curr->left)
 			{
 				prev = curr;
-				if (curr->right == NULL)
+				if (curr->right == this->nil)
 					curr = curr->parent;
 				else
 					curr = curr->right;
 				continue ;
 			}
-			if (curr->left != NULL)
+			if (curr->left != this->nil)
 			{
 				prev = curr;
 				curr = curr->left;
 				continue ;
 			}
-			if (curr->right != NULL)
+			if (curr->right != this->nil)
 			{
 				prev = curr;
 				curr = curr->right;
@@ -441,6 +458,17 @@ public:
 
 int main()
 {
+	ft::rbtree<int> tree;
+
+	// tree.insert(3);
+	// tree.insert(5);
+	// tree.insert(8);
+	// tree.insert(7);
+	// tree.print();
+	// tree.clear();
+
+
+// TESTER
 	srand(clock());
 	ft::rbtree<int> rbtree;
 	//Insert test
