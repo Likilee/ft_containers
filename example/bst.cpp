@@ -43,12 +43,14 @@ public:
 			return (true);
 		return (false);
 	}
+
 	bool is_root()
 	{
 		if (this->parent == NULL)
 			return (true);
 		return (false);
 	}
+
 	bool is_left()
 	{
 		if (this->parent == NULL)
@@ -67,6 +69,27 @@ public:
 			return (true);
 		else
 			return (false);
+	}
+
+	bool is_leaf()
+	{
+		if (this->left == NULL && this->right == NULL)
+			return (true);
+		return (false);
+	}
+
+	bool has_one_child()
+	{
+		if (!is_leaf() && (this->left == NULL || this->right == NULL))
+			return (true);
+		return (false);
+	}
+
+	bool has_two_child()
+	{
+		if (this->left != NULL && this->right != NULL)
+			return (true);
+		return (false);
 	}
 };
 
@@ -136,6 +159,89 @@ public:
 private:
 	tree_node *root;
 
+	bool empty()
+	{
+		return (this->root == NULL);
+	}
+
+	void erase_leaf_node(tree_node* target)
+	{
+		if (target->is_root())
+			this->root = NULL;
+		else if (target->is_left())
+			target->parent->left = NULL;
+		else
+			target->parent->right = NULL;
+	}
+
+	void erase_has_one_child_node(tree_node* target)
+	{
+		if (target->left == NULL) // 오른쪽 자식이 있음
+		{
+			if (target->is_root())
+				this->root = target->right;
+			else if (target->is_left())
+				target->parent->left = target->right;
+			else
+				target->parent->right = target->right;
+			target->right->parent = target->parent;
+		}
+		else // 왼쪽 자식이 있음
+		{
+			if (target->is_root())
+				this->root = target->left;
+			else if (target->is_right())
+				target->parent->right = target->left;
+			else
+				target->parent->left = target->left;
+			target->left->parent = target->parent;
+		}
+	}
+
+	void erase_has_two_child_node(tree_node* target)
+	{
+		tree_node *node = get_left_biggest_node(target->left);
+		if (node->parent == target) // node가 타겟의 바로 왼쪽노드이다.
+		{
+			// target의 오른쪽 브랜치를 node 로 가져온다.
+			node->right = target->right;
+			target->right->parent = node;
+			if (target->is_root()) // target이 root 이면 node를 root로 세팅
+			{
+				this->root = node;
+				node->parent = NULL;
+			}
+			else
+			{
+				if (target->is_left()) // target이 left 였으면 target의 부모의 왼쪽 브랜치와 node를 연결
+					target->parent->left = node;
+				else
+					target->parent->right = node;
+				node->parent = target->parent;
+			}
+		}
+		else //노드가 타겟에서 2depth 이상 떨어져 있다.
+		{
+			//step1. 노드의 부모와 노드의 자식을 연결해준다 (노드가 원래 위치에서 빠져나온다. )
+			node->parent->right = node->left;
+			if (node->left != NULL)
+				node->left->parent = node->parent;
+			//노드를 타겟 자리로 옮긴다.
+			node->parent = target->parent;
+			node->right = target->right;
+			target->right->parent = node;
+			node->left = target->left;
+			target->left->parent = node;
+			//타겟의 부모의 브랜치에 node를 연결한다.
+			if (target->is_root()) // target이 root 이면
+				this->root = node;
+			else if (target->is_left())
+				target->parent->left = node;
+			else
+				target->parent->right = node;
+		}
+	}
+
 public:
 	tree() : root(NULL) {}
 	~tree() { } // root 바닥부터 싹 지워주는거 만들어야함.(재귀로 짜면될 듯)
@@ -175,37 +281,36 @@ public:
 
 	void insert(const T& key)
 	{
-		if (this->root == NULL)
+		//빈 트리면, key를 루트노드로 추가한다.
+		if (this->empty())
 			this->root = new tree_node(key);
-		tree_node *node = this->root;
-		if (node->key == NULL)
-		{
-			node->key = new T(key);
-			return ;
-		}
+
+		//트리를 루트 노드부터 key값과 비교하며 같은게 있는지 찾는다.
+		tree_node *current = this->root;
 		tree_node *parent = NULL;
-		while (node != NULL)
+		while (current != NULL)
 		{
-			parent = node;
-			if (node->getData() == key)
+			parent = current;
+			if (current->getData() == key)
 			{
 				std::cout << "Key is already in" << std::endl;
 				return ;
 			}
-			else if (node->getData() > key)
-				node = node->left;
-			else //if(node->getData() < key)
-				node = node->right;
+			else if (current->getData() > key)
+				current = current->left;
+			else
+				current = current->right;
 		}
-		node = new tree_node(key);
-		node->parent = parent;
+		// wile문을 빠져나왔으면 = 트리에 키가 존재하지 않음 아래 실행
+		current = new tree_node(key);
+		current->parent = parent;
 		if (parent->getData() > key)
-			parent->left = node;
+			parent->left = current;
 		else
-			parent->right = node;
+			parent->right = current;
 	}
 
-	tree_node *getLeftBiggest(tree_node *left)
+	tree_node *get_left_biggest_node(tree_node *left)
 	{
 		while (left->right != NULL)
 			left = left->right;
@@ -217,102 +322,18 @@ public:
 	// case 2 자식이 둘인 노드 : 왼쪽 서브트리의 최대 노드를 가져오거나, 오른쪽 서브트리의 최소 노드를 가져온다.
 	void erase(const T& key)
 	{
-		// std::cout << "Try erase : " << key << std::endl;
-		tree_node *node = this->root;
-		if (node == NULL )//|| node->empty())
+		//트리에 key가 없으면 아무 것도 안함.
+		tree_node *target;
+		if (NULL == (target = this->search(key)))
 			return ;
-		tree_node *target = search(key);
-		if (target == NULL)
-		{
-			// std::cout << "No key in tree" << std::endl;
-			return ;
-		}
-		else if (target->left == NULL && target->right == NULL) // case1 -자식이 없는 리프노드
-		{
-			if (target->is_root())
-				this->root = NULL;
-			else if (target->is_left())
-				target->parent->left = NULL;
-			else
-				target->parent->right = NULL;
-		}
-		else if (target->left == NULL || target->right == NULL) // case2 - 자식이 하나인 노드
-		{
-			if (target->left == NULL)
-			{
-				if (target->is_root())
-					this->root = target->right;
-				else if (target->is_left())
-					target->parent->left = target->right;
-				else
-					target->parent->right = target->right;
-				target->right->parent = target->parent;
-			}
-			else
-			{
-				if (target->is_root())
-					this->root = target->left;
-				else if (target->is_right())
-					target->parent->right = target->left;
-				else
-					target->parent->left = target->left;
-				target->left->parent = target->parent;
-			}
-		}
+		//비어 있지 않다면 해당 키값의 노드를 찾음.
+		if (target->is_leaf()) // case1 -자식이 없는 리프노드
+			erase_leaf_node(target);
+		else if (target->has_one_child()) // case2 - 자식이 하나인 노드
+			erase_has_one_child_node(target);
 		else // case 3 - 자식이 둘인 노드
-		{
-			node = getLeftBiggest(target->left);
-			if (node->parent == target) // left_node의 오른쪽 자식이 아예 없다.
-			{
-				node->right = target->right;
-				target->right->parent = node;
-				if (target->is_root()) // target이 root 이면
-				{
-					this->root = node;
-					node->parent = NULL;
-				}
-				else
-				{
-					if (target->is_left())
-						target->parent->left = node;
-					else
-						target->parent->right = node;
-					node->parent = target->parent;
-					target->left = NULL;
-					target->right = NULL;
-				}
-			}
-			else
-			{
-				node->parent->right = node->left;
-				if (node->left != NULL)
-					node->left->parent = node->parent;
-				node->parent = target->parent;
-				node->right = target->right;
-				target->right->parent = node;
-				node->left = target->left;
-				target->left->parent = node;
-				if (target->is_root()) // target이 root 이면
-					this->root = node;
-				else if (target->is_left())
-				{
-					target->parent->left = node;
-					node->parent = target->parent;
-				}
-				else
-				{
-					target->parent->right = node;
-					node->parent = target->parent;
-				}
-			}
-		}
-		delete_node(target);
-	}
-
-	void delete_node(tree_node *node)
-	{
-		if (node != NULL)
-			delete (node);
+			erase_has_two_child_node(target);
+		delete (target);
 	}
 
 	void clear()
@@ -335,7 +356,7 @@ public:
 			node->parent->left = NULL;
 		else
 			node->parent->right = NULL;
-		delete_node(node);
+		delete (node);
 	}
 
 	void print()
@@ -393,51 +414,6 @@ public:
 
 int main()
 {
-	// ft::tree<int> tree;
-	// // ft::tree_node<int>* root_pointer = &root;
-	// // std::cout << root.getData() << std::endl;
-	// // std::cout << root.getRight() << std::endl;
-	// tree.insert(32);
-	// tree.insert(15);
-	// tree.insert(61);
-	// tree.insert(7);
-	// tree.insert(10);
-	// tree.insert(4);
-	// tree.insert(9);
-	// tree.insert(73);
-	// tree.insert(8);
-	// tree.insert(27);
-	// tree.insert(5);
-	// tree.insert(18);
-	// tree.insert(16);
-	// tree.insert(6);
-	// tree.insert(26);
-	// tree.insert(16);
-	// tree.insert(89);
-	// tree.insert(1);
-	// tree.insert(3);
-	// tree.insert(20);
-	// tree.search(3);
-	// std::cout << " ===== BEFORE =====" << std::endl;
-	// tree.print();
-	// int irase = 5;
-	// tree.erase(irase); // earser
-	// tree.erase(1); // earser
-	// tree.erase(20); // earser
-	// tree.erase(89); // earser
-	// tree.erase(18); // earser
-	// std::cout << "\n ===== AFTER erase " << irase << " =====" << std::endl;
-	// tree.print();
-
-	// std::cout << " ===== CHAR TREE BEFORE =====" << std::endl;
-	// ft::tree<char> tree2;
-	// for (int i = 97; i < 125; ++i)
-	// 	tree2.insert(i);
-	// tree2.print();
-	// std::cout << " ===== CHAR TREE CLEAR =====" << std::endl;
-	// tree2.clear();
-	// tree2.print();
-
 	srand(clock());
 	ft::tree<int> tree;
 	for (int i = 0; i < 1000; ++i)
@@ -453,9 +429,6 @@ int main()
 	tree.insert(rand() % 500);
 	tree.print();
 	tree.clear();
+	std::cout << "CLEAR" << std::endl;
 	tree.print();
-	// tree.print();
-
-
-
 }
