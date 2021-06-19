@@ -135,6 +135,12 @@ public:
 	typedef tree_node<T> tree_node;
 private:
 	tree_node *root;
+
+	bool empty()
+	{
+		return (this->root == NULL);
+	}
+
 public:
 	tree() : root(NULL) {}
 	~tree() { } // root 바닥부터 싹 지워주는거 만들어야함.(재귀로 짜면될 듯)
@@ -175,7 +181,7 @@ public:
 	void insert(const T& key)
 	{
 		//빈 트리면, key를 루트노드로 추가한다.
-		if (this->root == NULL)
+		if (this->empty())
 			this->root = new tree_node(key);
 
 		//트리를 루트 노드부터 key값과 비교하며 같은게 있는지 찾는다.
@@ -191,7 +197,7 @@ public:
 			}
 			else if (current->getData() > key)
 				current = current->left;
-			else //if(current->getData() < key)
+			else
 				current = current->right;
 		}
 		// wile문을 빠져나왔으면 = 트리에 키가 존재하지 않음 아래 실행
@@ -221,10 +227,7 @@ public:
 			return ;
 		tree_node *target = search(key);
 		if (target == NULL)
-		{
-			// std::cout << "No key in tree" << std::endl;
 			return ;
-		}
 		else if (target->left == NULL && target->right == NULL) // case1 -자식이 없는 리프노드
 		{
 			if (target->is_root())
