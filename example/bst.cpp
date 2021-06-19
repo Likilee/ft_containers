@@ -199,7 +199,7 @@ private:
 	}
 	void erase_has_two_child_node(tree_node* target)
 	{
-		tree_node *node = getLeftBiggest(target->left);
+		tree_node *node = get_left_biggest_node(target->left);
 		if (node->parent == target) // left_node의 오른쪽 자식이 아예 없다.
 		{
 			node->right = target->right;
@@ -313,7 +313,7 @@ public:
 			parent->right = current;
 	}
 
-	tree_node *getLeftBiggest(tree_node *left)
+	tree_node *get_left_biggest_node(tree_node *left)
 	{
 		while (left->right != NULL)
 			left = left->right;
