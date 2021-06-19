@@ -43,12 +43,14 @@ public:
 			return (true);
 		return (false);
 	}
+
 	bool is_root()
 	{
 		if (this->parent == NULL)
 			return (true);
 		return (false);
 	}
+
 	bool is_left()
 	{
 		if (this->parent == NULL)
@@ -67,6 +69,13 @@ public:
 			return (true);
 		else
 			return (false);
+	}
+
+	bool is_leaf()
+	{
+		if (this->left == NULL && this->right == NULL)
+			return (true);
+		return (false);
 	}
 };
 
@@ -221,12 +230,12 @@ public:
 	// case 2 자식이 둘인 노드 : 왼쪽 서브트리의 최대 노드를 가져오거나, 오른쪽 서브트리의 최소 노드를 가져온다.
 	void erase(const T& key)
 	{
-		if (this->empty())//|| node->empty())
+		//트리에 key가 없으면 아무 것도 안함.
+		tree_node *target;
+		if (NULL == (target = this->search(key)))
 			return ;
-		tree_node *target = search(key);
-		if (target == NULL)
-			return ;
-		else if (target->left == NULL && target->right == NULL) // case1 -자식이 없는 리프노드
+		//비어 있지 않다면 해당 키값의 노드를 찾음.
+		else if (target->is_leaf()) // case1 -자식이 없는 리프노드
 		{
 			if (target->is_root())
 				this->root = NULL;
@@ -452,6 +461,7 @@ int main()
 	tree.insert(rand() % 500);
 	tree.print();
 	tree.clear();
+	std::cout << "CLEAR" << std::endl;
 	tree.print();
 	// tree.print();
 
