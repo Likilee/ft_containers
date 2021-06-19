@@ -51,6 +51,8 @@ public:
 	}
 	bool is_left()
 	{
+		if (this->parent == NULL)
+			std::cout << "is_left Error: target :" << this->getData() << std::endl;
 		if (this->parent->left == this)
 			return (true);
 		else
@@ -59,6 +61,8 @@ public:
 
 	bool is_right()
 	{
+		if (this->parent == NULL)
+			std::cout << "is_right Error: target :" << this->getData() << std::endl;
 		if (this->parent->right == this)
 			return (true);
 		else
@@ -215,7 +219,7 @@ public:
 	{
 		std::cout << "Try erase : " << key << std::endl;
 		tree_node *node = this->root;
-		if (node->empty())
+		if (node == NULL )//|| node->empty())
 			return ;
 		tree_node *target = search(key);
 		if (target == NULL)
@@ -225,7 +229,9 @@ public:
 		}
 		else if (target->left == NULL && target->right == NULL) // case1 -자식이 없는 리프노드
 		{
-			if (target->is_left())
+			if (target->is_root())
+				this->root = NULL;
+			else if (target->is_left())
 				target->parent->left = NULL;
 			else
 				target->parent->right = NULL;
@@ -234,30 +240,43 @@ public:
 		{
 			if (target->left == NULL)
 			{
-				if (target->is_left())
+				if (target->is_root())
+					this->root = target->right;
+				else if (target->is_left())
 					target->parent->left = target->right;
 				else
 					target->parent->right = target->right;
+				target->right->parent = target->parent;
 			}
 			else
 			{
-				if (target->is_right())
+				if (target->is_root())
+					this->root = target->left;
+				else if (target->is_right())
 					target->parent->right = target->left;
 				else
 					target->parent->left = target->left;
+				target->left->parent = target->parent;
 			}
 		}
 		else // case 3 - 자식이 둘인 노드
 		{
-			tree_node *node = getLeftBiggest(target->left);
+			node = getLeftBiggest(target->left);
 			if (node->parent == target) // left_node의 오른쪽 자식이 아예 없다.
 			{
 				node->right = target->right;
+				target->right->parent = node;
 				if (target->is_root()) // target이 root 이면
+				{
 					this->root = node;
+					node->parent = NULL;
+				}
 				else
 				{
-					target->parent->left = node;
+					if (target->is_left())
+						target->parent->left = node;
+					else
+						target->parent->right = node;
 					node->parent = target->parent;
 					target->left = NULL;
 					target->right = NULL;
@@ -276,9 +295,15 @@ public:
 				if (target->is_root()) // target이 root 이면
 					this->root = node;
 				else if (target->is_left())
+				{
 					target->parent->left = node;
+					node->parent = target->parent;
+				}
 				else
+				{
 					target->parent->right = node;
+					node->parent = target->parent;
+				}
 			}
 		}
 		delete_node(target);
@@ -313,6 +338,50 @@ public:
 	void print()
 	{
 		ft::printTree(this->root, NULL, false);
+	}
+
+	void check_traversal()
+	{
+		tree_node* curr = this->root;
+		tree_node* prev = NULL;
+		if (curr == NULL)
+			return ;
+		while (1)
+		{
+			if (prev == curr->right)
+			{
+				prev = curr;
+				if (curr->parent != NULL)
+					curr = curr->parent;
+				else
+					return ;
+				continue ;
+			}
+			else if (prev == curr->left)
+			{
+				prev = curr;
+				if (curr->right == NULL)
+					curr = curr->parent;
+				else
+					curr = curr->right;
+				continue ;
+			}
+			if (curr->left != NULL)
+			{
+				prev = curr;
+				curr = curr->left;
+				continue ;
+			}
+			if (curr->right != NULL)
+			{
+				prev = curr;
+				curr = curr->right;
+				continue ;
+			}
+			prev = curr;
+			curr = curr->parent;
+			continue ;
+		}
 	}
 };
 }
@@ -368,15 +437,19 @@ int main()
 
 	srand(clock());
 	ft::tree<int> tree;
-	for (int i = 0; i < 100; ++i)
-		tree.insert(rand() % 50);
+	for (int i = 0; i < 1000; ++i)
+		tree.insert(rand() % 500);
 	tree.print();
 
-	for (int i = 0; i < 100; ++i)
+	for (int i = 0; i < 3000; ++i)
 	{
-		// tree.print();
-		tree.erase(rand() % 50);
+		tree.erase(rand() % 500);
+		tree.check_traversal();
 	}
+	tree.print();
+		tree.insert(rand() % 500);
+	tree.print();
+
 	// tree.print();
 
 
