@@ -221,9 +221,7 @@ public:
 	// case 2 자식이 둘인 노드 : 왼쪽 서브트리의 최대 노드를 가져오거나, 오른쪽 서브트리의 최소 노드를 가져온다.
 	void erase(const T& key)
 	{
-		// std::cout << "Try erase : " << key << std::endl;
-		tree_node *node = this->root;
-		if (node == NULL )//|| node->empty())
+		if (this->empty())//|| node->empty())
 			return ;
 		tree_node *target = search(key);
 		if (target == NULL)
@@ -262,7 +260,7 @@ public:
 		}
 		else // case 3 - 자식이 둘인 노드
 		{
-			node = getLeftBiggest(target->left);
+			tree_node *node = getLeftBiggest(target->left);
 			if (node->parent == target) // left_node의 오른쪽 자식이 아예 없다.
 			{
 				node->right = target->right;
