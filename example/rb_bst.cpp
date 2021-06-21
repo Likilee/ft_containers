@@ -70,7 +70,7 @@ public:
 		return (false);
 	}
 
-bool is_left()
+	bool is_left()
 	{
 		if (this->parent->empty())
 			std::cout << "is_left Error: target :" << this->getData() << std::endl;
@@ -109,6 +109,14 @@ bool is_left()
 		if (!this->left->empty() && this->right->empty())
 			return (true);
 		return (false);
+	}
+
+	rb_node *sibling()
+	{
+		if (this == this->parent->left)
+			return (this->parent->right);
+		else
+			return (this->parent->left);
 	}
 };
 
@@ -275,6 +283,35 @@ private:
 				target->parent->right = node;
 		}
 	}
+
+	void switch_has_two_child_node(rb_node* target)
+	{
+		rb_node *node = get_left_biggest_node(target->left);
+		if (node->parent == target) // node가 타겟의 바로 왼쪽노드이다.
+		{
+			swap_parent_child(target, node);
+		}
+		else //노드가 타겟에서 2depth 이상 떨어져 있다.
+		{
+			//step1. 노드의 부모와 노드의 자식을 연결해준다 (노드가 원래 위치에서 빠져나온다. )
+			node->parent->right = node->left;
+			if (node->left != this->nil)
+				node->left->parent = node->parent;
+			//노드를 타겟 자리로 옮긴다.
+			node->parent = target->parent;
+			node->right = target->right;
+			target->right->parent = node;
+			node->left = target->left;
+			target->left->parent = node;
+			//타겟의 부모의 브랜치에 node를 연결한다.
+			if (target->is_root()) // target이 root 이면
+				this->root = node;
+			else if (target->is_left())
+				target->parent->left = node;
+			else
+				target->parent->right = node;
+		}
+	}
 	void rotate_left(rb_node *&pt)
 	{
 		rb_node *pt_right = pt->right;
@@ -327,11 +364,14 @@ private:
 		rb_node *temp_p = p->parent;
 		rb_node *temp_l = p->left;
 		rb_node *temp_r = p->right;
+		Color temp_c = p->color;
+
+		if (c->sibling() != this->nil)
+			c->sibling()->parent = c;
 		if (c->is_left())
 			temp_l = p;
 		else
 			temp_r = p;
-		Color temp_c = p->color;
 
 		if (p->is_left())
 			p->parent->left = c;
@@ -339,7 +379,11 @@ private:
 			p->parent->right = c;
 		p->parent = c;
 		p->left = c->left;
+		if (!p->left->empty())
+			p->left->parent = p;
 		p->right = c->right;
+		if (!p->right->empty())
+			p->right->parent = p;
 		p->color = c->color;
 
 		c->parent = temp_p;
@@ -564,12 +608,14 @@ public:
 		else // case 3 - 자식이 둘인 노드
 			erase_has_two_child_node(target);
 		// 여기까지 왔을 때 target의 위치가 바뀌어 있어야함.
-		delete (target); // delete_node()
+		// delete (target); // delete_node()
 	}
 
 	//
 	void erase_rbt(const T& key)
 	{
+		// std::cout << "Erase: " << key << std::endl;
+
 		//트리에 key가 없으면 아무 것도 안함.
 		rb_node *target;
 		if (this->nil == (target = this->search(key)))
@@ -580,8 +626,8 @@ public:
 			; // root 이면 무시하고 종료. 아니면 자기 자리 그대로.
 		else if (target->has_one_child()) // case2 - 자식이 하나인 노드
 			switch_has_one_child_node(target);
-		// else // case 3 - 자식이 둘인 노드
-		// 	erase_has_two_child_node(target);
+		else // case 3 - 자식이 둘인 노드
+			switch_has_two_child_node(target);
 		// // 여기까지 왔을 때 target의 위치가 바뀌어 있어야함.
 		// delete (target); // delete_node()
 	}
@@ -664,52 +710,54 @@ public:
 
 int main()
 {
-	ft::rbtree<int> tree;
+	// ft::rbtree<int> tree;
 
-	tree.insert(3);
-	tree.insert(5);
-	tree.insert(8);
-	tree.insert(7);
-	tree.insert(9);
-	tree.insert(10);
-	tree.print();
-	tree.erase_rbt(9);
-	tree.print();
-	tree.clear();
+	// tree.insert(3);
+	// tree.insert(5);
+	// tree.insert(8);
+	// tree.insert(7);
+	// tree.insert(9);
+	// tree.insert(10);
+	// tree.print();
+	// // tree.erase_rbt(9);
+	// tree.erase_rbt(8);
+	// tree.print();
+	// tree.clear();
 
 
-// // TESTER
-// 	srand(clock());
-// 	ft::rbtree<int> rbtree;
-// 	//Insert test
-// 	std::cout << "*====== INSERT TEST ======*" << std::endl;
+// TESTER
+	srand(clock());
+	ft::rbtree<int> rbtree;
+	//Insert test
+	std::cout << "*====== INSERT TEST ======*" << std::endl;
 
-// 	for (int i = 0; i < 100; ++i)
-// 		rbtree.insert(rand() % 50);
-// 	rbtree.print();
-// 	std::cout << std::endl; //end Insert test
+	for (int i = 0; i < 1000; ++i)
+		rbtree.insert(rand() % 500);
+	rbtree.print();
+	std::cout << std::endl; //end Insert test
 
-// 	//Erase test
-// 	std::cout << "*====== ERASE TEST ======*" << std::endl;
-// 	for (int i = 0; i < 100; ++i)
-// 	{
-// 		rbtree.erase(rand() % 50);
-// 		rbtree.check_traversal();
-// 	}
-// 	rbtree.print();
-// 	std::cout << std::endl; //end Erase test
+	//Erase test
+	std::cout << "*====== ERASE TEST ======*" << std::endl;
+	for (int i = 0; i < 1000; ++i)
+	{
+		rbtree.erase_rbt(rand() % 500);
+		// rbtree.print();
+		rbtree.check_traversal();
+	}
+	rbtree.print();
+	std::cout << std::endl; //end Erase test
 
-// 	//Clear test
-// 	std::cout << "*====== CLEAR TEST ======*" << std::endl;
-// 	rbtree.clear();
-// 	rbtree.print();
+	//Clear test
+	std::cout << "*====== CLEAR TEST ======*" << std::endl;
+	rbtree.clear();
+	rbtree.print();
 
-// 	std::cout << std::endl; //end Clear test
+	std::cout << std::endl; //end Clear test
 
-// 	//Insert after clear test
-// 	std::cout << "*====== INSERT AFTER CLEAR TEST ======*" << std::endl;
-// 	rbtree.insert(1004);
-// 	rbtree.print();
+	//Insert after clear test
+	std::cout << "*====== INSERT AFTER CLEAR TEST ======*" << std::endl;
+	rbtree.insert(1004);
+	rbtree.print();
 
 	return (0);
 }
