@@ -284,34 +284,55 @@ private:
 		}
 	}
 
+	void swap_far_node(rb_node *&high, rb_node *&low)
+	{
+		rb_node *temp_l = high->left;
+		rb_node *temp_r = high->right;
+		rb_node *temp_p = high->parent;
+
+		//high를 low 위치로 이동
+		high->parent = low->parent;
+		if (low->is_left())
+			low->parent->left = high;
+		else
+			low->parent->right = high;
+		high->left = low->left;
+		if (!low->left->empty())
+			low->left->parent = high;
+		high->right = low->right;
+		if (!low->right->empty())
+			low->right->parent = high;
+
+		//low를 high 위치로 이동
+		low->parent = temp_p;
+		if (temp_p->left == high)
+			temp_p->left = low;
+		else if (temp_p->right == high)
+			temp_p->right = low;
+		low->left = temp_l;
+		if (!temp_l->empty())
+			temp_l->parent = low;
+		low->right = temp_r;
+		if (!temp_r->empty())
+			temp_r->parent = low;
+
+		//색 바꾸고
+		swap(high->color, low->color);
+		//치환한게 루트이면 루트 바꿔주고
+		if (low->parent->empty())
+			this->root = low;
+	}
+
 	void switch_has_two_child_node(rb_node* target)
 	{
 		rb_node *node = get_left_biggest_node(target->left);
+
 		if (node->parent == target) // node가 타겟의 바로 왼쪽노드이다.
-		{
 			swap_parent_child(target, node);
-		}
 		else //노드가 타겟에서 2depth 이상 떨어져 있다.
-		{
-			//step1. 노드의 부모와 노드의 자식을 연결해준다 (노드가 원래 위치에서 빠져나온다. )
-			node->parent->right = node->left;
-			if (node->left != this->nil)
-				node->left->parent = node->parent;
-			//노드를 타겟 자리로 옮긴다.
-			node->parent = target->parent;
-			node->right = target->right;
-			target->right->parent = node;
-			node->left = target->left;
-			target->left->parent = node;
-			//타겟의 부모의 브랜치에 node를 연결한다.
-			if (target->is_root()) // target이 root 이면
-				this->root = node;
-			else if (target->is_left())
-				target->parent->left = node;
-			else
-				target->parent->right = node;
-		}
+			swap_far_node(target, node);
 	}
+
 	void rotate_left(rb_node *&pt)
 	{
 		rb_node *pt_right = pt->right;
@@ -375,7 +396,7 @@ private:
 
 		if (p->is_left())
 			p->parent->left = c;
-		else
+		else if (p->is_right())
 			p->parent->right = c;
 		p->parent = c;
 		p->left = c->left;
@@ -384,12 +405,13 @@ private:
 		p->right = c->right;
 		if (!p->right->empty())
 			p->right->parent = p;
-		p->color = c->color;
 
 		c->parent = temp_p;
 		c->left = temp_l; // 여기가 문제
 		c->right = temp_r; // 여기가 문제
-		c->color = temp_c;
+		swap(p->color, c->color);
+		if (c->parent->empty())
+			this->root = c;
 	}
 
 public:
@@ -710,7 +732,7 @@ public:
 
 int main()
 {
-	// ft::rbtree<int> tree;
+	ft::rbtree<int> tree;
 
 	// tree.insert(3);
 	// tree.insert(5);
@@ -718,9 +740,14 @@ int main()
 	// tree.insert(7);
 	// tree.insert(9);
 	// tree.insert(10);
+	// tree.insert(13);
+	// tree.insert(12);
+	// tree.insert(11);
+	// tree.insert(4);
+	// tree.insert(19);
 	// tree.print();
-	// // tree.erase_rbt(9);
 	// tree.erase_rbt(8);
+	// tree.erase_rbt(5);
 	// tree.print();
 	// tree.clear();
 
