@@ -70,7 +70,7 @@ public:
 		return (false);
 	}
 
-	bool is_left()
+bool is_left()
 	{
 		if (this->parent->empty())
 			std::cout << "is_left Error: target :" << this->getData() << std::endl;
@@ -221,6 +221,17 @@ private:
 		}
 	}
 
+	void switch_has_one_child_node(rb_node* parent)
+	{
+		rb_node *child;
+
+		if (parent->left == this->nil) // 오른쪽 자식이 있음
+			child = parent->right;
+		else // 왼쪽 자식이 있음
+			child = parent->left;
+		swap_parent_child(parent, child);
+	}
+
 	void erase_has_two_child_node(rb_node* target)
 	{
 		rb_node *node = get_left_biggest_node(target->left);
@@ -309,6 +320,32 @@ private:
 		temp = a;
 		a = b;
 		b = temp;
+	}
+
+	void swap_parent_child(rb_node *&p, rb_node *&c)
+	{
+		rb_node *temp_p = p->parent;
+		rb_node *temp_l = p->left;
+		rb_node *temp_r = p->right;
+		if (c->is_left())
+			temp_l = p;
+		else
+			temp_r = p;
+		Color temp_c = p->color;
+
+		if (p->is_left())
+			p->parent->left = c;
+		else
+			p->parent->right = c;
+		p->parent = c;
+		p->left = c->left;
+		p->right = c->right;
+		p->color = c->color;
+
+		c->parent = temp_p;
+		c->left = temp_l; // 여기가 문제
+		c->right = temp_r; // 여기가 문제
+		c->color = temp_c;
 	}
 
 public:
@@ -539,15 +576,14 @@ public:
 			return ;
 		//비어 있지 않다면 해당 키값의 노드를 찾음.
 		//switch
-		rb_node *switch_target;
 		if (target->is_leaf()) // case1 -자식이 없는 리프노드
 			; // root 이면 무시하고 종료. 아니면 자기 자리 그대로.
 		else if (target->has_one_child()) // case2 - 자식이 하나인 노드
-			erase_has_one_child_node(target);
-		else // case 3 - 자식이 둘인 노드
-			erase_has_two_child_node(target);
-		// 여기까지 왔을 때 target의 위치가 바뀌어 있어야함.
-		delete (target); // delete_node()
+			switch_has_one_child_node(target);
+		// else // case 3 - 자식이 둘인 노드
+		// 	erase_has_two_child_node(target);
+		// // 여기까지 왔을 때 target의 위치가 바뀌어 있어야함.
+		// delete (target); // delete_node()
 	}
 
 	void clear()
@@ -630,46 +666,50 @@ int main()
 {
 	ft::rbtree<int> tree;
 
-	// tree.insert(3);
-	// tree.insert(5);
-	// tree.insert(8);
-	// tree.insert(7);
-	// tree.print();
-	// tree.clear();
+	tree.insert(3);
+	tree.insert(5);
+	tree.insert(8);
+	tree.insert(7);
+	tree.insert(9);
+	tree.insert(10);
+	tree.print();
+	tree.erase_rbt(9);
+	tree.print();
+	tree.clear();
 
 
-// TESTER
-	srand(clock());
-	ft::rbtree<int> rbtree;
-	//Insert test
-	std::cout << "*====== INSERT TEST ======*" << std::endl;
+// // TESTER
+// 	srand(clock());
+// 	ft::rbtree<int> rbtree;
+// 	//Insert test
+// 	std::cout << "*====== INSERT TEST ======*" << std::endl;
 
-	for (int i = 0; i < 100; ++i)
-		rbtree.insert(rand() % 50);
-	rbtree.print();
-	std::cout << std::endl; //end Insert test
+// 	for (int i = 0; i < 100; ++i)
+// 		rbtree.insert(rand() % 50);
+// 	rbtree.print();
+// 	std::cout << std::endl; //end Insert test
 
-	//Erase test
-	std::cout << "*====== ERASE TEST ======*" << std::endl;
-	for (int i = 0; i < 100; ++i)
-	{
-		rbtree.erase(rand() % 50);
-		rbtree.check_traversal();
-	}
-	rbtree.print();
-	std::cout << std::endl; //end Erase test
+// 	//Erase test
+// 	std::cout << "*====== ERASE TEST ======*" << std::endl;
+// 	for (int i = 0; i < 100; ++i)
+// 	{
+// 		rbtree.erase(rand() % 50);
+// 		rbtree.check_traversal();
+// 	}
+// 	rbtree.print();
+// 	std::cout << std::endl; //end Erase test
 
-	//Clear test
-	std::cout << "*====== CLEAR TEST ======*" << std::endl;
-	rbtree.clear();
-	rbtree.print();
+// 	//Clear test
+// 	std::cout << "*====== CLEAR TEST ======*" << std::endl;
+// 	rbtree.clear();
+// 	rbtree.print();
 
-	std::cout << std::endl; //end Clear test
+// 	std::cout << std::endl; //end Clear test
 
-	//Insert after clear test
-	std::cout << "*====== INSERT AFTER CLEAR TEST ======*" << std::endl;
-	rbtree.insert(1004);
-	rbtree.print();
+// 	//Insert after clear test
+// 	std::cout << "*====== INSERT AFTER CLEAR TEST ======*" << std::endl;
+// 	rbtree.insert(1004);
+// 	rbtree.print();
 
 	return (0);
 }
