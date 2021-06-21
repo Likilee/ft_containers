@@ -72,8 +72,8 @@ public:
 
 	bool is_left()
 	{
-		if (this->parent->empty())
-			std::cout << "is_left Error: target :" << this->getData() << std::endl;
+		// if (this->parent->empty())
+		// 	std::cout << "is_left Error: target :" << this->getData() << std::endl;
 		if (this->parent->left == this)
 			return (true);
 		else
@@ -82,8 +82,8 @@ public:
 
 	bool is_right()
 	{
-		if (this->parent->empty())
-			std::cout << "is_right Error: target :" << this->getData() << std::endl;
+		// if (this->parent->empty())
+		// 	std::cout << "is_right Error: target :" << this->getData() << std::endl;
 		if (this->parent->right == this)
 			return (true);
 		else
@@ -106,7 +106,7 @@ public:
 
 	bool has_two_child()
 	{
-		if (!this->left->empty() && this->right->empty())
+		if (!this->left->empty() && !this->right->empty())
 			return (true);
 		return (false);
 	}
@@ -650,8 +650,145 @@ public:
 			switch_has_one_child_node(target);
 		else // case 3 - 자식이 둘인 노드
 			switch_has_two_child_node(target);
-		// // 여기까지 왔을 때 target의 위치가 바뀌어 있어야함.
-		// delete (target); // delete_node()
+
+		// 여기까지 왔을 때 target의 위치가 바뀌어 있어야함.
+		delete_node(target);
+	}
+
+	void replace_node(rb_node* target, rb_node* child)
+	{
+		/*
+		*앞에서 n의 부모가 NULL이 되는 경우를 delete_case에 오지 않게 미리 처리해주면 된다.
+		*/
+		child->parent = target->parent;
+		if (target->parent->left == target)
+			target->parent->left = child;
+		else if (target->parent->right == target)
+			target->parent->right = child;
+	}
+
+	void delete_node(rb_node *target)
+	{
+		//삭제노드가 루트다 -> 그냥 삭제
+		if (target->is_root())
+		{
+			delete_root();
+			return ;
+		}
+		rb_node *child;
+		if (target->left->empty())
+			child = target->right;
+		else
+			child = target->left;
+		replace_node(target, child);
+		if (target->color == BLACK)
+		{
+			if (child->color == RED)
+				child->color = BLACK;
+			else
+				delete_case1(child);
+		}
+		delete target;
+	}
+
+	void delete_case1(rb_node *target)
+	{
+		if (!target->parent->empty())
+			delete_case2(target);
+	}
+
+	void delete_case2(rb_node *target)
+	{
+		rb_node *s = target->sibling();
+
+		if (s->color == RED)
+		{
+			target->parent->color = RED;
+			s->color = BLACK;
+			if (target == target->parent->left)
+				rotate_left(target->parent);
+			else
+				rotate_right(target->parent);
+		}
+		delete_case3(target);
+	}
+
+	void delete_case3(rb_node *target)
+	{
+		rb_node *s = target->sibling();
+
+		if ((target->parent->color == BLACK) &&
+			(s->color == BLACK) &&
+			(s->left->color == BLACK) &&
+			(s->right->color == BLACK))
+		{
+			s->color = RED;
+			delete_case1(target->parent);
+		}
+		else
+			delete_case4(target);
+	}
+
+	void delete_case4(rb_node *target)
+	{
+		rb_node *s = target->sibling();
+
+		if ((target->parent->color == RED) &&
+			(s->color == BLACK) &&
+			(s->left->color == BLACK) &&
+			(s->right->color == BLACK))
+		{
+			s->color = RED;
+			target->parent->color = BLACK;
+		}
+		else
+			delete_case5(target);
+	}
+
+	void delete_case5(rb_node *target)
+	{
+		rb_node *s = target->sibling();
+
+		if  (s->color == BLACK) {
+			/* 이 문은 자명하다,
+				case 2로 인해서(case 2에서 '''N'''의 형제 노드를 원래 형제 노드 '''S'''의 자식노드로 바꾸지만,
+				빨강 부모노드는 빨강 자식 노드를 가질 수 없기 때문에 '''N'''의 새로운 형제노드는 빨강일 수 없다). */
+			/* 다음의 문은 빨강을 '''N'''의 부모노드의 오른쪽 자식의 오른쪽 자식으로 두기 위함이다.
+				혹은 '''N'''의 부모노드의 왼쪽 자식의 왼쪽 자식으로 두기 위함. case 6에 넘기기 위해 */
+			if ((target == target->parent->left) &&
+				(s->right->color == BLACK) &&
+				(s->left->color == RED))
+			{ /* this last test is trivial too due to cases 2-4. */
+				s->color = RED;
+				s->left->color = BLACK;
+				rotate_right(s);
+			}
+			else if ((target == target->parent->right) &&
+				(s->left->color == BLACK) &&
+				(s->right->color == RED))
+			{/* this last test is trivial too due to cases 2-4. */
+				s->color = RED;
+				s->right->color = BLACK;
+				rotate_left(s);
+			}
+		}
+		delete_case6(target);
+	}
+
+	void delete_case6(rb_node *target)
+	{
+		rb_node *s = target->sibling();
+
+		s->color = target->parent->color;
+		target->parent->color = BLACK;
+
+		if (target == target->parent->left) {
+			s->right->color = BLACK;
+			rotate_left(target->parent);
+		} else {
+			s->left->color = BLACK;
+			rotate_right(target->parent);
+		}
 	}
 
 	void clear()
@@ -747,7 +884,7 @@ int main()
 	// tree.insert(19);
 	// tree.print();
 	// tree.erase_rbt(8);
-	// tree.erase_rbt(5);
+	// // tree.erase_rbt(5);
 	// tree.print();
 	// tree.clear();
 
@@ -759,7 +896,7 @@ int main()
 	std::cout << "*====== INSERT TEST ======*" << std::endl;
 
 	for (int i = 0; i < 1000; ++i)
-		rbtree.insert(rand() % 500);
+		rbtree.insert(rand() % 800);
 	rbtree.print();
 	std::cout << std::endl; //end Insert test
 
@@ -767,7 +904,7 @@ int main()
 	std::cout << "*====== ERASE TEST ======*" << std::endl;
 	for (int i = 0; i < 1000; ++i)
 	{
-		rbtree.erase_rbt(rand() % 500);
+		rbtree.erase_rbt(rand() % 800);
 		// rbtree.print();
 		rbtree.check_traversal();
 	}
