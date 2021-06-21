@@ -264,6 +264,52 @@ private:
 				target->parent->right = node;
 		}
 	}
+	void rotate_left(rb_node *&pt)
+	{
+		rb_node *pt_right = pt->right;
+
+		pt->right = pt_right->left;
+		if (pt->right != this->nil)
+			pt->right->parent = pt;
+
+		pt_right->parent = pt->parent;
+		if (pt->parent == this->nil)
+			this->root = pt_right;
+		else if (pt == pt->parent->left)
+			pt->parent->left = pt_right;
+		else
+			pt->parent->right = pt_right;
+		pt_right->left = pt;
+		pt->parent = pt_right;
+	}
+
+	void rotate_right(rb_node *pt)
+	{
+		rb_node *pt_left = pt->left;
+
+		pt->left = pt_left->right;
+		if (pt->left != this->nil)
+			pt->left->parent = pt;
+
+		pt_left->parent = pt->parent;
+		if (pt->parent == this->nil)
+			this->root = pt_left;
+		else if (pt == pt->parent->left)
+			pt->parent->left = pt_left;
+		else
+			pt->parent->right = pt_left;
+
+		pt_left->right = pt;
+		pt->parent = pt_left;
+	}
+
+	void swap(Color &a, Color &b)
+	{
+		Color temp;
+		temp = a;
+		a = b;
+		b = temp;
+	}
 
 public:
 	rbtree()
@@ -352,9 +398,8 @@ public:
 // Let x be the newly inserted node.
 
 // Perform standard BST insertion and make the colour of newly inserted nodes as RED.
-// If x is the root, change the colour of x as BLACK (Black height of complete tree increases by 1).
-// Do the following if the color of x’s parent is not BLACK and x is not the root.
-// a) If x’s uncle is RED (Grandparent must have been black from property 4)
+
+
 // (i) Change the colour of parent and uncle as BLACK.
 // (ii) Colour of a grandparent as RED.
 // (iii) Change x = x’s grandparent, repeat steps 2 and 3 for new x.
@@ -364,23 +409,97 @@ public:
 // (iii) Right Right Case (Mirror of case i)
 // (iv) Right Left Case (Mirror of case ii)
 
+		//1. If x is the root, change the colour of x as BLACK (Black height of complete tree increases by 1).
+		rb_node *parent_pt = this->nil;
+		rb_node *grand_parent_pt = this->nil;
 
-		// 장애발생! : 신규노드와 부모가 연속으로 red 일 경우!
-		if (redred())
+		while ((current != this->root) && (current->color != BLACK)
+				&& (current->parent->color == RED))
 		{
-			if(uncle is black)
-				rotate()
-			else if (uncle is red)
-				color_change();
-		}
+			parent_pt = current->parent;
+			grand_parent_pt = current->parent->parent;
 
-		rotate() // 삽입, 부모, 조부모를 세트로 흔드렁 제껴~
-		{
+			/*  Case : A
+				Parent of pt is left child
+				of Grand-parent of pt */
+			if (parent_pt == grand_parent_pt->left)
+			{
 
+				rb_node *uncle_pt = grand_parent_pt->right;
+
+				/* Case : 1
+					The uncle of pt is also red
+					Only Recoloring required */
+				if (uncle_pt != this->nil && uncle_pt->color ==
+														RED)
+				{
+					grand_parent_pt->color = RED;
+					parent_pt->color = BLACK;
+					uncle_pt->color = BLACK;
+					current = grand_parent_pt;
+				}
+				else
+				{
+					/* Case : 2
+						current is right child of its parent
+						Left-rotation required */
+					if (current == parent_pt->right)
+					{
+						this->rotate_left(parent_pt);
+						current = parent_pt;
+						parent_pt = current->parent;
+					}
+
+					/* Case : 3
+						current is left child of its parent
+						Right-rotation required */
+					this->rotate_right(grand_parent_pt);
+					swap(parent_pt->color,
+								grand_parent_pt->color);
+					current = parent_pt;
+				}
+			}
+
+			/* Case : B
+				Parent of current is right child
+				of Grand-parent of current */
+			else
+			{
+				rb_node *uncle_pt = grand_parent_pt->left;
+
+				/*  Case : 1
+					The uncle of current is also red
+					Only Recoloring required */
+				if ((uncle_pt != this->nil) && (uncle_pt->color == RED))
+				{
+					grand_parent_pt->color = RED;
+					parent_pt->color = BLACK;
+					uncle_pt->color = BLACK;
+					current = grand_parent_pt;
+				}
+				else
+				{
+					/* Case : 2
+						current is left child of its parent
+						Right-rotation required */
+					if (current == parent_pt->left)
+					{
+						this->rotate_right(parent_pt);
+						current = parent_pt;
+						parent_pt = current->parent;
+					}
+
+					/* Case : 3
+						current is right child of its parent
+						Left-rotation required */
+					this->rotate_left(grand_parent_pt);
+					this->swap(parent_pt->color,
+								grand_parent_pt->color);
+					current = parent_pt;
+				}
+			}
 		}
-		//마지막에 Root color Black으로 바꿔주기
-		if (this->root->color == RED)
-			this->root->color = BLACK;
+		this->root->color = BLACK;
 	}
 
 	rb_node *get_left_biggest_node(rb_node *left)
@@ -400,13 +519,35 @@ public:
 		if (this->nil == (target = this->search(key)))
 			return ;
 		//비어 있지 않다면 해당 키값의 노드를 찾음.
+		//switch
 		if (target->is_leaf()) // case1 -자식이 없는 리프노드
-			erase_leaf_node(target);
+			erase_leaf_node(target); // root 이면 무시하고 종료. 아니면 자기 자리 그대로.
 		else if (target->has_one_child()) // case2 - 자식이 하나인 노드
 			erase_has_one_child_node(target);
 		else // case 3 - 자식이 둘인 노드
 			erase_has_two_child_node(target);
-		delete (target);
+		// 여기까지 왔을 때 target의 위치가 바뀌어 있어야함.
+		delete (target); // delete_node()
+	}
+
+	//
+	void erase_rbt(const T& key)
+	{
+		//트리에 key가 없으면 아무 것도 안함.
+		rb_node *target;
+		if (this->nil == (target = this->search(key)))
+			return ;
+		//비어 있지 않다면 해당 키값의 노드를 찾음.
+		//switch
+		rb_node *switch_target;
+		if (target->is_leaf()) // case1 -자식이 없는 리프노드
+			; // root 이면 무시하고 종료. 아니면 자기 자리 그대로.
+		else if (target->has_one_child()) // case2 - 자식이 하나인 노드
+			erase_has_one_child_node(target);
+		else // case 3 - 자식이 둘인 노드
+			erase_has_two_child_node(target);
+		// 여기까지 왔을 때 target의 위치가 바뀌어 있어야함.
+		delete (target); // delete_node()
 	}
 
 	void clear()
@@ -503,16 +644,16 @@ int main()
 	//Insert test
 	std::cout << "*====== INSERT TEST ======*" << std::endl;
 
-	for (int i = 0; i < 30; ++i)
-		rbtree.insert(rand() % 15);
+	for (int i = 0; i < 100; ++i)
+		rbtree.insert(rand() % 50);
 	rbtree.print();
 	std::cout << std::endl; //end Insert test
 
 	//Erase test
 	std::cout << "*====== ERASE TEST ======*" << std::endl;
-	for (int i = 0; i < 30; ++i)
+	for (int i = 0; i < 100; ++i)
 	{
-		rbtree.erase(rand() % 15);
+		rbtree.erase(rand() % 50);
 		rbtree.check_traversal();
 	}
 	rbtree.print();
