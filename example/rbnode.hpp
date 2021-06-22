@@ -14,26 +14,26 @@ template <typename T>
 struct rb_node
 {
 public:
-	T *key;
+	T *value;
 	rb_node *left;
 	rb_node *right;
 	rb_node *parent;
 	rb_color color;
 
-	rb_node() : key(NULL), left(NULL), right(NULL), parent(NULL), color(BLACK) {}; // nil_node
+	rb_node() : value(NULL), left(NULL), right(NULL), parent(NULL), color(BLACK) {}; // nil_node
 	rb_node(const T& val) : left(NULL), right(NULL), parent(NULL), color(RED)
 	{
-		this->key = new T(val);
+		this->value = new T(val);
 	}
 
 	~rb_node()
 	{
-		delete key;
+		delete value;
 	}
 
 	T& getData()
 	{
-		return (*this->key);
+		return (*this->value);
 	}
 
 	T& getColor()
@@ -58,7 +58,7 @@ public:
 
 	bool empty()
 	{
-		if (this->key == NULL)
+		if (this->value == NULL)
 			return (true);
 		return (false);
 	}
@@ -113,6 +113,21 @@ public:
 			return (this->parent->right);
 		else
 			return (this->parent->left);
+	}
+
+	bool operator<(const rb_node& x) const
+	{
+		return (*(this->value) < *x.value);
+	}
+
+	bool operator>(const rb_node& x) const
+	{
+		return (x < *this);
+	}
+
+	bool operator==(const rb_node& x) const
+	{
+		return (*(this->value) == *x.value);
 	}
 };
 }

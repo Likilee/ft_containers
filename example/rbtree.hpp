@@ -3,6 +3,8 @@
 
 # include <iostream>
 # include "rbnode.hpp"
+# include "print_tree.hpp"
+# include "pair.hpp"
 
 // 1. 루트(root) 노드는 블랙이다.
 // 2. 노드 색은 레드 아니면 블랙이다.
@@ -91,7 +93,6 @@ private:
 		rb_node *temp_p = p->parent;
 		rb_node *temp_l = p->left;
 		rb_node *temp_r = p->right;
-		rb_color temp_c = p->color;
 
 		if (c->sibling() != this->nil)
 			c->sibling()->parent = c;
@@ -456,7 +457,7 @@ public:
 			return (search(node->getLeft(), key));
 	}
 
-	void insert(const T& key)
+	pair<rb_node*, bool> insert(const T& key)
 	{
 		//빈 트리면, key를 루트노드로 추가한다.
 		if (this->empty())
@@ -467,7 +468,7 @@ public:
 			this->root->right = this->nil;
 			this->root->color = BLACK;
 			++this->size;
-			return ;
+			return (pair<rb_node*, bool>(this->root, true));
 		}
 		//트리를 루트 노드부터 key값과 비교하며 같은게 있는지 찾는다.
 		rb_node *current = this->root;
@@ -478,7 +479,7 @@ public:
 			if (current->getData() == key)
 			{
 				// std::cout << "Key is already in" << std::endl;
-				return ;
+				return (pair<rb_node*, bool>(current, false));
 			}
 			else if (current->getData() > key)
 				current = current->left;
@@ -496,6 +497,7 @@ public:
 			parent->right = current;
 		fix_violation(current);
 		++this->size;
+		return (pair<rb_node*, bool>(current, true));
 	}
 
 	void erase(const T& key)
@@ -588,6 +590,22 @@ public:
 			curr = curr->parent;
 			continue ;
 		}
+	}
+
+	rb_node *get_smallest()
+	{
+		rb_node *result = this->root;
+		while (!result->left->empty())
+			result = result->left;
+		return (result);
+	}
+
+	rb_node *get_biggest()
+	{
+		rb_node *result = this->root;
+		while (!result->right->empty())
+			result = result->right;
+		return (result);
 	}
 };
 }
