@@ -36,7 +36,7 @@ int main()
 
 	//Erase test
 	std::cout << "*====== ERASE TEST ======*" << std::endl;
-	for (int i = 0; i < 1000; ++i)
+	for (int i = 0; i < 40000; ++i)
 	{
 		rbtree.erase(rand() % 800);
 		// rbtree.print();

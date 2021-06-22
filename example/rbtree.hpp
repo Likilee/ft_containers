@@ -20,6 +20,7 @@ public:
 private:
 	rb_node *root;
 	rb_node *nil;
+	size_t size;
 
 	bool empty()
 	{
@@ -170,6 +171,7 @@ private:
 	{
 		delete (this->root);
 		this->root = this->nil;
+		--this->size;
 	}
 
 	//insert후 틀어진 rb_tree 규칙에 맞게 노드 조정
@@ -308,6 +310,7 @@ private:
 				delete_case1(child);
 		}
 		delete target;
+		--this->size;
 	}
 
 	void delete_case1(rb_node *target)
@@ -411,6 +414,7 @@ public:
 	{
 		nil = new rb_node;
 		root = nil;
+		size = 0;
 	}
 
 	~rbtree()  // root 바닥부터 싹 지워주는거 만들어야함.(재귀로 짜면될 듯)
@@ -423,6 +427,12 @@ public:
 	{
 		return (this->root);
 	}
+
+	size_t getSize()
+	{
+		return (this-size);
+	}
+
 	rb_node *search(const T& key)
 	{
 		return (search(this->root, key));
@@ -456,6 +466,7 @@ public:
 			this->root->left = this->nil;
 			this->root->right = this->nil;
 			this->root->color = BLACK;
+			++this->size;
 			return ;
 		}
 		//트리를 루트 노드부터 key값과 비교하며 같은게 있는지 찾는다.
@@ -484,6 +495,7 @@ public:
 		else
 			parent->right = current;
 		fix_violation(current);
+		++this->size;
 	}
 
 	void erase(const T& key)
@@ -507,6 +519,7 @@ public:
 	void clear()
 	{
 		clear(this->root);
+		this->size = 0;
 	}
 
 	void clear(rb_node *node)
@@ -530,6 +543,7 @@ public:
 	void print()
 	{
 		ft::printTree(this->root, NULL, false);
+		std::cout << "Tree size: " << this->size << std::endl;
 	}
 
 	void check_traversal()
