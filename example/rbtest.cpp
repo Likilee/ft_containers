@@ -17,8 +17,8 @@ int main()
 	// tree.insert(4);
 	// tree.insert(19);
 	// tree.print();
-	// tree.erase_rbt(8);
-	// // tree.erase_rbt(5);
+	// tree.erase(8);
+	// // tree.erase(5);
 	// tree.print();
 	// tree.clear();
 
@@ -38,7 +38,7 @@ int main()
 	std::cout << "*====== ERASE TEST ======*" << std::endl;
 	for (int i = 0; i < 1000; ++i)
 	{
-		rbtree.erase_rbt(rand() % 800);
+		rbtree.erase(rand() % 800);
 		// rbtree.print();
 		rbtree.check_traversal();
 	}

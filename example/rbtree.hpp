@@ -34,10 +34,20 @@ private:
 			child = parent->right;
 		else // 왼쪽 자식이 있음
 			child = parent->left;
-		swap_parent_child(parent, child);
+		swap_one_depth(parent, child);
 	}
 
-	void swap_far_node(rb_node *&high, rb_node *&low)
+	void switch_has_two_child_node(rb_node* target)
+	{
+		rb_node *node = get_left_biggest_node(target->left);
+
+		if (node->parent == target) // node가 타겟의 바로 왼쪽노드이다.
+			swap_one_depth(target, node);
+		else //노드가 타겟에서 2depth 이상 떨어져 있다.
+			swap_over_one_depth(target, node);
+	}
+
+	void swap_over_one_depth(rb_node *&high, rb_node *&low)
 	{
 		rb_node *temp_l = high->left;
 		rb_node *temp_r = high->right;
@@ -68,22 +78,45 @@ private:
 		low->right = temp_r;
 		if (!temp_r->empty())
 			temp_r->parent = low;
-
 		//색 바꾸고
-		swap(high->color, low->color);
+		swap_color(high->color, low->color);
 		//치환한게 루트이면 루트 바꿔주고
 		if (low->parent->empty())
 			this->root = low;
 	}
 
-	void switch_has_two_child_node(rb_node* target)
+	void swap_one_depth(rb_node *&p, rb_node *&c)
 	{
-		rb_node *node = get_left_biggest_node(target->left);
+		rb_node *temp_p = p->parent;
+		rb_node *temp_l = p->left;
+		rb_node *temp_r = p->right;
+		rb_color temp_c = p->color;
 
-		if (node->parent == target) // node가 타겟의 바로 왼쪽노드이다.
-			swap_parent_child(target, node);
-		else //노드가 타겟에서 2depth 이상 떨어져 있다.
-			swap_far_node(target, node);
+		if (c->sibling() != this->nil)
+			c->sibling()->parent = c;
+		if (c->is_left())
+			temp_l = p;
+		else
+			temp_r = p;
+
+		if (p->is_left())
+			p->parent->left = c;
+		else if (p->is_right())
+			p->parent->right = c;
+		p->parent = c;
+		p->left = c->left;
+		if (!p->left->empty())
+			p->left->parent = p;
+		p->right = c->right;
+		if (!p->right->empty())
+			p->right->parent = p;
+
+		c->parent = temp_p;
+		c->left = temp_l; // 여기가 문제
+		c->right = temp_r; // 여기가 문제
+		swap_color(p->color, c->color);
+		if (c->parent->empty())
+			this->root = c;
 	}
 
 	void rotate_left(rb_node *&pt)
@@ -125,85 +158,12 @@ private:
 		pt->parent = pt_left;
 	}
 
-	void swap(rb_color &a, rb_color &b)
+	void swap_color(rb_color &a, rb_color &b)
 	{
 		rb_color temp;
 		temp = a;
 		a = b;
 		b = temp;
-	}
-
-	void swap_parent_child(rb_node *&p, rb_node *&c)
-	{
-		rb_node *temp_p = p->parent;
-		rb_node *temp_l = p->left;
-		rb_node *temp_r = p->right;
-		rb_color temp_c = p->color;
-
-		if (c->sibling() != this->nil)
-			c->sibling()->parent = c;
-		if (c->is_left())
-			temp_l = p;
-		else
-			temp_r = p;
-
-		if (p->is_left())
-			p->parent->left = c;
-		else if (p->is_right())
-			p->parent->right = c;
-		p->parent = c;
-		p->left = c->left;
-		if (!p->left->empty())
-			p->left->parent = p;
-		p->right = c->right;
-		if (!p->right->empty())
-			p->right->parent = p;
-
-		c->parent = temp_p;
-		c->left = temp_l; // 여기가 문제
-		c->right = temp_r; // 여기가 문제
-		swap(p->color, c->color);
-		if (c->parent->empty())
-			this->root = c;
-	}
-
-public:
-	rbtree()
-	{
-		nil = new rb_node;
-		root = nil;
-	}
-	~rbtree()  // root 바닥부터 싹 지워주는거 만들어야함.(재귀로 짜면될 듯)
-	{
-		this->clear();
-		delete this->nil;
-	}
-
-	rb_node *getRoot()
-	{
-		return (this->root);
-	}
-	rb_node *search(const T& key)
-	{
-		return (search(this->root, key));
-	}
-
-	rb_node *search(rb_node *node, const T& key)
-	{
-		if (node == this->nil)
-		{
-			// std::cout << "Failed search" << std::endl;
-			return (this->nil);
-		}
-		else if (node->getData() == key)
-		{
-			// std::cout << "Success search" << std::endl;
-			return (node);
-		}
-		else if (node->getData() < key)
-			return (search(node->getRight(), key));
-		else //if (node->getData() > key)
-			return (search(node->getLeft(), key));
 	}
 
 	void delete_root()
@@ -212,60 +172,9 @@ public:
 		this->root = this->nil;
 	}
 
-	void insert(const T& key)
+	//insert후 틀어진 rb_tree 규칙에 맞게 노드 조정
+	void fix_violation(rb_node *current)
 	{
-		//빈 트리면, key를 루트노드로 추가한다.
-		if (this->empty())
-		{
-			this->root = new rb_node(key);
-			this->root->parent = this->nil;
-			this->root->left = this->nil;
-			this->root->right = this->nil;
-			this->root->color = BLACK;
-			return ;
-		}
-		//트리를 루트 노드부터 key값과 비교하며 같은게 있는지 찾는다.
-		rb_node *current = this->root;
-		rb_node *parent = this->nil;
-		while (current != this->nil)
-		{
-			parent = current;
-			if (current->getData() == key)
-			{
-				// std::cout << "Key is already in" << std::endl;
-				return ;
-			}
-			else if (current->getData() > key)
-				current = current->left;
-			else
-				current = current->right;
-		}
-		// wile문을 빠져나왔으면 = 트리에 키가 존재하지 않음 아래 실행
-		current = new rb_node(key);
-		current->left = this->nil;
-		current->right = this->nil;
-		current->parent = parent;
-		if (parent->getData() > key)
-			parent->left = current;
-		else
-			parent->right = current;
-		// **** 여기부터 RBTREE 기능 추가
-// 		Algorithm:
-// Let x be the newly inserted node.
-
-// Perform standard BST insertion and make the colour of newly inserted nodes as RED.
-
-
-// (i) Change the colour of parent and uncle as BLACK.
-// (ii) Colour of a grandparent as RED.
-// (iii) Change x = x’s grandparent, repeat steps 2 and 3 for new x.
-// b) If x’s uncle is BLACK, then there can be four configurations for x, x’s parent (p) and x’s grandparent (g) (This is similar to AVL Tree)
-// (i) Left Left Case (p is left child of g and x is left child of p)
-// (ii) Left Right Case (p is left child of g and x is the right child of p)
-// (iii) Right Right Case (Mirror of case i)
-// (iv) Right Left Case (Mirror of case ii)
-
-		//1. If x is the root, change the colour of x as BLACK (Black height of complete tree increases by 1).
 		rb_node *parent_pt = this->nil;
 		rb_node *grand_parent_pt = this->nil;
 
@@ -310,12 +219,11 @@ public:
 						current is left child of its parent
 						Right-rotation required */
 					this->rotate_right(grand_parent_pt);
-					swap(parent_pt->color,
+					swap_color(parent_pt->color,
 								grand_parent_pt->color);
 					current = parent_pt;
 				}
 			}
-
 			/* Case : B
 				Parent of current is right child
 				of Grand-parent of current */
@@ -349,7 +257,7 @@ public:
 						current is right child of its parent
 						Left-rotation required */
 					this->rotate_left(grand_parent_pt);
-					this->swap(parent_pt->color,
+					this->swap_color(parent_pt->color,
 								grand_parent_pt->color);
 					current = parent_pt;
 				}
@@ -365,48 +273,6 @@ public:
 		return (left);
 	}
 
-	// case 1 자식이 없는 리프노드 : 부모노드의 해당 링크를 this->nil로
-	// case 2 자식이 하나인 노드 : 삭제되는 자리에 하나밖에 없는 그 노드를 위치시키면 됨
-	// case 2 자식이 둘인 노드 : 왼쪽 서브트리의 최대 노드를 가져오거나, 오른쪽 서브트리의 최소 노드를 가져온다.
-	void erase(const T& key)
-	{
-		//트리에 key가 없으면 아무 것도 안함.
-		rb_node *target;
-		if (this->nil == (target = this->search(key)))
-			return ;
-		//비어 있지 않다면 해당 키값의 노드를 찾음.
-		//switch
-		if (target->is_leaf()) // case1 -자식이 없는 리프노드
-			erase_leaf_node(target); // root 이면 무시하고 종료. 아니면 자기 자리 그대로.
-		else if (target->has_one_child()) // case2 - 자식이 하나인 노드
-			erase_has_one_child_node(target);
-		else // case 3 - 자식이 둘인 노드
-			erase_has_two_child_node(target);
-		// 여기까지 왔을 때 target의 위치가 바뀌어 있어야함.
-		// delete (target); // delete_node()
-	}
-
-	//
-	void erase_rbt(const T& key)
-	{
-		// std::cout << "Erase: " << key << std::endl;
-
-		//트리에 key가 없으면 아무 것도 안함.
-		rb_node *target;
-		if (this->nil == (target = this->search(key)))
-			return ;
-		//비어 있지 않다면 해당 키값의 노드를 찾음.
-		//switch
-		if (target->is_leaf()) // case1 -자식이 없는 리프노드
-			; // root 이면 무시하고 종료. 아니면 자기 자리 그대로.
-		else if (target->has_one_child()) // case2 - 자식이 하나인 노드
-			switch_has_one_child_node(target);
-		else // case 3 - 자식이 둘인 노드
-			switch_has_two_child_node(target);
-
-		// 여기까지 왔을 때 target의 위치가 바뀌어 있어야함.
-		delete_node(target);
-	}
 
 	void replace_node(rb_node* target, rb_node* child)
 	{
@@ -502,16 +368,12 @@ public:
 	{
 		rb_node *s = target->sibling();
 
-		if  (s->color == BLACK) {
-			/* 이 문은 자명하다,
-				case 2로 인해서(case 2에서 '''N'''의 형제 노드를 원래 형제 노드 '''S'''의 자식노드로 바꾸지만,
-				빨강 부모노드는 빨강 자식 노드를 가질 수 없기 때문에 '''N'''의 새로운 형제노드는 빨강일 수 없다). */
-			/* 다음의 문은 빨강을 '''N'''의 부모노드의 오른쪽 자식의 오른쪽 자식으로 두기 위함이다.
-				혹은 '''N'''의 부모노드의 왼쪽 자식의 왼쪽 자식으로 두기 위함. case 6에 넘기기 위해 */
+		if  (s->color == BLACK)
+		{
 			if ((target == target->parent->left) &&
 				(s->right->color == BLACK) &&
 				(s->left->color == RED))
-			{ /* this last test is trivial too due to cases 2-4. */
+			{
 				s->color = RED;
 				s->left->color = BLACK;
 				rotate_right(s);
@@ -519,7 +381,7 @@ public:
 			else if ((target == target->parent->right) &&
 				(s->left->color == BLACK) &&
 				(s->right->color == RED))
-			{/* this last test is trivial too due to cases 2-4. */
+			{
 				s->color = RED;
 				s->right->color = BLACK;
 				rotate_left(s);
@@ -542,6 +404,104 @@ public:
 			s->left->color = BLACK;
 			rotate_right(target->parent);
 		}
+	}
+
+public:
+	rbtree()
+	{
+		nil = new rb_node;
+		root = nil;
+	}
+
+	~rbtree()  // root 바닥부터 싹 지워주는거 만들어야함.(재귀로 짜면될 듯)
+	{
+		this->clear();
+		delete this->nil;
+	}
+
+	rb_node *getRoot()
+	{
+		return (this->root);
+	}
+	rb_node *search(const T& key)
+	{
+		return (search(this->root, key));
+	}
+
+	rb_node *search(rb_node *node, const T& key)
+	{
+		if (node == this->nil)
+		{
+			// std::cout << "Failed search" << std::endl;
+			return (this->nil);
+		}
+		else if (node->getData() == key)
+		{
+			// std::cout << "Success search" << std::endl;
+			return (node);
+		}
+		else if (node->getData() < key)
+			return (search(node->getRight(), key));
+		else //if (node->getData() > key)
+			return (search(node->getLeft(), key));
+	}
+
+	void insert(const T& key)
+	{
+		//빈 트리면, key를 루트노드로 추가한다.
+		if (this->empty())
+		{
+			this->root = new rb_node(key);
+			this->root->parent = this->nil;
+			this->root->left = this->nil;
+			this->root->right = this->nil;
+			this->root->color = BLACK;
+			return ;
+		}
+		//트리를 루트 노드부터 key값과 비교하며 같은게 있는지 찾는다.
+		rb_node *current = this->root;
+		rb_node *parent = this->nil;
+		while (current != this->nil)
+		{
+			parent = current;
+			if (current->getData() == key)
+			{
+				// std::cout << "Key is already in" << std::endl;
+				return ;
+			}
+			else if (current->getData() > key)
+				current = current->left;
+			else
+				current = current->right;
+		}
+		// wile문을 빠져나왔으면 = 트리에 키가 존재하지 않음 아래 실행
+		current = new rb_node(key);
+		current->left = this->nil;
+		current->right = this->nil;
+		current->parent = parent;
+		if (parent->getData() > key)
+			parent->left = current;
+		else
+			parent->right = current;
+		fix_violation(current);
+	}
+
+	void erase(const T& key)
+	{
+		// std::cout << "Erase: " << key << std::endl;
+		//트리에 key가 없으면 아무 것도 안함.
+		rb_node *target;
+		if (this->nil == (target = this->search(key)))
+			return ;
+		//비어 있지 않다면 해당 키값의 노드를 찾음.
+		if (target->is_leaf()) // case1 -자식이 없는 리프노드
+			; // root 이면 무시하고 종료. 아니면 자기 자리 그대로.
+		else if (target->has_one_child()) // case2 - 자식이 하나인 노드
+			switch_has_one_child_node(target);
+		else // case 3 - 자식이 둘인 노드
+			switch_has_two_child_node(target);
+		// 여기까지 왔을 때 target의 위치가 바뀌어 있어야함.
+		delete_node(target);
 	}
 
 	void clear()
