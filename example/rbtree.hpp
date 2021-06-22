@@ -26,40 +26,6 @@ private:
 		return (this->root == this->nil);
 	}
 
-	void erase_leaf_node(rb_node* target)
-	{
-		if (target->is_root())
-			this->root = this->nil;
-		else if (target->is_left())
-			target->parent->left = this->nil;
-		else
-			target->parent->right = this->nil;
-	}
-
-	void erase_has_one_child_node(rb_node* target)
-	{
-		if (target->left == this->nil) // 오른쪽 자식이 있음
-		{
-			if (target->is_root())
-				this->root = target->right;
-			else if (target->is_left())
-				target->parent->left = target->right;
-			else
-				target->parent->right = target->right;
-			target->right->parent = target->parent;
-		}
-		else // 왼쪽 자식이 있음
-		{
-			if (target->is_root())
-				this->root = target->left;
-			else if (target->is_right())
-				target->parent->right = target->left;
-			else
-				target->parent->left = target->left;
-			target->left->parent = target->parent;
-		}
-	}
-
 	void switch_has_one_child_node(rb_node* parent)
 	{
 		rb_node *child;
@@ -69,50 +35,6 @@ private:
 		else // 왼쪽 자식이 있음
 			child = parent->left;
 		swap_parent_child(parent, child);
-	}
-
-	void erase_has_two_child_node(rb_node* target)
-	{
-		rb_node *node = get_left_biggest_node(target->left);
-		if (node->parent == target) // node가 타겟의 바로 왼쪽노드이다.
-		{
-			// target의 오른쪽 브랜치를 node 로 가져온다.
-			node->right = target->right;
-			target->right->parent = node;
-			if (target->is_root()) // target이 root 이면 node를 root로 세팅
-			{
-				this->root = node;
-				node->parent = this->nil;
-			}
-			else
-			{
-				if (target->is_left()) // target이 left 였으면 target의 부모의 왼쪽 브랜치와 node를 연결
-					target->parent->left = node;
-				else
-					target->parent->right = node;
-				node->parent = target->parent;
-			}
-		}
-		else //노드가 타겟에서 2depth 이상 떨어져 있다.
-		{
-			//step1. 노드의 부모와 노드의 자식을 연결해준다 (노드가 원래 위치에서 빠져나온다. )
-			node->parent->right = node->left;
-			if (node->left != this->nil)
-				node->left->parent = node->parent;
-			//노드를 타겟 자리로 옮긴다.
-			node->parent = target->parent;
-			node->right = target->right;
-			target->right->parent = node;
-			node->left = target->left;
-			target->left->parent = node;
-			//타겟의 부모의 브랜치에 node를 연결한다.
-			if (target->is_root()) // target이 root 이면
-				this->root = node;
-			else if (target->is_left())
-				target->parent->left = node;
-			else
-				target->parent->right = node;
-		}
 	}
 
 	void swap_far_node(rb_node *&high, rb_node *&low)
