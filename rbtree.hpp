@@ -421,6 +421,12 @@ public:
 		size = 0;
 	}
 
+	rbtree(const rbtree& x) : rbtree()
+	{
+		this->clear();
+		this->copy(x);
+	}
+
 	~rbtree()  // root 바닥부터 싹 지워주는거 만들어야함.(재귀로 짜면될 듯)
 	{
 		this->clear();
@@ -550,6 +556,25 @@ public:
 		else
 			node->parent->right = this->nil;
 		delete (node);
+	}
+
+	void copy(rb_node* dst, rb_node* src, rb_node* nil)
+	{
+		if (src->empty())
+		{
+			dst = nil;
+			return ;
+		}
+		else
+			dst = new rb_node(*src);
+		copy(dst->left, src->left, nil);
+		copy(dst->right, src->right, nil);
+	}
+	
+	void copy(const rbtree& x)
+	{
+		rb_node* nil = new rb_node;
+		copy(this->root, x.root, nil);
 	}
 
 	void print()

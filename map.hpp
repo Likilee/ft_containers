@@ -76,7 +76,10 @@ public:
 // rb_node<ft::pair<const int, std::__1::basic_string<char> > > *'
 // map_iter<std::__1::basic_string<char>, std::__1::basic_string<char> *, std::__1::basic_string<char> &>
 	map	&operator=(const map &x)
-	{}
+	{
+		this->_tree.copy(x._tree);
+		return (*this);
+	}
 
 	//Iterators:
 	iterator begin()

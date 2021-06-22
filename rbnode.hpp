@@ -21,9 +21,15 @@ public:
 	rb_color color;
 
 	rb_node() : value(NULL), left(NULL), right(NULL), parent(NULL), color(BLACK) {}; // nil_node
+
 	rb_node(const T& val) : left(NULL), right(NULL), parent(NULL), color(RED)
 	{
 		this->value = new T(val);
+	}
+
+	rb_node(const rb_node& x) : left(NULL), right(NULL), parent(NULL), color(RED)
+	{
+		this->value = new T(*x.value);
 	}
 
 	~rb_node()

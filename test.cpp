@@ -6,7 +6,7 @@
 /*   By: kilee <kilee@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/11 14:10:31 by kilee             #+#    #+#             */
-/*   Updated: 2021/06/22 17:20:59 by kilee            ###   ########.fr       */
+/*   Updated: 2021/06/22 18:06:05 by kilee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,10 +40,12 @@ int	main()
 	students.insert(ft::pair<int, std::string>(2, "현스키"));
 	students.insert(ft::pair<int, std::string>(1, "이기훈"));
 	students.insert(ft::pair<int, std::string>(5, "스키"));
+	ft::map<int, std::string> students2;//(vec.begin(), vec.end());
 	// students.insert(ft::pair<int, std::string>(3, "z스키"));
-	ft::map<int, std::string>::iterator itr = students.end();
 	// for (;itr != students.end(); ++itr)
-		--itr;
+	students2 = students;
+	ft::map<int, std::string>::iterator itr = students2.begin();
+		
 		std::cout << itr->first << std::endl;
 		--itr;
 		std::cout << itr->first << std::endl;
@@ -51,8 +53,6 @@ int	main()
 		std::cout << itr->first << std::endl;
 		--itr;
 		std::cout << itr->first << std::endl;
-
-
 
 	// --itr;
 	// std::cout << itr->second << std::endl;
