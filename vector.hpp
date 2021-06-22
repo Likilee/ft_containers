@@ -24,7 +24,7 @@ public:
 	typedef ptrdiff_t difference_type;  // 이터레이터 간극 반환 타입
 	typedef random_access_iter<T, T*, T&> iterator;
 	typedef random_access_iter<T, const T*, const T&> const_iterator;
-	typedef reverse_iterator<const_iterator > const_reverse_iterator;
+	typedef reverse_iterator<const_iterator> const_reverse_iterator;
 	typedef reverse_iterator<iterator> reverse_iterator; // 이거 위아래 순서 바꾸면 컴파일 안됨 왜지?
 
 private:
