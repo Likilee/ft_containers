@@ -11,7 +11,6 @@
 // 5. 레드 노드는 두 개가 연속해서 등장할 수 없다.
 namespace ft
 {
-
 template <typename T>
 class rbtree
 {
@@ -204,9 +203,9 @@ private:
 		pt->parent = pt_left;
 	}
 
-	void swap(Color &a, Color &b)
+	void swap(rb_color &a, rb_color &b)
 	{
-		Color temp;
+		rb_color temp;
 		temp = a;
 		a = b;
 		b = temp;
@@ -217,7 +216,7 @@ private:
 		rb_node *temp_p = p->parent;
 		rb_node *temp_l = p->left;
 		rb_node *temp_r = p->right;
-		Color temp_c = p->color;
+		rb_color temp_c = p->color;
 
 		if (c->sibling() != this->nil)
 			c->sibling()->parent = c;

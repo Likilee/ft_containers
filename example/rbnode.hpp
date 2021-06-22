@@ -4,21 +4,21 @@
 namespace ft
 {
 
-enum Color
+enum rb_color
 {
 	RED,
 	BLACK
 };
 
 template <typename T>
-class rb_node
+struct rb_node
 {
 public:
 	T *key;
 	rb_node *left;
 	rb_node *right;
 	rb_node *parent;
-	Color color;
+	rb_color color;
 
 	rb_node() : key(NULL), left(NULL), right(NULL), parent(NULL), color(BLACK) {}; // nil_node
 	rb_node(const T& val) : left(NULL), right(NULL), parent(NULL), color(RED)
