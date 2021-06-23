@@ -17,8 +17,8 @@ template <typename T>
 class rbtree
 {
 public:
-	typedef T key_type;
-	typedef rb_node<T> rb_node;
+	typedef T value_type;
+	typedef rb_node<value_type> rb_node;
 private:
 	rb_node *root;
 	rb_node *nil;
@@ -558,23 +558,25 @@ public:
 		delete (node);
 	}
 
-	void copy(rb_node* dst, rb_node* src, rb_node* nil)
+	bool copy(const value_type* value)
 	{
-		if (src->empty())
-		{
-			dst = nil;
-			return ;
-		}
-		else
-			dst = new rb_node(*src);
-		copy(dst->left, src->left, nil);
-		copy(dst->right, src->right, nil);
+		if (value == NULL)
+			return (false);
+		insert(*value);
+		return (true);
 	}
-	
+
+	void copy(const rb_node* node)
+	{
+		if(false == copy(node->value))
+			return ;
+		copy(node->left);
+		copy(node->right);
+	}
+
 	void copy(const rbtree& x)
 	{
-		rb_node* nil = new rb_node;
-		copy(this->root, x.root, nil);
+		copy(x.root);
 	}
 
 	void print()
