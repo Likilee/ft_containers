@@ -6,7 +6,7 @@
 /*   By: kihoonlee <kihoonlee@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/11 14:10:31 by kilee             #+#    #+#             */
-/*   Updated: 2021/06/23 17:23:19 by kihoonlee        ###   ########.fr       */
+/*   Updated: 2021/06/23 20:51:52 by kihoonlee        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,17 +33,20 @@ class Test {
 
 int	main()
 {
-	ft::map<int, std::string> students;//(vec.begin(), vec.end());
-	students.insert(ft::pair<int, std::string>(8, "스키"));
-	std::cout << students.getTree().getRoot()->value->first << std::endl;
-	students.insert(ft::pair<int, std::string>(2, "현스키"));
-	std::cout << students._tree.getRoot()->value->first << std::endl;
-	students.insert(ft::pair<int, std::string>(1, "이기훈"));
-	std::cout << students._tree.getRoot()->value->first << std::endl;
-	// students.erase(2);
-	// std::cout << students._tree.getRoot()->value->first << std::endl;
 
-	// students.insert(ft::pair<int, std::string>(5, "스키"));
+	// std::map<int, int> students;//(vec.begin(), vec.end());
+	// students.insert(std::make_pair(3,3));
+	// std::map<int, int>::iterator itr = students.end();
+	// std::cout << itr->first << std::endl;
+	ft::map<int, std::string> students;//(vec.begin(), vec.end());
+
+	students.insert(ft::pair<int, std::string>(8, "스키"));
+	students.insert(ft::pair<int, std::string>(2, "현스키"));
+	students.insert(ft::pair<int, std::string>(1, "이기훈"));
+	students.insert(ft::pair<int, std::string>(5, "스키"));
+	// students.erase(2);
+	// std::cout << students.getTree().getRoot()->value->first << std::endl;
+
 	// students.insert(ft::pair<int, std::string>(2, "스키"));
 	// students.insert(ft::pair<int, std::string>(2, "스키"));
 	// students.insert(ft::pair<int, std::string>(2, "스키"));
@@ -81,12 +84,12 @@ int	main()
 
 	for (int i = 0; i < COUNT; ++i)
 		test.insert(ft::pair<int, std::string>(rand() % SIZE, "학생"));
-	test._tree.print();
+	test.getTree().print();
 	std::cout << std::endl; //end Insert test
 
 	std::cout << "*====== COPY TEST ======*" << std::endl;
 	ft::map<int, std::string> test2(test);
-	test2._tree.print();
+	test2.getTree().print();
 	std::cout << std::endl; //end Insert test
 
 	std::cout << "*====== BOUND TEST ======*" << std::endl;
@@ -106,9 +109,9 @@ int	main()
 	for (int i = 0; i < COUNT; ++i)
 	{
 		test.erase(rand() % SIZE);
-		test._tree.check_traversal();
+		test.getTree().check_traversal();
 	}
-	test._tree.print();
+	test.getTree().print();
 	std::cout << std::endl; //end Erase test
 
 	//Clear test

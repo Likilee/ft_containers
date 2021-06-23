@@ -1,6 +1,8 @@
 #ifndef RBNODE_HPP
 # define RBNODE_HPP
 
+# include <memory>
+
 namespace ft
 {
 
@@ -10,7 +12,7 @@ enum rb_color
 	BLACK
 };
 
-template <typename T>
+template <typename T, typename Alloc = std::allocator<T> >
 struct rb_node
 {
 public:
@@ -19,22 +21,33 @@ public:
 	rb_node *right;
 	rb_node *parent;
 	rb_color color;
+	Alloc alloc;
 
-	rb_node() : value(NULL), left(NULL), right(NULL), parent(NULL), color(BLACK) {}; // nil_node
+	rb_node() : value(NULL), left(NULL), right(NULL), parent(NULL), color(BLACK), alloc(Alloc()) {}; // nil_node
 
-	rb_node(const T& val) : left(NULL), right(NULL), parent(NULL), color(RED)
+	rb_node(const T& val) : value(NULL), left(NULL), right(NULL), parent(NULL), color(RED), alloc(Alloc())
 	{
-		this->value = new T(val);
+		this->value = alloc.allocate(1);
+		alloc.construct(this->value, val);
 	}
 
-	rb_node(const rb_node& x) : left(NULL), right(NULL), parent(NULL), color(RED)
+	rb_node(const rb_node& x) : value(NULL), left(NULL), right(NULL), parent(NULL), color(RED), alloc(Alloc())
 	{
-		this->value = new T(*x.value);
+		if (!(x.value == NULL))
+		{
+			this->value = alloc.allocate(1);
+			alloc.construct(this->value, x.getValue());
+		}
+
 	}
 
 	~rb_node()
 	{
-		delete value;
+		if (this->value != NULL)
+		{
+			alloc.destroy(this->value);
+			alloc.deallocate(this->value, 1);
+		}
 	}
 
 	T& getValue() const

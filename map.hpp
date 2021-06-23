@@ -53,6 +53,10 @@ private:
 	key_compare _comp;
 	allocator_type _alloc;
 public:
+	tree_type &getTree()
+	{
+		return (this->_tree);
+	}
 
 	explicit map(const key_compare& comp = key_compare(),
 				const allocator_type& alloc = allocator_type())
