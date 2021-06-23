@@ -424,12 +424,12 @@ public:
 		delete this->nil;
 	}
 
-	rb_node *getRoot()
+	rb_node *get_root()
 	{
 		return (this->root);
 	}
 
-	size_t getSize()
+	size_t get_size()
 	{
 		return (this-size);
 	}

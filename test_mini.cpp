@@ -6,7 +6,7 @@
 /*   By: kihoonlee <kihoonlee@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/11 14:10:31 by kilee             #+#    #+#             */
-/*   Updated: 2021/06/23 22:11:16 by kihoonlee        ###   ########.fr       */
+/*   Updated: 2021/06/23 23:03:14 by kihoonlee        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ int	main()
 	students.insert(ft::pair<int, std::string>(1, "이기훈"));
 	students.insert(ft::pair<int, std::string>(5, "스키"));
 	// students.erase(2);
-	// std::cout << students.getTree().getRoot()->value->first << std::endl;
+	// std::cout << students.getTree().get_root()->value->first << std::endl;
 
 	// students.insert(ft::pair<int, std::string>(2, "스키"));
 	// students.insert(ft::pair<int, std::string>(2, "스키"));

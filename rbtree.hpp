@@ -27,32 +27,13 @@ public:
 	typedef typename Alloc::template rebind<node_type>::other node_allocator_type;
 	typedef map_iter<value_type, value_type*, value_type&> iterator;
 	typedef map_iter<value_type, const value_type*, const value_type&> const_iterator;
+
 private:
 	node_type *_root;
 	node_type *_nil;
 	size_t _size;
 	comp_type _comp;
 	node_allocator_type _node_alloc;
-
-	node_type* construct_node(const value_type& value)
-	{
-		node_type* result = this->_node_alloc.allocate(1);
-		this->_node_alloc.construct(result, node_type(value));
-		return (result);
-	}
-
-	node_type* construct_node()
-	{
-		node_type* result = this->_node_alloc.allocate(1);
-		this->_node_alloc.construct(result, node_type());
-		return (result);
-	}
-
-	void destroy_node(node_type* node)
-	{
-		this->_node_alloc.destroy(node);
-		this->_node_alloc.deallocate(node, 1);
-	}
 
 public:
 	rbtree() : _size(0), _comp(comp_type()), _node_alloc(node_allocator_type())
@@ -83,19 +64,30 @@ public:
 		destroy_node(this->_nil);
 	}
 
-	node_type *getRoot()
-	{
-		return (this->_root);
-	}
-
-	node_type *getNil() const
+	node_type *get_nil() const
 	{
 		return (this->_nil);
 	}
 
-	size_t getSize() const
+	size_t get_size() const
 	{
 		return (this->_size);
+	}
+
+	node_type *get_smallest() const
+	{
+		node_type *result = this->_root;
+		while (!result->left->empty())
+			result = result->left;
+		return (result);
+	}
+
+	node_type *get_biggest() const
+	{
+		node_type *result = this->_root;
+		while (!result->right->empty())
+			result = result->right;
+		return (result);
 	}
 
 	node_type *search(const T& value) const
@@ -113,60 +105,6 @@ public:
 			return (search(node->getRight(), value));
 		else
 			return (search(node->getLeft(), value));
-	}
-
-	node_type *lower_bound(const T& value) const
-	{
-		return (lower_bound(this->_root, value));
-	}
-
-	node_type *lower_bound(node_type *node, const T& value) const
-	{
-		if (_comp(this->get_biggest()->getValue(), value)) // 트리 최대 value가 value 보다 작으면 _nil~
-			return (this->_nil);
-		while (1)
-		{
-			if (same_value(node->getValue(), value))
-				return (node);
-			else if (_comp(value, node->getValue())) // 현재 node가 찾는 값보다 작으면,
-			{
-				if (node->left == this->_nil)
-					return (node);
-				node = node->left;
-			}
-			else
-			{
-				if (node->right == this->_nil)
-					return (this->get_next_node(node)); //여기 수정 현재보다 한개 큰노드 가져오기
-				node = node->right;
-			}
-		}
-	}
-
-	node_type *upper_bound(const T& value) const
-	{
-		return (upper_bound(this->_root, value));
-	}
-
-	node_type *upper_bound(node_type *node, const T& value) const
-	{
-		if (!_comp(value, this->get_biggest()->getValue())) //tree 최대 값이 value이하이면 _nil~
-			return (this->_nil);
-		while (1)
-		{
-			if (_comp(value, node->getValue())) // 현재 node가 찾는 값보다 작으면,
-			{
-				if (node->left == this->_nil)
-					return (node);
-				node = node->left;
-			}
-			else
-			{
-				if (node->right == this->_nil)
-					return (this->get_next_node(node)); //여기 수정 현재보다 한개 큰노드 가져오기
-				node = node->right;
-			}
-		}
 	}
 
 	pair<node_type*, bool> insert(const T& value)
@@ -307,6 +245,60 @@ public:
 		return (true);
 	}
 
+	node_type *lower_bound(const T& value) const
+	{
+		return (lower_bound(this->_root, value));
+	}
+
+	node_type *lower_bound(node_type *node, const T& value) const
+	{
+		if (_comp(this->get_biggest()->getValue(), value)) // 트리 최대 value가 value 보다 작으면 _nil~
+			return (this->_nil);
+		while (1)
+		{
+			if (same_value(node->getValue(), value))
+				return (node);
+			else if (_comp(value, node->getValue())) // 현재 node가 찾는 값보다 작으면,
+			{
+				if (node->left == this->_nil)
+					return (node);
+				node = node->left;
+			}
+			else
+			{
+				if (node->right == this->_nil)
+					return (this->get_next_node(node)); //여기 수정 현재보다 한개 큰노드 가져오기
+				node = node->right;
+			}
+		}
+	}
+
+	node_type *upper_bound(const T& value) const
+	{
+		return (upper_bound(this->_root, value));
+	}
+
+	node_type *upper_bound(node_type *node, const T& value) const
+	{
+		if (!_comp(value, this->get_biggest()->getValue())) //tree 최대 값이 value이하이면 _nil~
+			return (this->_nil);
+		while (1)
+		{
+			if (_comp(value, node->getValue())) // 현재 node가 찾는 값보다 작으면,
+			{
+				if (node->left == this->_nil)
+					return (node);
+				node = node->left;
+			}
+			else
+			{
+				if (node->right == this->_nil)
+					return (this->get_next_node(node)); //여기 수정 현재보다 한개 큰노드 가져오기
+				node = node->right;
+			}
+		}
+	}
+
 	void print()
 	{
 		ft::printTree(this->_root, NULL, false);
@@ -357,23 +349,28 @@ public:
 		}
 	}
 
-	node_type *get_smallest() const
-	{
-		node_type *result = this->_root;
-		while (!result->left->empty())
-			result = result->left;
-		return (result);
-	}
-
-	node_type *get_biggest() const
-	{
-		node_type *result = this->_root;
-		while (!result->right->empty())
-			result = result->right;
-		return (result);
-	}
 
 private:
+	node_type* construct_node(const value_type& value)
+	{
+		node_type* result = this->_node_alloc.allocate(1);
+		this->_node_alloc.construct(result, node_type(value));
+		return (result);
+	}
+
+	node_type* construct_node()
+	{
+		node_type* result = this->_node_alloc.allocate(1);
+		this->_node_alloc.construct(result, node_type());
+		return (result);
+	}
+
+	void destroy_node(node_type* node)
+	{
+		this->_node_alloc.destroy(node);
+		this->_node_alloc.deallocate(node, 1);
+	}
+
 	bool same_value(const value_type &a, const value_type &b) const
 	{
 		return (!_comp(a, b) && !_comp(b, a));

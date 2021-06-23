@@ -99,12 +99,12 @@ public:
 
 	iterator end()
 	{
-		return (iterator(this->_tree.getNil()));
+		return (iterator(this->_tree.get_nil()));
 	}
 
 	const_iterator end() const
 	{
-		return (const_iterator(this->_tree.getNil()));
+		return (const_iterator(this->_tree.get_nil()));
 	}
 
 	reverse_iterator rbegin()
@@ -129,12 +129,12 @@ public:
 // // 3. Capacity
 	bool empty() const
 	{
-		return (this->_tree.getSize() == 0);
+		return (this->_tree.get_size() == 0);
 	}
 
 	size_type size() const
 	{
-		return (this->_tree.getSize());
+		return (this->_tree.get_size());
 	}
 
 	size_type max_size() const

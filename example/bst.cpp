@@ -246,7 +246,7 @@ public:
 	tree() : root(NULL) {}
 	~tree() { } // root 바닥부터 싹 지워주는거 만들어야함.(재귀로 짜면될 듯)
 
-	tree_node *getRoot()
+	tree_node *get_root()
 	{
 		return (this->root);
 	}

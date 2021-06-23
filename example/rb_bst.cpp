@@ -426,7 +426,7 @@ public:
 		delete this->nil;
 	}
 
-	rb_node *getRoot()
+	rb_node *get_root()
 	{
 		return (this->root);
 	}
