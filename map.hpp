@@ -35,22 +35,24 @@ public:
 	typedef reverse_iterator<const_iterator> const_reverse_iterator;
 	typedef reverse_iterator<iterator> reverse_iterator;
 
-private:
-	rbtree<value_type> _tree;
-	key_compare _comp;
-	allocator_type _alloc;
-public:
 	class value_compare
 	{
 		protected:
 			Compare comp;
-			explicit value_compare(Compare c) : comp(c) {}
 		public:
+			value_compare() : comp() {}
 			bool operator()(const value_type& x, const value_type& y) const
 			{
 				return comp(x.first, y.first);
 			}
 	};
+	typedef ft::rbtree<value_type, value_compare> tree_type;
+
+private:
+	key_compare _comp;
+	allocator_type _alloc;
+public:
+	tree_type _tree;
 
 	explicit map(const key_compare& comp = key_compare(),
 				const allocator_type& alloc = allocator_type())
@@ -69,12 +71,11 @@ public:
 
 	map(const map& x) : _tree(), _comp(x._comp), _alloc(x._alloc)
 	{
-		insert(x.begin, x.end());
+		*this = x;
 	}
 
 	~map() {}
-// rb_node<ft::pair<const int, std::__1::basic_string<char> > > *'
-// map_iter<std::__1::basic_string<char>, std::__1::basic_string<char> *, std::__1::basic_string<char> &>
+
 	map	&operator=(const map &x)
 	{
 		this->_tree.copy(x._tree);
@@ -102,42 +103,46 @@ public:
 		return (const_iterator(this->_tree.getNil()));
 	}
 
-	// reverse_iterator rbegin()
-	// {
-	// 	return (reverse_iterator(this->end()));
-	// }
+	reverse_iterator rbegin()
+	{
+		return (reverse_iterator(this->end()));
+	}
 
-	// const_reverse_iterator rbegin() const
-	// {
-	// 	return (const_reverse_iterator(this->end()));
-	// }
+	const_reverse_iterator rbegin() const
+	{
+		return (const_reverse_iterator(this->end()));
+	}
 
-	// reverse_iterator rend()
-	// {
-	// 	return (reverse_iterator(this->begin()));
-	// }
-	// const_reverse_iterator rend() const
-	// {
-	// 	return (const_reverse_iterator(this->begin()));
-	// }
+	reverse_iterator rend()
+	{
+		return (reverse_iterator(this->begin()));
+	}
+	const_reverse_iterator rend() const
+	{
+		return (const_reverse_iterator(this->begin()));
+	}
 
 // // 3. Capacity
-// 	bool empty() const
-// 	{
-// 		return (this->_size == 0);
-// 	}
+	bool empty() const
+	{
+		return (this->_tree.size == 0);
+	}
 
-// 	size_type size() const
-// 	{
-// 		return (this->_size);
-// 	}
+	size_type size() const
+	{
+		return (this->_tree.size);
+	}
 
-// 	size_type max_size() const
-// 	{
-// 		return (std::numeric_limits<size_type>::max() / sizeof(node));
-// 	}
+	size_type max_size() const
+	{
+		return (std::numeric_limits<size_type>::max() / sizeof(node));
+	}
 
-	// mapped_type& operator[] (const key_type& k);
+	mapped_type& operator[] (const key_type& k)
+	{
+		return ((*((this->insert(make_pair(k,mapped_type()))).first)).second);
+	}
+
 	// 삽입한 이터 또는 기존 요소 이터 반환
 	pair<iterator,bool> insert(const value_type& val)
 	{
@@ -149,8 +154,8 @@ public:
 	// An iterator that points to the first of the newly inserted elements.
 	iterator insert(iterator position, const value_type& val)
 	{
+		(void)position;
 		pair<iterator,bool> result = this->insert(val);
-
 		return (result.first);
 	}
 
@@ -162,43 +167,32 @@ public:
 			insert(*first);
 	}
 
-	// //지우면 타겟의 넥스트를 리턴
-	// iterator erase(iterator position) // 범위 밖의 이터레이터 들어오는거 테스트해보니 segfault, 디펜스 안해도 될듯.
-	// {
-	// 	node_ptr target = position.get_ptr();
-	// 	target->prev->next = target->next;
-	// 	target->next->prev = target->prev;
-	// 	++position;
-	// 	this->_node_alloc.destroy(target);
-	// 	this->_node_alloc.deallocate(target, 1);
-	// 	--this->_size;
-	// 	return (position);
-	// }
+	void erase(iterator position)
+	{
+		this->_tree.erase(position);
+	}
 
-	// iterator erase(iterator first, iterator last)
-	// {
-	// 	iterator temp;
+	size_type erase(const key_type& k)
+	{
+		return (this->_tree.erase(value_type(k, mapped_type())));
+	}
 
-	// 	while (first != last)
-	// 	{
-	// 		temp = first;
-	// 		++first;
-	// 		erase(temp);
-	// 	}
-	// 	return (first);
-	// }
+	void erase(iterator first, iterator last)
+	{
+		while (first != last)
+		{
+			iterator temp = first;
+			++first;
+			erase(temp);
+		}
+	}
 
-	// void swap (list& x) // // All iterators, references and pointers remain valid for the swapped objects.
-	// {
-	// 	node_ptr temp_tail = x._tail;
-	// 	size_type temp_size = x._size;
-
-	// 	x._tail = this->_tail;
-	// 	x._size = this->_size;
-
-	// 	this->_tail = temp_tail;
-	// 	this->_size = temp_size;
-	// }
+	void swap (map& x)
+	{
+		tree_type temp = x._tree;
+		x._tree = this->_tree;
+		this->_tree = temp;
+	}
 
 	// void clear()
 	// {

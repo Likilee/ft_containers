@@ -21,7 +21,7 @@ public:
 	{
 		delete key;
 	}
-	T& getData()
+	T& getValue()
 	{
 		return (*this->key);
 	}
@@ -54,7 +54,7 @@ public:
 	bool is_left()
 	{
 		if (this->parent == NULL)
-			std::cout << "is_left Error: target :" << this->getData() << std::endl;
+			std::cout << "is_left Error: target :" << this->getValue() << std::endl;
 		if (this->parent->left == this)
 			return (true);
 		else
@@ -64,7 +64,7 @@ public:
 	bool is_right()
 	{
 		if (this->parent == NULL)
-			std::cout << "is_right Error: target :" << this->getData() << std::endl;
+			std::cout << "is_right Error: target :" << this->getValue() << std::endl;
 		if (this->parent->right == this)
 			return (true);
 		else
@@ -262,14 +262,14 @@ public:
 			// std::cout << "Failed search" << std::endl;
 			return (NULL);
 		}
-		else if (node->getData() == key)
+		else if (node->getValue() == key)
 		{
 			// std::cout << "Success search" << std::endl;
 			return (node);
 		}
-		else if (node->getData() < key)
+		else if (node->getValue() < key)
 			return (search(node->getRight(), key));
-		else //if (node->getData() > key)
+		else //if (node->getValue() > key)
 			return (search(node->getLeft(), key));
 	}
 
@@ -291,12 +291,12 @@ public:
 		while (current != NULL)
 		{
 			parent = current;
-			if (current->getData() == key)
+			if (current->getValue() == key)
 			{
 				std::cout << "Key is already in" << std::endl;
 				return ;
 			}
-			else if (current->getData() > key)
+			else if (current->getValue() > key)
 				current = current->left;
 			else
 				current = current->right;
@@ -304,7 +304,7 @@ public:
 		// wile문을 빠져나왔으면 = 트리에 키가 존재하지 않음 아래 실행
 		current = new tree_node(key);
 		current->parent = parent;
-		if (parent->getData() > key)
+		if (parent->getValue() > key)
 			parent->left = current;
 		else
 			parent->right = current;

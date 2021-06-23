@@ -4,8 +4,9 @@ NS = ft
 COMMAND = one
 
 all :
-	c++ -g3 -fsanitize=address test.cpp
+	c++ -g3 -fsanitize=address test_mini.cpp
 	./a.out
+
 test :
 	cd ./containers_test && ./do.sh $(CONTAINER)
 bounds :

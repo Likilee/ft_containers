@@ -37,7 +37,7 @@ public:
 		delete value;
 	}
 
-	T& getData()
+	T& getValue()
 	{
 		return (*this->value);
 	}

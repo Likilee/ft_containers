@@ -446,14 +446,14 @@ public:
 			// std::cout << "Failed search" << std::endl;
 			return (this->nil);
 		}
-		else if (node->getData() == key)
+		else if (node->getValue() == key)
 		{
 			// std::cout << "Success search" << std::endl;
 			return (node);
 		}
-		else if (node->getData() < key)
+		else if (node->getValue() < key)
 			return (search(node->getRight(), key));
-		else //if (node->getData() > key)
+		else //if (node->getValue() > key)
 			return (search(node->getLeft(), key));
 	}
 
@@ -476,12 +476,12 @@ public:
 		while (current != this->nil)
 		{
 			parent = current;
-			if (current->getData() == key)
+			if (current->getValue() == key)
 			{
 				// std::cout << "Key is already in" << std::endl;
 				return (pair<rb_node*, bool>(current, false));
 			}
-			else if (current->getData() > key)
+			else if (current->getValue() > key)
 				current = current->left;
 			else
 				current = current->right;
@@ -491,7 +491,7 @@ public:
 		current->left = this->nil;
 		current->right = this->nil;
 		current->parent = parent;
-		if (parent->getData() > key)
+		if (parent->getValue() > key)
 			parent->left = current;
 		else
 			parent->right = current;

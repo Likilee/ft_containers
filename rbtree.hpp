@@ -5,6 +5,7 @@
 # include "rbnode.hpp"
 # include "print_tree.hpp"
 # include "pair.hpp"
+# include "utils.hpp"
 
 // 1. 루트(root) 노드는 블랙이다.
 // 2. 노드 색은 레드 아니면 블랙이다.
@@ -13,16 +14,23 @@
 // 5. 레드 노드는 두 개가 연속해서 등장할 수 없다.
 namespace ft
 {
-template <typename T>
+template <typename T, typename Compare = ft::less<T>()>
 class rbtree
 {
 public:
 	typedef T value_type;
 	typedef rb_node<value_type> rb_node;
+	typedef Compare comp_type;
 private:
 	rb_node *root;
 	rb_node *nil;
 	size_t size;
+	comp_type comp;
+
+	bool same_value(const value_type &a, const value_type &b)
+	{
+		return (!comp(a, b) && !comp(b, a));
+	}
 
 	bool empty()
 	{
@@ -289,31 +297,6 @@ private:
 			target->parent->right = child;
 	}
 
-	void delete_node(rb_node *target)
-	{
-		//삭제노드가 루트다 -> 그냥 삭제
-		if (target->is_root())
-		{
-			delete_root();
-			return ;
-		}
-		rb_node *child;
-		if (target->left->empty())
-			child = target->right;
-		else
-			child = target->left;
-		replace_node(target, child);
-		if (target->color == BLACK)
-		{
-			if (child->color == RED)
-				child->color = BLACK;
-			else
-				delete_case1(child);
-		}
-		delete target;
-		--this->size;
-	}
-
 	void delete_case1(rb_node *target)
 	{
 		if (!target->parent->empty())
@@ -413,17 +396,18 @@ private:
 public:
 	rbtree()
 	{
-		nil = new rb_node;
-		nil->left = nil;
-		nil->parent = nil;
-		nil->right = nil;
-		root = nil;
-		size = 0;
+		this->nil = new rb_node;
+		this->nil->left = nil;
+		this->nil->parent = nil;
+		this->nil->right = nil;
+
+		this->root = nil;
+		this->comp = comp_type();
+		this->size = 0;
 	}
 
 	rbtree(const rbtree& x) : rbtree()
 	{
-		this->clear();
 		this->copy(x);
 	}
 
@@ -448,35 +432,35 @@ public:
 		return (this-size);
 	}
 
-	rb_node *search(const T& key)
+	rb_node *search(const T& value)
 	{
-		return (search(this->root, key));
+		return (search(this->root, value));
 	}
 
-	rb_node *search(rb_node *node, const T& key)
+	rb_node *search(rb_node *node, const T& value)
 	{
 		if (node == this->nil)
 		{
 			// std::cout << "Failed search" << std::endl;
 			return (this->nil);
 		}
-		else if (node->getData() == key)
+		else if (same_value(node->getValue(), value))
 		{
 			// std::cout << "Success search" << std::endl;
 			return (node);
 		}
-		else if (node->getData() < key)
-			return (search(node->getRight(), key));
-		else //if (node->getData() > key)
-			return (search(node->getLeft(), key));
+		else if (comp(node->getValue(), value))
+			return (search(node->getRight(), value));
+		else
+			return (search(node->getLeft(), value));
 	}
 
-	pair<rb_node*, bool> insert(const T& key)
+	pair<rb_node*, bool> insert(const T& value)
 	{
 		//빈 트리면, key를 루트노드로 추가한다.
 		if (this->empty())
 		{
-			this->root = new rb_node(key);
+			this->root = new rb_node(value);
 			this->root->parent = this->nil;
 			this->root->left = this->nil;
 			this->root->right = this->nil;
@@ -491,22 +475,22 @@ public:
 		while (current != this->nil)
 		{
 			parent = current;
-			if (current->getData() == key)
+			if (same_value(value, current->getValue()))
 			{
 				// std::cout << "Key is already in" << std::endl;
 				return (pair<rb_node*, bool>(current, false));
 			}
-			else if (current->getData() > key)
+			else if (comp(value, current->getValue()))
 				current = current->left;
 			else
 				current = current->right;
 		}
 		// wile문을 빠져나왔으면 = 트리에 키가 존재하지 않음 아래 실행
-		current = new rb_node(key);
+		current = new rb_node(value);
 		current->left = this->nil;
 		current->right = this->nil;
 		current->parent = parent;
-		if (parent->getData() > key)
+		if (comp(value, parent->getValue()))
 			parent->left = current;
 		else
 			parent->right = current;
@@ -516,13 +500,13 @@ public:
 		return (pair<rb_node*, bool>(current, true));
 	}
 
-	void erase(const T& key)
+	size_t erase(const T& value)
 	{
-		// std::cout << "Erase: " << key << std::endl;
+		// std::cout << "Erase: " << value << std::endl;
 		//트리에 key가 없으면 아무 것도 안함.
 		rb_node *target;
-		if (this->nil == (target = this->search(key)))
-			return ;
+		if (this->nil == (target = this->search(value)))
+			return (0);
 		//비어 있지 않다면 해당 키값의 노드를 찾음.
 		if (target->is_leaf()) // case1 -자식이 없는 리프노드
 			; // root 이면 무시하고 종료. 아니면 자기 자리 그대로.
@@ -532,6 +516,51 @@ public:
 			switch_has_two_child_node(target);
 		// 여기까지 왔을 때 target의 위치가 바뀌어 있어야함.
 		delete_node(target);
+		return (1);
+	}
+
+	template <typename InputIter>
+	size_t erase(InputIter iterator, typename ft::enable_if<ft::is_iter<InputIter>::value>::yes = 1)
+	{
+		rb_node *target;
+		rb_node *switched;
+		if (this->nil == (target = iterator.get_ptr()))
+			return (0);
+		//비어 있지 않다면 해당 키값의 노드를 찾음.
+		if (target->is_leaf()) // case1 -자식이 없는 리프노드
+			; // root 이면 무시하고 종료. 아니면 자기 자리 그대로.
+		else if (target->has_one_child()) // case2 - 자식이 하나인 노드
+			switch_has_one_child_node(target);
+		else // case 3 - 자식이 둘인 노드
+			switch_has_two_child_node(target);
+		// 여기까지 왔을 때 target의 위치가 바뀌어 있어야함.
+		delete_node(target);
+		return (1);
+	}
+
+	void delete_node(rb_node *target)
+	{
+		//삭제노드가 루트다 -> 그냥 삭제
+		if (target->is_root())
+		{
+			delete_root();
+			return ;
+		}
+		rb_node *child;
+		if (target->left->empty())
+			child = target->right;
+		else
+			child = target->left;
+		replace_node(target, child);
+		if (target->color == BLACK)
+		{
+			if (child->color == RED)
+				child->color = BLACK;
+			else
+				delete_case1(child);
+		}
+		delete target;
+		--this->size;
 	}
 
 	void clear()
@@ -558,12 +587,10 @@ public:
 		delete (node);
 	}
 
-	bool copy(const value_type* value)
+	void copy(const rbtree& x)
 	{
-		if (value == NULL)
-			return (false);
-		insert(*value);
-		return (true);
+		this->clear();
+		copy(x.root);
 	}
 
 	void copy(const rb_node* node)
@@ -574,9 +601,12 @@ public:
 		copy(node->right);
 	}
 
-	void copy(const rbtree& x)
+	bool copy(const value_type* value)
 	{
-		copy(x.root);
+		if (value == NULL)
+			return (false);
+		insert(*value);
+		return (true);
 	}
 
 	void print()
