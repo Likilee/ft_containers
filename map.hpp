@@ -188,7 +188,9 @@ public:
 		{
 			iterator temp = first;
 			++first;
+			std::cout << temp->first << std::endl;
 			erase(temp);
+			this->_tree.print();
 		}
 	}
 

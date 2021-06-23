@@ -6,7 +6,7 @@
 /*   By: kihoonlee <kihoonlee@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/11 14:10:31 by kilee             #+#    #+#             */
-/*   Updated: 2021/06/23 20:51:52 by kihoonlee        ###   ########.fr       */
+/*   Updated: 2021/06/23 21:14:02 by kihoonlee        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,6 +116,9 @@ int	main()
 
 	//Clear test
 	std::cout << "*====== CLEAR TEST ======*" << std::endl;
+
+	test.clear();
+	test.getTree().print();
 
 	std::cout << std::endl; //end Clear test
 

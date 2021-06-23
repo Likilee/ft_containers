@@ -230,13 +230,17 @@ public:
 		if (this->nil == target)
 			return (0);
 		//비어 있지 않다면 해당 키값의 노드를 찾음.
-		if (target->is_leaf()) // case1 -자식이 없는 리프노드
+		if (!target->is_leaf()) // case1 -자식이 없는 리프노드
 			; // root 이면 무시하고 종료. 아니면 자기 자리 그대로.
 		else if (target->has_one_child()) // case2 - 자식이 하나인 노드
 			switch_has_one_child_node(target);
 		else // case 3 - 자식이 둘인 노드
 			switch_has_two_child_node(target);
 		// 여기까지 왔을 때 target의 위치가 바뀌어 있어야함.
+
+		std::cout << "Switch after:" << std::endl;
+		this->print();
+		std::cout << std::endl;
 		delete_node(target);
 		return (1);
 	}
@@ -255,7 +259,7 @@ public:
 	void delete_node(node_type *target)
 	{
 		//삭제노드가 루트다 -> 그냥 삭제
-		if (target->is_root())
+		if (target->is_root() && target->is_leaf())
 		{
 			delete_root();
 			return ;
