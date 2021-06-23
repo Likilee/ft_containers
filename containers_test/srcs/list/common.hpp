@@ -11,7 +11,7 @@ template <typename T>
 void	printSize(TESTED_NAMESPACE::list<T> const &lst, bool print_content = 1)
 {
 	std::cout << "size: " << lst.size() << std::endl;
-	std::cout << "max_size: " << lst.max_size() << std::endl;
+	// std::cout << "max_size: " << lst.max_size() << std::endl;
 	if (print_content)
 	{
 		typename TESTED_NAMESPACE::list<T>::const_iterator it = lst.begin(), ite = lst.end();

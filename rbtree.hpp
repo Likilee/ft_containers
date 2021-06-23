@@ -65,8 +65,13 @@ public:
 		this->root = nil;
 	}
 
-	rbtree(const rbtree& x) : rbtree()
+	rbtree(const rbtree& x) : size(0), comp(comp_type()), node_alloc(node_allocator_type())
 	{
+		this->nil = this->construct_node();
+		this->nil->left = nil;
+		this->nil->parent = nil;
+		this->nil->right = nil;
+		this->root = nil;
 		this->copy(x);
 	}
 
@@ -231,16 +236,16 @@ public:
 			return (0);
 		//비어 있지 않다면 해당 키값의 노드를 찾음.
 		if (!target->is_leaf()) // case1 -자식이 없는 리프노드
-			; // root 이면 무시하고 종료. 아니면 자기 자리 그대로.
-		else if (target->has_one_child()) // case2 - 자식이 하나인 노드
-			switch_has_one_child_node(target);
-		else // case 3 - 자식이 둘인 노드
-			switch_has_two_child_node(target);
+			swap_target(target); // root 이면 무시하고 종료. 아니면 자기 자리 그대로.
+		// else if (target->has_one_child()) // case2 - 자식이 하나인 노드
+		// 	switch_has_one_child_node(target);
+		// else // case 3 - 자식이 둘인 노드
+		// 	switch_has_two_child_node(target);
 		// 여기까지 왔을 때 target의 위치가 바뀌어 있어야함.
 
-		std::cout << "Switch after:" << std::endl;
-		this->print();
-		std::cout << std::endl;
+		// std::cout << "Switch after:" << std::endl;
+		// this->print();
+		// std::cout << std::endl;
 		delete_node(target);
 		return (1);
 	}
@@ -279,6 +284,7 @@ public:
 		}
 		this->destroy_node(target);
 		--this->size;
+		this->nil->parent = this->get_biggest();
 	}
 
 	void clear()
@@ -404,6 +410,19 @@ private:
 		return (this->root == this->nil);
 	}
 
+	void swap_target(node_type* target)
+	{
+		node_type *node;
+		if (target->left != this->nil)
+			node = get_left_biggest_node(target->left);
+		else
+			node = get_right_smallest_node(target->right);
+		if (node->parent == target)
+			swap_one_depth(target, node);
+		else //노드가 타겟에서 2depth 이상 떨어져 있다.
+			swap_over_one_depth(target, node);
+
+	}
 	void switch_has_one_child_node(node_type* parent)
 	{
 		node_type *child;
@@ -548,6 +567,7 @@ private:
 		this->destroy_node(this->root);
 		this->root = this->nil;
 		--this->size;
+		this->nil->parent = this->get_biggest();
 	}
 
 	//insert후 틀어진 rb_tree 규칙에 맞게 노드 조정
@@ -649,6 +669,13 @@ private:
 		while (left->right != this->nil)
 			left = left->right;
 		return (left);
+	}
+
+	node_type *get_right_smallest_node(node_type *right)
+	{
+		while (right->left != this->nil)
+			right = right->left;
+		return (right);
 	}
 
 	node_type *get_next_node(node_type *position) const

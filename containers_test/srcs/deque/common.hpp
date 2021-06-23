@@ -11,7 +11,7 @@ template <typename T>
 void	printSize(TESTED_NAMESPACE::deque<T> const &deq, bool print_content = 1)
 {
 	std::cout << "size: " << deq.size() << std::endl;
-	std::cout << "max_size: " << deq.max_size() << std::endl;
+	// std::cout << "max_size: " << deq.max_size() << std::endl;
 	if (print_content)
 	{
 		typename TESTED_NAMESPACE::deque<T>::const_iterator it = deq.begin();

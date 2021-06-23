@@ -6,7 +6,7 @@
 /*   By: kihoonlee <kihoonlee@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/11 14:10:31 by kilee             #+#    #+#             */
-/*   Updated: 2021/06/23 21:14:02 by kihoonlee        ###   ########.fr       */
+/*   Updated: 2021/06/23 22:11:16 by kihoonlee        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,10 +86,13 @@ int	main()
 		test.insert(ft::pair<int, std::string>(rand() % SIZE, "학생"));
 	test.getTree().print();
 	std::cout << std::endl; //end Insert test
+	std::cout << "biggest: " << (--test.end())->first << std::endl;
 
 	std::cout << "*====== COPY TEST ======*" << std::endl;
 	ft::map<int, std::string> test2(test);
 	test2.getTree().print();
+	std::cout << "biggest: " << (--test.end())->first << std::endl;
+
 	std::cout << std::endl; //end Insert test
 
 	std::cout << "*====== BOUND TEST ======*" << std::endl;
@@ -112,6 +115,7 @@ int	main()
 		test.getTree().check_traversal();
 	}
 	test.getTree().print();
+	std::cout << "biggest: " << (--test.end())->first << std::endl;
 	std::cout << std::endl; //end Erase test
 
 	//Clear test
