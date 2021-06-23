@@ -37,7 +37,7 @@ public:
 		delete value;
 	}
 
-	T& getValue()
+	T& getValue() const
 	{
 		return (*this->value);
 	}

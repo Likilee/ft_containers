@@ -1,84 +1,50 @@
-1,83d0
-< size: 6
+2c2
 < max_size: 288230376151711743
-< 
-< Content is:
-< - key: 0 | value: AAAAAA
-< - key: 1 | value: BBBBB
-< - key: 2 | value: CCCC
-< - key: 3 | value: DDD
-< - key: 4 | value: EE
-< - key: 5 | value: F
-< ###############################################
-< 	-- [0] --
-< ret: 1
-< size: 5
+---
+> max_size: 461168601842738790
+15c15
 < max_size: 288230376151711743
-< 
-< Content is:
-< - key: 0 | value: AAAAAA
-< - key: 1 | value: BBBBB
-< - key: 3 | value: DDD
-< - key: 4 | value: EE
-< - key: 5 | value: F
-< ###############################################
-< 	-- [1] --
-< ret: 1
-< size: 4
+---
+> max_size: 461168601842738790
+27c27
 < max_size: 288230376151711743
-< 
-< Content is:
-< - key: 0 | value: AAAAAA
-< - key: 1 | value: BBBBB
-< - key: 4 | value: EE
-< - key: 5 | value: F
-< ###############################################
-< 	-- [2] --
-< ret: 1
-< size: 3
+---
+> max_size: 461168601842738790
+38c38
 < max_size: 288230376151711743
-< 
-< Content is:
-< - key: 1 | value: BBBBB
-< - key: 4 | value: EE
-< - key: 5 | value: F
-< ###############################################
-< 	-- [3] --
-< ret: 1
-< size: 2
+---
+> max_size: 461168601842738790
+48c48
 < max_size: 288230376151711743
-< 
-< Content is:
+---
+> max_size: 461168601842738790
+51d50
 < - key: 1 | value: BBBBB
-< - key: 4 | value: EE
-< ###############################################
-< size: 4
+52a52
+> - key: 5 | value: F
+55c55
 < max_size: 288230376151711743
-< 
-< Content is:
-< - key: -1 | value: Hello
+---
+> max_size: 461168601842738790
+59d58
 < - key: 1 | value: BBBBB
-< - key: 4 | value: EE
-< - key: 10 | value: Hi there
-< ###############################################
-< 	-- [4] --
-< ret: 0
-< size: 4
+60a60
+> - key: 5 | value: F
+66c66
 < max_size: 288230376151711743
-< 
-< Content is:
-< - key: -1 | value: Hello
+---
+> max_size: 461168601842738790
+70d69
 < - key: 1 | value: BBBBB
-< - key: 4 | value: EE
-< - key: 10 | value: Hi there
-< ###############################################
-< 	-- [5] --
+71a71
+> - key: 5 | value: F
+75,77c75,77
 < ret: 1
 < size: 3
 < max_size: 288230376151711743
-< 
-< Content is:
-< - key: -1 | value: Hello
-< - key: 4 | value: EE
-< - key: 10 | value: Hi there
-< ###############################################
+---
+> ret: 0
+> size: 4
+> max_size: 461168601842738790
+81a82
+> - key: 5 | value: F

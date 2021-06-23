@@ -6,7 +6,7 @@
 # include "print_tree.hpp"
 # include "pair.hpp"
 # include "utils.hpp"
-
+# include "map_iter.hpp"
 // 1. 루트(root) 노드는 블랙이다.
 // 2. 노드 색은 레드 아니면 블랙이다.
 // 3. 모든 외부 노드(External Node)는 블랙이다.
@@ -21,18 +21,20 @@ public:
 	typedef T value_type;
 	typedef rb_node<value_type> rb_node;
 	typedef Compare comp_type;
+	typedef map_iter<value_type, value_type*, value_type&> iterator;
+	typedef map_iter<value_type, const value_type*, const value_type&> const_iterator;
 private:
 	rb_node *root;
 	rb_node *nil;
 	size_t size;
 	comp_type comp;
 
-	bool same_value(const value_type &a, const value_type &b)
+	bool same_value(const value_type &a, const value_type &b) const
 	{
 		return (!comp(a, b) && !comp(b, a));
 	}
 
-	bool empty()
+	bool empty() const
 	{
 		return (this->root == this->nil);
 	}
@@ -284,6 +286,13 @@ private:
 		return (left);
 	}
 
+	rb_node *get_next_node(rb_node *position) const
+	{
+		iterator itr(position);
+		++itr;
+		return (itr.get_ptr());
+	}
+
 
 	void replace_node(rb_node* target, rb_node* child)
 	{
@@ -422,22 +431,22 @@ public:
 		return (this->root);
 	}
 
-	rb_node *getNil()
+	rb_node *getNil() const
 	{
 		return (this->nil);
 	}
 
-	size_t getSize()
+	size_t getSize() const
 	{
-		return (this-size);
+		return (this->size);
 	}
 
-	rb_node *search(const T& value)
+	rb_node *search(const T& value) const
 	{
 		return (search(this->root, value));
 	}
 
-	rb_node *search(rb_node *node, const T& value)
+	rb_node *search(rb_node *node, const T& value) const
 	{
 		if (node == this->nil)
 		{
@@ -453,6 +462,72 @@ public:
 			return (search(node->getRight(), value));
 		else
 			return (search(node->getLeft(), value));
+	}
+
+	//key 이상인 첫지점을 찾는거임, 그럼 어떻게 해야겠어?, key보다 크면 왼쪽으로 내려가쟈!, 키보다 작으면 오른쪽으로 내려가자!()
+	// 크면 무족건 왼쪽으로 가봐, 계속 가 작거나 같아질 때 까지가. 그러다가 작아졌어, 그럼, 오른쪽에서
+	//탑다운으로 변곡점까지 가고
+	//이터순회로 거슬러올라와.
+	rb_node *lower_bound(const T& value) const
+	{
+		return (lower_bound(this->root, value));
+	}
+
+	rb_node *lower_bound(rb_node *node, const T& value) const
+	{
+		if (comp(this->get_biggest()->getValue(), value))
+			return (this->nil);
+		while (1)
+		{
+			//현재 node 가 nil 이면 nil 리턴( 로워 바운드가 없는거) // 여기 없애도 될거 같음.
+			if (node == this->nil)
+				return (this->nil);
+				//현재 node 와 value가 같으면 node 리턴 ( 차자따!)
+			else if (same_value(node->getValue(), value))
+				return (node);
+			else if (comp(value, node->getValue())) // 현재 node가 찾는 값보다 작으면,
+			{
+				if (node->left == this->nil)
+					return (node);
+				node = node->left;
+			}
+			else
+			{
+				if (node->right == this->nil)
+					return (this->get_next_node(node)); //여기 수정 현재보다 한개 큰노드 가져오기
+				node = node->right;
+			}
+		}
+	}
+
+	rb_node *upper_bound(const T& value) const
+	{
+		return (upper_bound(this->root, value));
+	}
+
+	rb_node *upper_bound(rb_node *node, const T& value) const
+	{
+		if (!comp(value, this->get_biggest()->getValue()))
+			return (this->nil);
+		while (1)
+		{
+			//현재 node 가 nil 이면 nil 리턴( 로워 바운드가 없는거) // 여기 없애도 될거 같음.
+			if (node == this->nil)
+				return (this->nil);
+				//현재 node 와 value가 같으면 node 리턴 ( 차자따!)
+			else if (comp(value, node->getValue())) // 현재 node가 찾는 값보다 작으면,
+			{
+				if (node->left == this->nil)
+					return (node);
+				node = node->left;
+			}
+			else
+			{
+				if (node->right == this->nil)
+					return (this->get_next_node(node)); //여기 수정 현재보다 한개 큰노드 가져오기
+				node = node->right;
+			}
+		}
 	}
 
 	pair<rb_node*, bool> insert(const T& value)
@@ -648,7 +723,7 @@ public:
 		}
 	}
 
-	rb_node *get_smallest()
+	rb_node *get_smallest() const
 	{
 		rb_node *result = this->root;
 		while (!result->left->empty())
@@ -656,7 +731,7 @@ public:
 		return (result);
 	}
 
-	rb_node *get_biggest()
+	rb_node *get_biggest() const
 	{
 		rb_node *result = this->root;
 		while (!result->right->empty())

@@ -96,12 +96,12 @@ public:
 		return (*this);
 	}
 
-	reference operator*() //pair<T,C> 리턴
+	reference operator*() const//pair<T,C> 리턴
 	{
-		return (*(this->_p->getValue()));
+		return (this->_p->getValue());
 	}
 
-	pointer operator->()
+	pointer operator->() const
 	{
 		return (&(this->_p->getValue()));
 	}

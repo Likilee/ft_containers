@@ -6,7 +6,7 @@
 /*   By: kihoonlee <kihoonlee@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/11 14:10:31 by kilee             #+#    #+#             */
-/*   Updated: 2021/06/23 14:13:56 by kihoonlee        ###   ########.fr       */
+/*   Updated: 2021/06/23 17:23:19 by kihoonlee        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ int	main()
 {
 	ft::map<int, std::string> students;//(vec.begin(), vec.end());
 	students.insert(ft::pair<int, std::string>(8, "스키"));
-	std::cout << students._tree.getRoot()->value->first << std::endl;
+	std::cout << students.getTree().getRoot()->value->first << std::endl;
 	students.insert(ft::pair<int, std::string>(2, "현스키"));
 	std::cout << students._tree.getRoot()->value->first << std::endl;
 	students.insert(ft::pair<int, std::string>(1, "이기훈"));
@@ -72,5 +72,53 @@ int	main()
 	// for(;itr != students.end(); ++itr)
 	// 	std::cout << itr->second << std::endl;
 
+	int COUNT = 50;
+	int SIZE = 50;
+	srand(clock());
+	ft::map<int, std::string> test;
+	//Insert test
+	std::cout << "*====== INSERT TEST ======*" << std::endl;
+
+	for (int i = 0; i < COUNT; ++i)
+		test.insert(ft::pair<int, std::string>(rand() % SIZE, "학생"));
+	test._tree.print();
+	std::cout << std::endl; //end Insert test
+
+	std::cout << "*====== COPY TEST ======*" << std::endl;
+	ft::map<int, std::string> test2(test);
+	test2._tree.print();
+	std::cout << std::endl; //end Insert test
+
+	std::cout << "*====== BOUND TEST ======*" << std::endl;
+
+	std::cout << "Lower3 : " << test.lower_bound(5)->first << std::endl;
+	std::cout << "Upper3 : " << test.upper_bound(5)->first << std::endl;
+	std::cout << std::endl; //end Insert test
+
+	std::cout << "*====== FIND TEST ======*" << std::endl;
+
+	// std::cout << "Found : " << test2.find(24)->first <<std::endl;
+	// std::cout << "Not found : " << (test2.find(101).get_ptr() == test2.end().get_ptr()) << std::endl;	//not found;
+
+	std::cout << std::endl; //end Insert test
+	//Erase test
+	std::cout << "*====== ERASE TEST ======*" << std::endl;
+	for (int i = 0; i < COUNT; ++i)
+	{
+		test.erase(rand() % SIZE);
+		test._tree.check_traversal();
+	}
+	test._tree.print();
+	std::cout << std::endl; //end Erase test
+
+	//Clear test
+	std::cout << "*====== CLEAR TEST ======*" << std::endl;
+
+	std::cout << std::endl; //end Clear test
+
+	//Insert after clear test
+	// std::cout << "*====== INSERT AFTER CLEAR TEST ======*" << std::endl;
+	// test.insert(1004);
+	// test.print();
 
 }

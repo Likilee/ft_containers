@@ -1,108 +1,82 @@
-1,107d0
-< size: 10
+2c2
 < max_size: 288230376151711743
-< 
-< Content is:
-< - key: 0 | value: AAAAAAAAAA
-< - key: 1 | value: BBBBBBBBB
+---
+> max_size: 461168601842738790
+18c18
+< max_size: 288230376151711743
+---
+> max_size: 461168601842738790
+33c33
+< max_size: 288230376151711743
+---
+> max_size: 461168601842738790
+47c47
+< max_size: 288230376151711743
+---
+> max_size: 461168601842738790
+50d49
 < - key: 2 | value: CCCCCCCC
-< - key: 3 | value: DDDDDDD
-< - key: 4 | value: EEEEEE
-< - key: 5 | value: FFFFF
-< - key: 6 | value: GGGG
-< - key: 7 | value: HHH
-< - key: 8 | value: II
-< - key: 9 | value: J
-< ###############################################
-< 	-- [0] --
-< size: 9
+56a56
+> - key: 9 | value: J
+60c60
 < max_size: 288230376151711743
-< 
-< Content is:
-< - key: 0 | value: AAAAAAAAAA
-< - key: 2 | value: CCCCCCCC
-< - key: 3 | value: DDDDDDD
-< - key: 4 | value: EEEEEE
+---
+> max_size: 461168601842738790
+63d62
 < - key: 5 | value: FFFFF
-< - key: 6 | value: GGGG
-< - key: 7 | value: HHH
-< - key: 8 | value: II
-< - key: 9 | value: J
-< ###############################################
-< 	-- [1] --
-< size: 8
-< max_size: 288230376151711743
-< 
-< Content is:
-< - key: 2 | value: CCCCCCCC
-< - key: 3 | value: DDDDDDD
-< - key: 4 | value: EEEEEE
-< - key: 5 | value: FFFFF
-< - key: 6 | value: GGGG
-< - key: 7 | value: HHH
-< - key: 8 | value: II
-< - key: 9 | value: J
-< ###############################################
-< 	-- [2] --
-< size: 7
-< max_size: 288230376151711743
-< 
-< Content is:
-< - key: 2 | value: CCCCCCCC
-< - key: 3 | value: DDDDDDD
-< - key: 4 | value: EEEEEE
-< - key: 5 | value: FFFFF
-< - key: 6 | value: GGGG
-< - key: 7 | value: HHH
-< - key: 8 | value: II
-< ###############################################
-< 	-- [3] --
-< size: 4
-< max_size: 288230376151711743
-< 
-< Content is:
-< - key: 5 | value: FFFFF
-< - key: 6 | value: GGGG
-< - key: 7 | value: HHH
-< - key: 8 | value: II
-< ###############################################
-< 	-- [4] --
+66a66
+> - key: 9 | value: J
+69,70c69,70
 < size: 2
 < max_size: 288230376151711743
-< 
-< Content is:
+---
+> size: 4
+> max_size: 461168601842738790
+73c73,74
 < - key: 5 | value: FFFFF
-< - key: 8 | value: II
-< ###############################################
+---
+> - key: 6 | value: GGGG
+> - key: 7 | value: HHH
+74a76
+> - key: 9 | value: J
+76,77c78,79
 < size: 4
 < max_size: 288230376151711743
-< 
-< Content is:
+---
+> size: 6
+> max_size: 461168601842738790
+80c82,83
 < - key: 5 | value: FFFFF
-< - key: 8 | value: II
-< - key: 10 | value: Hello
-< - key: 11 | value: Hi there
-< ###############################################
-< 	-- [5] --
+---
+> - key: 6 | value: GGGG
+> - key: 7 | value: HHH
+81a85
+> - key: 9 | value: J
+86,87c90,91
 < size: 1
 < max_size: 288230376151711743
-< 
-< Content is:
+---
+> size: 3
+> max_size: 461168601842738790
+90c94,96
 < - key: 5 | value: FFFFF
-< ###############################################
+---
+> - key: 6 | value: GGGG
+> - key: 7 | value: HHH
+> - key: 8 | value: II
+92,93c98,99
 < size: 5
 < max_size: 288230376151711743
-< 
-< Content is:
+---
+> size: 7
+> max_size: 461168601842738790
+96c102,104
 < - key: 5 | value: FFFFF
-< - key: 12 | value: ONE
-< - key: 13 | value: TWO
-< - key: 14 | value: THREE
-< - key: 15 | value: FOUR
-< ###############################################
-< 	-- [6] --
-< size: 0
+---
+> - key: 6 | value: GGGG
+> - key: 7 | value: HHH
+> - key: 8 | value: II
+104c112
 < max_size: 288230376151711743
-< 
-< Content is:
-< ###############################################
+---
+> max_size: 461168601842738790

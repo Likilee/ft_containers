@@ -49,10 +49,10 @@ public:
 	typedef ft::rbtree<value_type, value_compare> tree_type;
 
 private:
+	tree_type _tree;
 	key_compare _comp;
 	allocator_type _alloc;
 public:
-	tree_type _tree;
 
 	explicit map(const key_compare& comp = key_compare(),
 				const allocator_type& alloc = allocator_type())
@@ -125,22 +125,23 @@ public:
 // // 3. Capacity
 	bool empty() const
 	{
-		return (this->_tree.size == 0);
+		return (this->_tree.getSize() == 0);
 	}
 
 	size_type size() const
 	{
-		return (this->_tree.size);
+		return (this->_tree.getSize());
 	}
 
 	size_type max_size() const
 	{
+		// return (std::numeric_limits<size_type>::max() / sizeof(node));
 		return (std::numeric_limits<size_type>::max() / sizeof(node));
 	}
 
 	mapped_type& operator[] (const key_type& k)
 	{
-		return ((*((this->insert(make_pair(k,mapped_type()))).first)).second);
+		return ((*((this->insert(ft::make_pair(k, mapped_type()))).first)).second);
 	}
 
 	// 삽입한 이터 또는 기존 요소 이터 반환
@@ -194,23 +195,69 @@ public:
 		this->_tree = temp;
 	}
 
-	// void clear()
-	// {
-	// 	this->erase(this->begin(), this->end());
-	// }
+	void clear()
+	{
+		this->erase(this->begin(), this->end());
+	}
 
-	// key_compare key_comp() const;
-	// value_compare value_comp() const;
+	key_compare key_comp() const
+	{
+		return (key_compare());
+	}
 
-// 	   iterator find (const key_type& k);
-// const_iterator find (const key_type& k) const;
-// size_type count (const key_type& k) const;
-// iterator lower_bound (const key_type& k);
-// const_iterator lower_bound (const key_type& k) const;
-// iterator upper_bound (const key_type& k);
-// const_iterator upper_bound (const key_type& k) const;
-// pair<const_iterator,const_iterator> equal_range (const key_type& k) const;
-// pair<iterator,iterator>             equal_range (const key_type& k);
+	value_compare value_comp() const
+	{
+		return (value_compare());
+	}
+
+	iterator find(const key_type& k)
+	{
+		return (iterator(this->_tree.search(value_type(k, mapped_type()))));
+	}
+
+	const_iterator find(const key_type& k) const
+	{
+		return (iterator(this->_tree.search(value_type(k, mapped_type()))));
+	}
+
+	size_type count(const key_type& k) const
+	{
+		if (find(k) == this->end())
+			return (0);
+		return (1);
+	}
+
+	iterator lower_bound(const key_type& k)
+	{
+		//1. 가장 큰 요소가 k 미만 일 때, end 리턴
+		//3. k 이상 첫 요소 찾아서 반화.
+		return (iterator(this->_tree.lower_bound(value_type(k, mapped_type()))));
+	}
+
+	const_iterator lower_bound(const key_type& k) const
+	{
+		return (iterator(this->_tree.lower_bound(value_type(k, mapped_type()))));
+	}
+
+	iterator upper_bound (const key_type& k)
+	{
+		return (iterator(this->_tree.upper_bound(value_type(k, mapped_type()))));
+	}
+
+	const_iterator upper_bound (const key_type& k) const
+	{
+		return (iterator(this->_tree.upper_bound(value_type(k, mapped_type()))));
+	}
+
+	pair<const_iterator,const_iterator> equal_range(const key_type& k) const
+	{
+		return (make_pair(lower_bound(k), upper_bound(k)));
+	}
+
+	pair<iterator,iterator> equal_range (const key_type& k)
+	{
+		return (make_pair(lower_bound(k), upper_bound(k)));
+	}
 };
 }
 
