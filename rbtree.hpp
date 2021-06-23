@@ -7,10 +7,12 @@
 # include "pair.hpp"
 # include "utils.hpp"
 # include "map_iter.hpp"
-// 1. 루트(root) 노드는 블랙이다.
+
+// ** Red-Black-tree 규칙
+// 1. 루트(_root) 노드는 블랙이다.
 // 2. 노드 색은 레드 아니면 블랙이다.
 // 3. 모든 외부 노드(External Node)는 블랙이다.
-// 4. 모든 외부 노드의 경우 루트(root)부터 외부 노드까지 방문하는 블랙 노드의 수가 같다.
+// 4. 모든 외부 노드의 경우 루트(_root)부터 외부 노드까지 방문하는 블랙 노드의 수가 같다.
 // 5. 레드 노드는 두 개가 연속해서 등장할 수 없다.
 namespace ft
 {
@@ -26,129 +28,115 @@ public:
 	typedef map_iter<value_type, value_type*, value_type&> iterator;
 	typedef map_iter<value_type, const value_type*, const value_type&> const_iterator;
 private:
-	node_type *root;
-	node_type *nil;
-	size_t size;
-	comp_type comp;
-	node_allocator_type node_alloc;
+	node_type *_root;
+	node_type *_nil;
+	size_t _size;
+	comp_type _comp;
+	node_allocator_type _node_alloc;
 
 	node_type* construct_node(const value_type& value)
 	{
-		node_type* result = this->node_alloc.allocate(1);
-		this->node_alloc.construct(result, node_type(value));
+		node_type* result = this->_node_alloc.allocate(1);
+		this->_node_alloc.construct(result, node_type(value));
 		return (result);
 	}
 
 	node_type* construct_node()
 	{
-		node_type* result = this->node_alloc.allocate(1);
-		this->node_alloc.construct(result, node_type());
+		node_type* result = this->_node_alloc.allocate(1);
+		this->_node_alloc.construct(result, node_type());
 		return (result);
 	}
 
 	void destroy_node(node_type* node)
 	{
-		this->node_alloc.destroy(node);
-		this->node_alloc.deallocate(node, 1);
+		this->_node_alloc.destroy(node);
+		this->_node_alloc.deallocate(node, 1);
 	}
 
 public:
-	rbtree() : size(0), comp(comp_type()), node_alloc(node_allocator_type())
+	rbtree() : _size(0), _comp(comp_type()), _node_alloc(node_allocator_type())
 	{
-		// this->nil = this->node_alloc.allocate(1);
-		// this->node_alloc.construct(this->nil, node_type()); // 두 번째 인자를 복사해서 때려넣는다.
-		this->nil = this->construct_node();
-		this->nil->left = nil;
-		this->nil->parent = nil;
-		this->nil->right = nil;
+		// this->_nil = this->_node_alloc.allocate(1);
+		// this->_node_alloc.construct(this->_nil, node_type()); // 두 번째 인자를 복사해서 때려넣는다.
+		this->_nil = this->construct_node();
+		this->_nil->left = _nil;
+		this->_nil->parent = _nil;
+		this->_nil->right = _nil;
 
-		this->root = nil;
+		this->_root = _nil;
 	}
 
-	rbtree(const rbtree& x) : size(0), comp(comp_type()), node_alloc(node_allocator_type())
+	rbtree(const rbtree& x) : _size(0), _comp(comp_type()), _node_alloc(node_allocator_type())
 	{
-		this->nil = this->construct_node();
-		this->nil->left = nil;
-		this->nil->parent = nil;
-		this->nil->right = nil;
-		this->root = nil;
+		this->_nil = this->construct_node();
+		this->_nil->left = _nil;
+		this->_nil->parent = _nil;
+		this->_nil->right = _nil;
+		this->_root = _nil;
 		this->copy(x);
 	}
 
-	~rbtree()  // root 바닥부터 싹 지워주는거 만들어야함.(재귀로 짜면될 듯)
+	~rbtree()  // _root 바닥부터 싹 지워주는거 만들어야함.(재귀로 짜면될 듯)
 	{
 		this->clear();
-		destroy_node(this->nil);
+		destroy_node(this->_nil);
 	}
 
 	node_type *getRoot()
 	{
-		return (this->root);
+		return (this->_root);
 	}
 
 	node_type *getNil() const
 	{
-		return (this->nil);
+		return (this->_nil);
 	}
 
 	size_t getSize() const
 	{
-		return (this->size);
+		return (this->_size);
 	}
 
 	node_type *search(const T& value) const
 	{
-		return (search(this->root, value));
+		return (search(this->_root, value));
 	}
 
 	node_type *search(node_type *node, const T& value) const
 	{
-		if (node == this->nil)
-		{
-			// std::cout << "Failed search" << std::endl;
-			return (this->nil);
-		}
+		if (node == this->_nil)
+			return (this->_nil);
 		else if (same_value(node->getValue(), value))
-		{
-			// std::cout << "Success search" << std::endl;
 			return (node);
-		}
-		else if (comp(node->getValue(), value))
+		else if (_comp(node->getValue(), value))
 			return (search(node->getRight(), value));
 		else
 			return (search(node->getLeft(), value));
 	}
 
-	//key 이상인 첫지점을 찾는거임, 그럼 어떻게 해야겠어?, key보다 크면 왼쪽으로 내려가쟈!, 키보다 작으면 오른쪽으로 내려가자!()
-	// 크면 무족건 왼쪽으로 가봐, 계속 가 작거나 같아질 때 까지가. 그러다가 작아졌어, 그럼, 오른쪽에서
-	//탑다운으로 변곡점까지 가고
-	//이터순회로 거슬러올라와.
 	node_type *lower_bound(const T& value) const
 	{
-		return (lower_bound(this->root, value));
+		return (lower_bound(this->_root, value));
 	}
 
 	node_type *lower_bound(node_type *node, const T& value) const
 	{
-		if (comp(this->get_biggest()->getValue(), value))
-			return (this->nil);
+		if (_comp(this->get_biggest()->getValue(), value)) // 트리 최대 value가 value 보다 작으면 _nil~
+			return (this->_nil);
 		while (1)
 		{
-			//현재 node 가 nil 이면 nil 리턴( 로워 바운드가 없는거) // 여기 없애도 될거 같음.
-			if (node == this->nil)
-				return (this->nil);
-				//현재 node 와 value가 같으면 node 리턴 ( 차자따!)
-			else if (same_value(node->getValue(), value))
+			if (same_value(node->getValue(), value))
 				return (node);
-			else if (comp(value, node->getValue())) // 현재 node가 찾는 값보다 작으면,
+			else if (_comp(value, node->getValue())) // 현재 node가 찾는 값보다 작으면,
 			{
-				if (node->left == this->nil)
+				if (node->left == this->_nil)
 					return (node);
 				node = node->left;
 			}
 			else
 			{
-				if (node->right == this->nil)
+				if (node->right == this->_nil)
 					return (this->get_next_node(node)); //여기 수정 현재보다 한개 큰노드 가져오기
 				node = node->right;
 			}
@@ -157,28 +145,24 @@ public:
 
 	node_type *upper_bound(const T& value) const
 	{
-		return (upper_bound(this->root, value));
+		return (upper_bound(this->_root, value));
 	}
 
 	node_type *upper_bound(node_type *node, const T& value) const
 	{
-		if (!comp(value, this->get_biggest()->getValue()))
-			return (this->nil);
+		if (!_comp(value, this->get_biggest()->getValue())) //tree 최대 값이 value이하이면 _nil~
+			return (this->_nil);
 		while (1)
 		{
-			//현재 node 가 nil 이면 nil 리턴( 로워 바운드가 없는거) // 여기 없애도 될거 같음.
-			if (node == this->nil)
-				return (this->nil);
-				//현재 node 와 value가 같으면 node 리턴 ( 차자따!)
-			else if (comp(value, node->getValue())) // 현재 node가 찾는 값보다 작으면,
+			if (_comp(value, node->getValue())) // 현재 node가 찾는 값보다 작으면,
 			{
-				if (node->left == this->nil)
+				if (node->left == this->_nil)
 					return (node);
 				node = node->left;
 			}
 			else
 			{
-				if (node->right == this->nil)
+				if (node->right == this->_nil)
 					return (this->get_next_node(node)); //여기 수정 현재보다 한개 큰노드 가져오기
 				node = node->right;
 			}
@@ -190,19 +174,19 @@ public:
 		//빈 트리면, key를 루트노드로 추가한다.
 		if (this->empty())
 		{
-			this->root = this->construct_node(value);
-			this->root->parent = this->nil;
-			this->root->left = this->nil;
-			this->root->right = this->nil;
-			this->root->color = BLACK;
-			++this->size;
-			this->nil->parent = this->get_biggest();
-			return (pair<node_type*, bool>(this->root, true));
+			this->_root = this->construct_node(value);
+			this->_root->parent = this->_nil;
+			this->_root->left = this->_nil;
+			this->_root->right = this->_nil;
+			this->_root->color = BLACK;
+			++this->_size;
+			this->_nil->parent = this->get_biggest();
+			return (pair<node_type*, bool>(this->_root, true));
 		}
 		//트리를 루트 노드부터 key값과 비교하며 같은게 있는지 찾는다.
-		node_type *current = this->root;
-		node_type *parent = this->nil;
-		while (current != this->nil)
+		node_type *current = this->_root;
+		node_type *parent = this->_nil;
+		while (current != this->_nil)
 		{
 			parent = current;
 			if (same_value(value, current->getValue()))
@@ -210,42 +194,32 @@ public:
 				// std::cout << "Key is already in" << std::endl;
 				return (pair<node_type*, bool>(current, false));
 			}
-			else if (comp(value, current->getValue()))
+			else if (_comp(value, current->getValue()))
 				current = current->left;
 			else
 				current = current->right;
 		}
 		// wile문을 빠져나왔으면 = 트리에 키가 존재하지 않음 아래 실행
 		current = this->construct_node(value);
-		current->left = this->nil;
-		current->right = this->nil;
+		current->left = this->_nil;
+		current->right = this->_nil;
 		current->parent = parent;
-		if (comp(value, parent->getValue()))
+		if (_comp(value, parent->getValue()))
 			parent->left = current;
 		else
 			parent->right = current;
 		fix_violation(current);
-		++this->size;
-		this->nil->parent = this->get_biggest();
+		++this->_size;
+		this->_nil->parent = this->get_biggest();
 		return (pair<node_type*, bool>(current, true));
 	}
 
 	size_t erase(node_type *target)
 	{
-		if (this->nil == target)
+		if (this->_nil == target)
 			return (0);
-		//비어 있지 않다면 해당 키값의 노드를 찾음.
-		if (!target->is_leaf()) // case1 -자식이 없는 리프노드
-			swap_target(target); // root 이면 무시하고 종료. 아니면 자기 자리 그대로.
-		// else if (target->has_one_child()) // case2 - 자식이 하나인 노드
-		// 	switch_has_one_child_node(target);
-		// else // case 3 - 자식이 둘인 노드
-		// 	switch_has_two_child_node(target);
-		// 여기까지 왔을 때 target의 위치가 바뀌어 있어야함.
-
-		// std::cout << "Switch after:" << std::endl;
-		// this->print();
-		// std::cout << std::endl;
+		if (!target->is_leaf()) // leaf 가 아니면 왼쪽이나 오른쪽에서 한놈 데꼬와서 스왑~
+			swap_target(target);
 		delete_node(target);
 		return (1);
 	}
@@ -283,19 +257,19 @@ public:
 				delete_case1(child);
 		}
 		this->destroy_node(target);
-		--this->size;
-		this->nil->parent = this->get_biggest();
+		--this->_size;
+		this->_nil->parent = this->get_biggest();
 	}
 
 	void clear()
 	{
-		clear(this->root);
-		this->size = 0;
+		clear(this->_root);
+		this->_size = 0;
 	}
 
 	void clear(node_type *node)
 	{
-		if (node == this->nil)
+		if (node == this->_nil)
 			return ;
 		clear(node->left);
 		clear(node->right);
@@ -305,16 +279,16 @@ public:
 			return ;
 		}
 		else if (node->is_left())
-			node->parent->left = this->nil;
+			node->parent->left = this->_nil;
 		else
-			node->parent->right = this->nil;
+			node->parent->right = this->_nil;
 		this->destroy_node(node);
 	}
 
 	void copy(const rbtree& x)
 	{
 		this->clear();
-		copy(x.root);
+		copy(x._root);
 	}
 
 	void copy(const node_type* node)
@@ -335,22 +309,22 @@ public:
 
 	void print()
 	{
-		ft::printTree(this->root, NULL, false);
-		std::cout << "Tree size: " << this->size << std::endl;
+		ft::printTree(this->_root, NULL, false);
+		std::cout << "Tree _size: " << this->_size << std::endl;
 	}
 
 	void check_traversal()
 	{
-		node_type* curr = this->root;
-		node_type* prev = this->nil;
-		if (curr == this->nil)
+		node_type* curr = this->_root;
+		node_type* prev = this->_nil;
+		if (curr == this->_nil)
 			return ;
 		while (1)
 		{
 			if (prev == curr->right)
 			{
 				prev = curr;
-				if (curr->parent != this->nil)
+				if (curr->parent != this->_nil)
 					curr = curr->parent;
 				else
 					return ;
@@ -359,19 +333,19 @@ public:
 			else if (prev == curr->left)
 			{
 				prev = curr;
-				if (curr->right == this->nil)
+				if (curr->right == this->_nil)
 					curr = curr->parent;
 				else
 					curr = curr->right;
 				continue ;
 			}
-			if (curr->left != this->nil)
+			if (curr->left != this->_nil)
 			{
 				prev = curr;
 				curr = curr->left;
 				continue ;
 			}
-			if (curr->right != this->nil)
+			if (curr->right != this->_nil)
 			{
 				prev = curr;
 				curr = curr->right;
@@ -385,7 +359,7 @@ public:
 
 	node_type *get_smallest() const
 	{
-		node_type *result = this->root;
+		node_type *result = this->_root;
 		while (!result->left->empty())
 			result = result->left;
 		return (result);
@@ -393,7 +367,7 @@ public:
 
 	node_type *get_biggest() const
 	{
-		node_type *result = this->root;
+		node_type *result = this->_root;
 		while (!result->right->empty())
 			result = result->right;
 		return (result);
@@ -402,43 +376,22 @@ public:
 private:
 	bool same_value(const value_type &a, const value_type &b) const
 	{
-		return (!comp(a, b) && !comp(b, a));
+		return (!_comp(a, b) && !_comp(b, a));
 	}
 
 	bool empty() const
 	{
-		return (this->root == this->nil);
+		return (this->_root == this->_nil);
 	}
 
 	void swap_target(node_type* target)
 	{
 		node_type *node;
-		if (target->left != this->nil)
+		if (target->left != this->_nil)
 			node = get_left_biggest_node(target->left);
 		else
 			node = get_right_smallest_node(target->right);
 		if (node->parent == target)
-			swap_one_depth(target, node);
-		else //노드가 타겟에서 2depth 이상 떨어져 있다.
-			swap_over_one_depth(target, node);
-
-	}
-	void switch_has_one_child_node(node_type* parent)
-	{
-		node_type *child;
-
-		if (parent->left == this->nil) // 오른쪽 자식이 있음
-			child = parent->right;
-		else // 왼쪽 자식이 있음
-			child = parent->left;
-		swap_one_depth(parent, child);
-	}
-
-	void switch_has_two_child_node(node_type* target)
-	{
-		node_type *node = get_left_biggest_node(target->left);
-
-		if (node->parent == target) // node가 타겟의 바로 왼쪽노드이다.
 			swap_one_depth(target, node);
 		else //노드가 타겟에서 2depth 이상 떨어져 있다.
 			swap_over_one_depth(target, node);
@@ -479,7 +432,7 @@ private:
 		swap_color(high->color, low->color);
 		//치환한게 루트이면 루트 바꿔주고
 		if (low->parent->empty())
-			this->root = low;
+			this->_root = low;
 	}
 
 	void swap_one_depth(node_type *&p, node_type *&c)
@@ -488,7 +441,7 @@ private:
 		node_type *temp_l = p->left;
 		node_type *temp_r = p->right;
 
-		if (c->sibling() != this->nil)
+		if (c->sibling() != this->_nil)
 			c->sibling()->parent = c;
 		if (c->is_left())
 			temp_l = p;
@@ -508,11 +461,11 @@ private:
 			p->right->parent = p;
 
 		c->parent = temp_p;
-		c->left = temp_l; // 여기가 문제
-		c->right = temp_r; // 여기가 문제
+		c->left = temp_l;
+		c->right = temp_r;
 		swap_color(p->color, c->color);
 		if (c->parent->empty())
-			this->root = c;
+			this->_root = c;
 	}
 
 	void rotate_left(node_type *&pt)
@@ -520,12 +473,12 @@ private:
 		node_type *pt_right = pt->right;
 
 		pt->right = pt_right->left;
-		if (pt->right != this->nil)
+		if (pt->right != this->_nil)
 			pt->right->parent = pt;
 
 		pt_right->parent = pt->parent;
-		if (pt->parent == this->nil)
-			this->root = pt_right;
+		if (pt->parent == this->_nil)
+			this->_root = pt_right;
 		else if (pt == pt->parent->left)
 			pt->parent->left = pt_right;
 		else
@@ -539,12 +492,12 @@ private:
 		node_type *pt_left = pt->left;
 
 		pt->left = pt_left->right;
-		if (pt->left != this->nil)
+		if (pt->left != this->_nil)
 			pt->left->parent = pt;
 
 		pt_left->parent = pt->parent;
-		if (pt->parent == this->nil)
-			this->root = pt_left;
+		if (pt->parent == this->_nil)
+			this->_root = pt_left;
 		else if (pt == pt->parent->left)
 			pt->parent->left = pt_left;
 		else
@@ -564,19 +517,19 @@ private:
 
 	void delete_root()
 	{
-		this->destroy_node(this->root);
-		this->root = this->nil;
-		--this->size;
-		this->nil->parent = this->get_biggest();
+		this->destroy_node(this->_root);
+		this->_root = this->_nil;
+		--this->_size;
+		this->_nil->parent = this->get_biggest();
 	}
 
 	//insert후 틀어진 rb_tree 규칙에 맞게 노드 조정
 	void fix_violation(node_type *current)
 	{
-		node_type *parent_pt = this->nil;
-		node_type *grand_parent_pt = this->nil;
+		node_type *parent_pt = this->_nil;
+		node_type *grand_parent_pt = this->_nil;
 
-		while ((current != this->root) && (current->color != BLACK)
+		while ((current != this->_root) && (current->color != BLACK)
 				&& (current->parent->color == RED))
 		{
 			parent_pt = current->parent;
@@ -587,14 +540,11 @@ private:
 				of Grand-parent of pt */
 			if (parent_pt == grand_parent_pt->left)
 			{
-
 				node_type *uncle_pt = grand_parent_pt->right;
-
 				/* Case : 1
 					The uncle of pt is also red
 					Only Recoloring required */
-				if (uncle_pt != this->nil && uncle_pt->color ==
-														RED)
+				if (uncle_pt != this->_nil && uncle_pt->color == RED)
 				{
 					grand_parent_pt->color = RED;
 					parent_pt->color = BLACK;
@@ -632,7 +582,7 @@ private:
 				/*  Case : 1
 					The uncle of current is also red
 					Only Recoloring required */
-				if ((uncle_pt != this->nil) && (uncle_pt->color == RED))
+				if ((uncle_pt != this->_nil) && (uncle_pt->color == RED))
 				{
 					grand_parent_pt->color = RED;
 					parent_pt->color = BLACK;
@@ -650,7 +600,6 @@ private:
 						current = parent_pt;
 						parent_pt = current->parent;
 					}
-
 					/* Case : 3
 						current is right child of its parent
 						Left-rotation required */
@@ -661,19 +610,19 @@ private:
 				}
 			}
 		}
-		this->root->color = BLACK;
+		this->_root->color = BLACK;
 	}
 
 	node_type *get_left_biggest_node(node_type *left)
 	{
-		while (left->right != this->nil)
+		while (left->right != this->_nil)
 			left = left->right;
 		return (left);
 	}
 
 	node_type *get_right_smallest_node(node_type *right)
 	{
-		while (right->left != this->nil)
+		while (right->left != this->_nil)
 			right = right->left;
 		return (right);
 	}
@@ -688,9 +637,6 @@ private:
 
 	void replace_node(node_type* target, node_type* child)
 	{
-		/*
-		*앞에서 n의 부모가 NULL이 되는 경우를 delete_case에 오지 않게 미리 처리해주면 된다.
-		*/
 		child->parent = target->parent;
 		if (target->parent->left == target)
 			target->parent->left = child;

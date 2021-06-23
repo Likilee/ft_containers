@@ -5,7 +5,6 @@
 
 namespace ft
 {
-
 enum rb_color
 {
 	RED,
@@ -38,7 +37,6 @@ public:
 			this->value = alloc.allocate(1);
 			alloc.construct(this->value, x.getValue());
 		}
-
 	}
 
 	~rb_node()
