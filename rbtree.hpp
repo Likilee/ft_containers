@@ -500,12 +500,9 @@ public:
 		return (pair<rb_node*, bool>(current, true));
 	}
 
-	size_t erase(const T& value)
+	size_t erase(rb_node *target)
 	{
-		// std::cout << "Erase: " << value << std::endl;
-		//트리에 key가 없으면 아무 것도 안함.
-		rb_node *target;
-		if (this->nil == (target = this->search(value)))
+		if (this->nil == target)
 			return (0);
 		//비어 있지 않다면 해당 키값의 노드를 찾음.
 		if (target->is_leaf()) // case1 -자식이 없는 리프노드
@@ -519,23 +516,15 @@ public:
 		return (1);
 	}
 
+	size_t erase(const T& value)
+	{
+		return (erase(this->search(value)));
+	}
+
 	template <typename InputIter>
 	size_t erase(InputIter iterator, typename ft::enable_if<ft::is_iter<InputIter>::value>::yes = 1)
 	{
-		rb_node *target;
-		rb_node *switched;
-		if (this->nil == (target = iterator.get_ptr()))
-			return (0);
-		//비어 있지 않다면 해당 키값의 노드를 찾음.
-		if (target->is_leaf()) // case1 -자식이 없는 리프노드
-			; // root 이면 무시하고 종료. 아니면 자기 자리 그대로.
-		else if (target->has_one_child()) // case2 - 자식이 하나인 노드
-			switch_has_one_child_node(target);
-		else // case 3 - 자식이 둘인 노드
-			switch_has_two_child_node(target);
-		// 여기까지 왔을 때 target의 위치가 바뀌어 있어야함.
-		delete_node(target);
-		return (1);
+		return (erase(iterator.get_ptr()));
 	}
 
 	void delete_node(rb_node *target)
