@@ -5,7 +5,7 @@
 
 namespace ft
 {
-// 2. For template overloading
+// 1. For template overloading
 template <bool B, class T = void>
 struct enable_if;
 
@@ -95,7 +95,7 @@ struct is_iter<T, typename ft::enable_if<ft::is_pointer_type<T>::value>::type>
 	static const bool value = true;
 };
 
-// 1. Iterator Compare Utility function
+// 2. Iterator Compare Utility function
 template <class InputIterator1, class InputIterator2>
 bool lexicographical_compare (InputIterator1 first1, InputIterator1 last1,
 							InputIterator2 first2, InputIterator2 last2)
@@ -125,16 +125,6 @@ bool equal(InputIterator1 first1, InputIterator1 last1,
 	}
 	return (true);
 }
-
-// template <typename InputItr>
-// typename InputItr::difference_type distance(InputItr first, InputItr last)
-// {
-// 	typename InputItr::difference_type dist = 0;
-
-// 	while (first++ != last)
-// 		++dist;
-// 	return (dist);
-// }
 
 template <typename InputItr>
 size_t distance(InputItr first, InputItr last)

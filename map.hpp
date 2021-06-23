@@ -6,7 +6,7 @@
 # include "utils.hpp"
 # include "rbtree.hpp"
 # include "pair.hpp"
-# include "map_iter.hpp"
+# include "rbtree_iterator.hpp"
 # include "reverse_iterator.hpp"
 
 namespace ft
@@ -30,8 +30,8 @@ public:
 	typedef node* node_ptr;
 	typedef size_t size_type; // 사이즈 타입
 	typedef ptrdiff_t difference_type;  // 이터레이터 간극 반환 타입
-	typedef map_iter<value_type, value_type*, value_type&> iterator;
-	typedef map_iter<value_type, const value_type*, const value_type&> const_iterator;
+	typedef rbtree_iterator<value_type, value_type*, value_type&> iterator;
+	typedef rbtree_iterator<value_type, const value_type*, const value_type&> const_iterator;
 	typedef reverse_iterator<const_iterator> const_reverse_iterator;
 	typedef reverse_iterator<iterator> reverse_iterator;
 
@@ -52,12 +52,8 @@ private:
 	tree_type _tree;
 	key_compare _comp;
 	allocator_type _alloc;
-public:
-	tree_type &getTree()
-	{
-		return (this->_tree);
-	}
 
+public:
 	explicit map(const key_compare& comp = key_compare(),
 				const allocator_type& alloc = allocator_type())
 	: _tree(), _comp(comp), _alloc(alloc)
@@ -126,7 +122,7 @@ public:
 		return (const_reverse_iterator(this->begin()));
 	}
 
-// // 3. Capacity
+	// 3. Capacity
 	bool empty() const
 	{
 		return (this->_tree.get_size() == 0);
@@ -137,12 +133,11 @@ public:
 		return (this->_tree.get_size());
 	}
 
-	size_type max_size() const
+	size_type max_size() const // 이건 내부 구현에 따라서 값이 다를 수 밖에 없음.
 	{
 		// return (std::numeric_limits<size_type>::max() / sizeof(node));
 		typename tree_type::node_allocator_type node_alloc;
 		return (node_alloc.max_size());
-
 	}
 
 	mapped_type& operator[] (const key_type& k)
@@ -196,9 +191,6 @@ public:
 
 	void swap(map& x)
 	{
-		// map temp = *this;
-		// *this = x;
-		// x = temp;
 		char buf[sizeof(map)];
 		memcpy(buf, reinterpret_cast<void *>(&x), sizeof(map));
 		memcpy(reinterpret_cast<char *>(&x), reinterpret_cast<void *>(this), sizeof(map));
@@ -249,12 +241,12 @@ public:
 		return (iterator(this->_tree.lower_bound(value_type(k, mapped_type()))));
 	}
 
-	iterator upper_bound (const key_type& k)
+	iterator upper_bound(const key_type& k)
 	{
 		return (iterator(this->_tree.upper_bound(value_type(k, mapped_type()))));
 	}
 
-	const_iterator upper_bound (const key_type& k) const
+	const_iterator upper_bound(const key_type& k) const
 	{
 		return (iterator(this->_tree.upper_bound(value_type(k, mapped_type()))));
 	}
@@ -264,7 +256,7 @@ public:
 		return (make_pair(lower_bound(k), upper_bound(k)));
 	}
 
-	pair<iterator,iterator> equal_range (const key_type& k)
+	pair<iterator,iterator> equal_range(const key_type& k)
 	{
 		return (make_pair(lower_bound(k), upper_bound(k)));
 	}
@@ -272,39 +264,44 @@ public:
 
 // 6. Relational operators
 template< class Key, class T, class Compare, class Alloc >
-bool operator==( const map<Key,T,Compare,Alloc>& lhs, const map<Key,T,Compare,Alloc>& rhs )
+bool operator==(const map<Key, T, Compare, Alloc>& lhs, const map<Key, T, Compare, Alloc>& rhs)
 {
 	if (lhs.size() != rhs.size())
 		return (false);
 	return (ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
 }
+
 template< class Key, class T, class Compare, class Alloc >
-bool operator!=( const map<Key,T,Compare,Alloc>& lhs, const map<Key,T,Compare,Alloc>& rhs )
+bool operator!=(const map<Key, T, Compare, Alloc>& lhs, const map<Key, T, Compare, Alloc>& rhs)
 {
 	return (!(lhs == rhs));
 }
+
 template< class Key, class T, class Compare, class Alloc >
-bool operator<( const map<Key,T,Compare,Alloc>& lhs, const map<Key,T,Compare,Alloc>& rhs )
+bool operator<(const map<Key, T, Compare, Alloc>& lhs, const map<Key, T, Compare, Alloc>& rhs)
 {
 	return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
 }
+
 template< class Key, class T, class Compare, class Alloc >
-bool operator<=( const map<Key,T,Compare,Alloc>& lhs, const map<Key,T,Compare,Alloc>& rhs )
+bool operator<=(const map<Key, T, Compare, Alloc>& lhs, const map<Key, T, Compare, Alloc>& rhs)
 {
 	return ((lhs == rhs) || (lhs < rhs));
 }
+
 template< class Key, class T, class Compare, class Alloc >
-bool operator>( const map<Key,T,Compare,Alloc>& lhs, const map<Key,T,Compare,Alloc>& rhs )
+bool operator>(const map<Key, T, Compare, Alloc>& lhs, const map<Key, T, Compare, Alloc>& rhs)
 {
 	return (!(lhs <= rhs));
 }
 template< class Key, class T, class Compare, class Alloc >
-bool operator>=( const map<Key,T,Compare,Alloc>& lhs, const map<Key,T,Compare,Alloc>& rhs )
+bool operator>=(const map<Key, T, Compare, Alloc>& lhs, const map<Key, T, Compare, Alloc>& rhs)
 {
 	return ((lhs == rhs) || (lhs > rhs));
 }
+
 template< class Key, class T, class Compare, class Alloc >
-void swap(map<Key,T,Compare,Alloc>& lhs, map<Key,T,Compare,Alloc>& rhs )
+void swap(map<Key, T, Compare, Alloc>& lhs, map<Key, T, Compare, Alloc>& rhs)
 {
 	lhs.swap(rhs);
 }

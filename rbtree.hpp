@@ -6,7 +6,7 @@
 # include "print_tree.hpp"
 # include "pair.hpp"
 # include "utils.hpp"
-# include "map_iter.hpp"
+# include "rbtree_iterator.hpp"
 
 // ** Red-Black-tree 규칙
 // 1. 루트(_root) 노드는 블랙이다.
@@ -25,8 +25,8 @@ public:
 	typedef Compare comp_type;
 	typedef Alloc allocator_type;
 	typedef typename Alloc::template rebind<node_type>::other node_allocator_type;
-	typedef map_iter<value_type, value_type*, value_type&> iterator;
-	typedef map_iter<value_type, const value_type*, const value_type&> const_iterator;
+	typedef rbtree_iterator<value_type, value_type*, value_type&> iterator;
+	typedef rbtree_iterator<value_type, const value_type*, const value_type&> const_iterator;
 
 private:
 	node_type *_root;
