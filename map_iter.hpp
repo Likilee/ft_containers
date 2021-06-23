@@ -98,12 +98,12 @@ public:
 
 	reference operator*() const//pair<T,C> 리턴
 	{
-		return (this->_p->getValue());
+		return (this->_p->get_value());
 	}
 
 	pointer operator->() const
 	{
-		return (&(this->_p->getValue()));
+		return (&(this->_p->get_value()));
 	}
 
 	this_type_iterator& operator++()

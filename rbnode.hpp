@@ -35,7 +35,7 @@ public:
 		if (!(x.value == NULL))
 		{
 			this->value = alloc.allocate(1);
-			alloc.construct(this->value, x.getValue());
+			alloc.construct(this->value, x.get_value());
 		}
 	}
 
@@ -48,46 +48,26 @@ public:
 		}
 	}
 
-	T& getValue() const
+	T& get_value() const
 	{
 		return (*this->value);
 	}
 
-	T& getColor()
-	{
-		return (this->color);
-	}
-
-	rb_node *getLeft()
-	{
-		return (this->left);
-	}
-
-	rb_node *getRight()
-	{
-		return (this->right);
-	}
-
-	rb_node *getParent()
-	{
-		return (this->parent);
-	}
-
-	bool empty()
+	bool empty() const
 	{
 		if (this->value == NULL)
 			return (true);
 		return (false);
 	}
 
-	bool is_root()
+	bool is_root() const
 	{
 		if (this->parent->empty())
 			return (true);
 		return (false);
 	}
 
-	bool is_left()
+	bool is_left() const
 	{
 		if (this->parent->left == this)
 			return (true);
@@ -95,7 +75,7 @@ public:
 			return (false);
 	}
 
-	bool is_right()
+	bool is_right() const
 	{
 		if (this->parent->right == this)
 			return (true);
@@ -103,27 +83,13 @@ public:
 			return (false);
 	}
 
-	bool is_leaf()
+	bool is_leaf() const
 	{
 		if (this->left->empty() && this->right->empty())
 			return (true);
 		return (false);
 	}
-
-	bool has_one_child()
-	{
-		if (!is_leaf() && (this->left->empty() || this->right->empty()))
-			return (true);
-		return (false);
-	}
-
-	bool has_two_child()
-	{
-		if (!this->left->empty() && !this->right->empty())
-			return (true);
-		return (false);
-	}
-
+	
 	rb_node *sibling()
 	{
 		if (this == this->parent->left)

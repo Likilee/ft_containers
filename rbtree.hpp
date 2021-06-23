@@ -99,12 +99,12 @@ public:
 	{
 		if (node == this->_nil)
 			return (this->_nil);
-		else if (same_value(node->getValue(), value))
+		else if (same_value(node->get_value(), value))
 			return (node);
-		else if (_comp(node->getValue(), value))
-			return (search(node->getRight(), value));
+		else if (_comp(node->get_value(), value))
+			return (search(node->right, value));
 		else
-			return (search(node->getLeft(), value));
+			return (search(node->left, value));
 	}
 
 	pair<node_type*, bool> insert(const T& value)
@@ -127,12 +127,12 @@ public:
 		while (current != this->_nil)
 		{
 			parent = current;
-			if (same_value(value, current->getValue()))
+			if (same_value(value, current->get_value()))
 			{
 				// std::cout << "Key is already in" << std::endl;
 				return (pair<node_type*, bool>(current, false));
 			}
-			else if (_comp(value, current->getValue()))
+			else if (_comp(value, current->get_value()))
 				current = current->left;
 			else
 				current = current->right;
@@ -142,7 +142,7 @@ public:
 		current->left = this->_nil;
 		current->right = this->_nil;
 		current->parent = parent;
-		if (_comp(value, parent->getValue()))
+		if (_comp(value, parent->get_value()))
 			parent->left = current;
 		else
 			parent->right = current;
@@ -252,13 +252,13 @@ public:
 
 	node_type *lower_bound(node_type *node, const T& value) const
 	{
-		if (_comp(this->get_biggest()->getValue(), value)) // 트리 최대 value가 value 보다 작으면 _nil~
+		if (_comp(this->get_biggest()->get_value(), value)) // 트리 최대 value가 value 보다 작으면 _nil~
 			return (this->_nil);
 		while (1)
 		{
-			if (same_value(node->getValue(), value))
+			if (same_value(node->get_value(), value))
 				return (node);
-			else if (_comp(value, node->getValue())) // 현재 node가 찾는 값보다 작으면,
+			else if (_comp(value, node->get_value())) // 현재 node가 찾는 값보다 작으면,
 			{
 				if (node->left == this->_nil)
 					return (node);
@@ -280,11 +280,11 @@ public:
 
 	node_type *upper_bound(node_type *node, const T& value) const
 	{
-		if (!_comp(value, this->get_biggest()->getValue())) //tree 최대 값이 value이하이면 _nil~
+		if (!_comp(value, this->get_biggest()->get_value())) //tree 최대 값이 value이하이면 _nil~
 			return (this->_nil);
 		while (1)
 		{
-			if (_comp(value, node->getValue())) // 현재 node가 찾는 값보다 작으면,
+			if (_comp(value, node->get_value())) // 현재 node가 찾는 값보다 작으면,
 			{
 				if (node->left == this->_nil)
 					return (node);
