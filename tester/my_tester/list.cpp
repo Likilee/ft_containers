@@ -482,8 +482,7 @@ int			main()
 
 
 	if (LEAK_TEST != 0)
-		system("leaks list | grep leaked 1>&2 ");
-
+		system("leaks list | grep leaked 1>&2");
 
 	return (0);
 }

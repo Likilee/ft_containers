@@ -13,23 +13,36 @@ GREEN=\033[0;32m
 BLUE=\033[0;34m
 
 all :
+	@printf "\n\n$(BLUE) [*** START OWN TESTER ***] $(NC)\n\n"
 	@make my
-	@make CONT=list my
-	@make CONT=map my
-	@make CONT=stack my
-	@make CONT=queue my
-mli :
-	@cd $(MLI_TESTER_DIR) && ./do.sh $(CONT)
+	@printf "\n\n$(BLUE) [*** START MLI TESTER ***] $(NC)\n\n"
+	@make mli
 my :
+	@make my_unit
+	@make CONT=list my_unit
+	@make CONT=map my_unit
+	@make CONT=stack my_unit
+	@make CONT=queue my_unit
+
+mli :
+	@make mli_unit
+	@make CONT=list mli_unit
+	@make CONT=map mli_unit
+	@make CONT=stack mli_unit
+	@make CONT=queue mli_unit
+
+mli_unit :
+	@cd $(MLI_TESTER_DIR) && ./do.sh $(CONT)
+my_unit :
 	@printf "***************************************************\n"
 	@printf "**                                               **\n"
 	@printf "**$(GREEN)               $(CONT) TEST START!              $(NC)**\n"
 	@printf "**                                               **\n"
 	@printf "***************************************************\n"
-	@c++ $(CXXFLAGS) $(INCLUDE) $(MY_TESTER_DIR)/$(CONT).cpp -o vector
-	@./vector > $(TEST_RESULT)/ft.$(CONT).result
-	@rm vector
-	@rm -rf vector.dSYM
+	@c++ $(CXXFLAGS) $(INCLUDE) $(MY_TESTER_DIR)/$(CONT).cpp -o $(CONT)
+	@./$(CONT) > $(TEST_RESULT)/ft.$(CONT).result
+	@rm $(CONT)
+	@rm -rf $(CONT).dSYM
 	@c++ $(CXXFLAGS) $(INCLUDE) $(STD_NS) $(MY_TESTER_DIR)/$(CONT).cpp -o $(CONT)
 	@./$(CONT) > $(TEST_RESULT)/std.$(CONT).result
 	@rm $(CONT)
