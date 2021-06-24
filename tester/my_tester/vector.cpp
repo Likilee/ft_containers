@@ -4,7 +4,7 @@
 #include "vector.hpp"
 
 #ifndef LEAK_TEST
-# define LEAK_TEST 0
+# define LEAK_TEST 1
 #endif
 
 #ifndef TEST_NS
@@ -398,8 +398,6 @@ int		main()
 
 
 	if (LEAK_TEST != 0)
-		system("leaks a.out > leaks_result; cat leaks_result | grep leaked > leaks_out && rm -rf leaks_result");
-
-
+		system("leaks vector | grep leaked 1>&2 ");
 	return 0;
 }
