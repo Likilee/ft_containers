@@ -70,17 +70,6 @@ private:
 		++this->_size;
 	}
 
-	// void add_node(iterator position, iterator first, iterator last)
-	// {
-	// 	// this->_size += ft::distance(first, last) + 1;
-	// 	node_ptr front = position.get_ptr()->prev;
-	// 	node_ptr back = position.get_ptr();
-	// 	front->next = first.get_ptr();
-	// 	first.get_ptr()->prev = front;
-	// 	back->prev = last.get_ptr();
-	// 	last.get_ptr()->next = back;
-	// }
-
 	void sub_node(iterator position)
 	{
 		node_ptr target = position.get_ptr();
@@ -91,16 +80,6 @@ private:
 		target->prev = NULL;
 		--this->_size;
 	}
-
-	// void sub_node(iterator first, iterator last)
-	// {
-	// 	node_ptr front = first.get_ptr()->prev;
-	// 	node_ptr back = last.get_ptr();
-	// 	front->next = back;
-	// 	back->prev = front;
-	// 	// this->_size -= ft::distance(first, last);
-	// 	// std::cout << "Sub distance" << ft::distance(first, last) << std::endl;
-	// }
 
 public:
 	// 1. Constructors, Destructor, operator=
@@ -226,7 +205,7 @@ public:
 	// 5. Modifiers
 	//새 벡터의 크기가 현재 벡터 용량을 초과하는 경우에만 자동 재할당진행!
 	template <class InputIterator>
-	void assign (InputIterator first, InputIterator last, typename ft::enable_if<ft::is_iter<InputIterator>::value>::yes = 1)
+	void assign(InputIterator first, InputIterator last, typename ft::enable_if<ft::is_iter<InputIterator>::value>::yes = 1)
 	{
 		this->clear();
 		this->insert(this->begin(), first, last);
@@ -342,9 +321,9 @@ public:
 	// Operations
 	// Splice 는 전송, 노드 그자체를 이동시키는 거구먼 오케잉~
 
-	void splice (iterator position, list& x)
+	void splice(iterator position, list& x)
 	{
-		splice (position, x, x.begin(), x.end());
+		splice(position, x, x.begin(), x.end());
 	}
 
 	void splice(iterator position, list& x, iterator i)
