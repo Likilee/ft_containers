@@ -1,0 +1,57 @@
+=========================== push_back test ============================
+1 2 3 4 5 
+list_push_back1 stores 5 numbers.
+
+list_push_back2 stores 0 numbers.
+3, 5 || 2, 33 || 5, 511 || 
+list_push_back2 stores 3 numbers.
+=========================== push_back test end=========================
+=========================== push_front test ===========================
+mylist contains: 300 200 100 100
+list_push_front1 stores 4 numbers.
+=========================== push_front test end========================
+=========================== insert test ========================
+778
+mylist contains: 1 778 10 20 30 30 20 2 3 4 5
+=========================== insert test end=====================
+=========================== resize test ========================
+list_resize_test contains: 1 2 3 4 5 100 100 100 0 0 0 0
+=========================== resize test end=====================
+=========================== splice test ========================
+size : 5
+2 22 5 3 4 
+list_splice_test3 contains: 30 3 4 1 10 20
+list_splice_test4 contains: 2
+=========================== splice test end=====================
+=========================== remove test start =====================
+mylist contains: 17 89 7 14 89
+mylist contains: 17 7 14
+=========================== remove test end=====================
+=========================== remove if test start =======================
+mylist contains: 36 20
+=========================== remove if test end =======================
+=========================== unique test start =======================
+2.72 3.14 12.15 12.77 15.3 72.25 73 73.35 
+2.72 3.14 12.15 15.3 72.25 73 
+2.72 12.15 72.25 
+=========================== unique test end =========================
+=========================== sort test start =========================
+mylist contains: Three one two
+mylist contains: one Three two
+=========================== sort test end ============================
+=========================== merge test start ============================
+first contains: 1.4 2.2 2.9 2.1 3.1 3.7 7.1
+7
+0
+=========================== merge test end ============================
+=========================== reverse test start ============================
+mylist contains: 9 8 7 6 5 4 3 2 1
+mylist contains:
+mylist contains:
+mylist contains: 55
+mylist contains: 40 55
+=========================== reverse test end ==============================
+=========================== sort iterator invalid test start ==============================
+3
+5
+=========================== sort iterator invalid test end ==============================

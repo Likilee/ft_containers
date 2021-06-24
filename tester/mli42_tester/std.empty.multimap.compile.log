@@ -1,0 +1,4 @@
+In file included from srcs/multimap/empty.cpp:1:
+srcs/multimap/common.hpp:1:10: fatal error: 'multimap.hpp' file not found
+#include "multimap.hpp"
+         ^~~~~~~~~~~~~~
