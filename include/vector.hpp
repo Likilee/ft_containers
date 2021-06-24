@@ -75,6 +75,7 @@ public:
 
 	~vector()//This destroys all container elements, and deallocates all the storage capacity allocated by the vector using its allocator.
 	{
+		this->clear();
 		this->_alloc.deallocate(this->_array, this->_capacity);
 	}
 
@@ -300,19 +301,6 @@ public:
 			this->put(idx++, val);
 	}
 
-	// void insert(iterator position, size_type n, const value_type& val)
-	// {
-	// 	ft::vector<T> temp(position, this->end());
-	// 	size_type pos = position - this->begin();
-
-	// 	this->resize(this->_size + n);
-
-	// 	while (n--)
-	// 		this->put(pos++, val);
-	// 	for (iterator itr = temp.begin(); itr != temp.end(); ++itr)
-	// 		this->put(pos++, *itr);
-	// }
-
 	template <class InputIterator>
 	void insert(iterator position, InputIterator first, InputIterator last,
 				typename ft::enable_if<ft::is_iter<InputIterator>::value>::yes = 1)
@@ -329,7 +317,7 @@ public:
 		while (first != last)
 			this->put(pos_idx++, *first++);
 	}
-	 
+
 	iterator erase(iterator position) // 범위 밖의 이터레이터 들어오는거 테스트해보니 segfault, 디펜스 안해도 될듯.
 	{
 		iterator target = position;
@@ -362,7 +350,7 @@ public:
 		return (first);
 	}
 
-	void swap(vector& x) // // All iterators, references and pointers remain valid for the swapped objects.
+	void swap(vector& x) // All iterators, references and pointers remain valid for the swapped objects.
 	{
 		pointer temp_array = x._array;
 		size_type temp_size = x.size();
@@ -381,11 +369,9 @@ public:
 		this->erase(this->begin(), this->end());
 		this->_size = 0;
 	}
-
 };
 
 // 6. Relational operators
-
 template <class T, class Alloc>
 bool operator==(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
 {
