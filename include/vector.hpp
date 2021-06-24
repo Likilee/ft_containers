@@ -282,22 +282,36 @@ public:
 
 	iterator insert(iterator position, const value_type& val)
 	{
+		size_type idx = position - this->begin();
 		insert(position, 1, val);
-		return (position);
+		return (this->begin() + idx);
 	}
 
 	void insert(iterator position, size_type n, const value_type& val)
 	{
-		ft::vector<T> temp(position, this->end());
-		size_type pos = position - this->begin();
+		size_type move_count = this->end() - position; // 몇개나 밀어야되는지.
+		size_type move_back = this->size() + n - 1;
+		size_type idx = position - this->begin();
 
 		this->resize(this->_size + n);
-
-		while (n--)
-			this->put(pos++, val);
-		for (iterator itr = temp.begin(); itr != temp.end(); ++itr)
-			this->put(pos++, *itr);
+		for(size_type i = 0; move_count - i > 0; ++i)
+			this->put(move_back - i, (*this)[move_back - n - i]);
+		while(n--)
+			this->put(idx++, val);
 	}
+
+	// void insert(iterator position, size_type n, const value_type& val)
+	// {
+	// 	ft::vector<T> temp(position, this->end());
+	// 	size_type pos = position - this->begin();
+
+	// 	this->resize(this->_size + n);
+
+	// 	while (n--)
+	// 		this->put(pos++, val);
+	// 	for (iterator itr = temp.begin(); itr != temp.end(); ++itr)
+	// 		this->put(pos++, *itr);
+	// }
 
 	template <class InputIterator>
 	void insert(iterator position, InputIterator first, InputIterator last,

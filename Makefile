@@ -2,7 +2,7 @@ MLI_TESTER_DIR = ./tester/mli42_tester/
 MY_TESTER_DIR = ./tester/my_tester
 TEST_RESULT = $(MY_TESTER_DIR)/result
 CONT = vector
-CXXFLAGS = -Wall -Wextra -Werror -g3 -std=c++0x -lgtest -lgtest_main -pthread
+CXXFLAGS = -Wall -Wextra -Werror -g3 -fsanitize=address -std=c++98 #-lgtest -lgtest_main -pthread
 INCLUDE = -I./include/
 STD_NS = -D TEST_NS=std
 
@@ -11,7 +11,9 @@ RED=\033[0;31m
 NC=\033[0m
 GREEN=\033[0;32m
 BLUE=\033[0;34m
-
+small :
+	@c++ $(CXXFLAGS) $(INCLUDE) main.cpp -o main
+	./main
 mli :
 	cd $(MLI_TESTER_DIR) && ./do.sh $(CONT)
 
