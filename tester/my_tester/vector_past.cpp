@@ -4,14 +4,26 @@
 #include "vector.hpp"
 
 
-//ConfigParser
-TEST(back, simple)
+//CONSTRUCTOR
+TEST(Vector, push_test)
 {
-	std::vector<int> stdint;
 	ft::vector<int> myint;
+	std::vector<int> stdint;
+	for (int i = 0; i < 100; ++i)
+	{
+		myint.push_back(i);
+		stdint.push_back(i);
+		ASSERT_EQ(myint.at(i), stdint.at(i));
+		ASSERT_EQ(myint[i], stdint[i]);
+		ASSERT_EQ(myint.front(), stdint.front());
+		ASSERT_EQ(myint.back(), stdint.back());
+		ASSERT_EQ(myint.size(), stdint.size());
+		ASSERT_EQ(myint.capacity(), stdint.capacity());
+		ASSERT_EQ(myint.empty(), stdint.empty());
+	}
 }
 
-TEST(Push_Back, simple)
+TEST(Vector, pop_back)
 {
 
 }

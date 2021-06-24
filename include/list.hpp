@@ -3,9 +3,9 @@
 
 # include <memory>
 # include <exception>
-# include "utils.hpp"
-# include "bidirection_iter.hpp"
-# include "reverse_iterator.hpp"
+# include "utils/utils.hpp"
+# include "iterator/bidirection_iter.hpp"
+# include "iterator/reverse_iterator.hpp"
 
 //list 특징
 // ** 이터레이터 테스트 해보니 환형(원형) 으로 구현해야할듯, 그리고 int 일 때는 end()노드에 size값이 담겨있다..

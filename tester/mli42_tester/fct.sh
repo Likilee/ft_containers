@@ -10,12 +10,12 @@ PURPLE="\e[95m"
 CYAN="\e[96m"
 DGREY="\e[1;90m"
 
-tested_path="../"
+tested_path="../../include/"
 incl_path="$tested_path"
 srcs="srcs"
 
 CC="clang++"
-CFLAGS="-Wall -Wextra -Werror -std=c++98" //-fsanitize=address -g3
+CFLAGS="-Wall -Wextra -Werror -std=c++98"
 
 if false; then
 	CFLAGS+=" -fsanitize=address -g3"

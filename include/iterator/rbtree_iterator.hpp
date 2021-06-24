@@ -1,9 +1,9 @@
 #ifndef RBTREE_ITERATOR_HPP
 # define RBTREE_ITERATOR_HPP
 
-# include "iterator_traits.hpp"
-# include "pair.hpp"
-# include "rbnode.hpp"
+# include "iterator/iterator_traits.hpp"
+# include "utils/pair.hpp"
+# include "rbtree/rbnode.hpp"
 # include <iostream>
 
 namespace ft

@@ -1,7 +1,7 @@
 #ifndef BIDIRECTION_ITER_HPP
 # define BIDIRECTION_ITER_HPP
 
-# include "iterator_traits.hpp"
+# include "iterator/iterator_traits.hpp"
 # include <iostream>
 
 namespace ft

@@ -1,0 +1,158 @@
+===================== basic test =====================
+3
+size : 7
+1 2 77 3 4 5 55 
+===================== basic test end =================
+===================== insert test ====================
+100 100 100 
+200 100 100 100 
+vec_insert1 contains: 55 0 200 100 100 100
+===================== insert test end ================
+===================== clear test =====================
+vec_clear1 contains: 299 200 300
+vec_clear1 contains: 1101 2202
+===================== clear test end =================
+===================== assign test ====================
+Size of vec_assign_first: 7
+Size of vec_assign_second: 5
+Size of vec_assign_third: 3
+===================== assign test end ================
+===================== pop_back test ==================
+The elements of vec_pop_back add up to 600
+===================== pop_back test end =============
+===================== operator[] test =============
+vec_operator1 contains: 9 8 7 6 5 4 3 2 1 0
+===================== operator[] test end =========
+===================== front test ==================
+vec_front1.front() is now 62
+===================== front test end ==============
+===================== back test ==================
+vec_back1 contains: 10 9 8 7 6 5 4 3 2 1 0
+===================== back test end ==============
+===================== erase test ==================
+vec_erase1 contains: 4 5 7 8 9 10
+===================== erase test end ==============
+===================== swap test ===================
+foo contains: 200 200 200 200 200
+bar contains: 100 100 100
+===================== swap test end ===============
+===================== resize test ===================
+9
+5
+vec_resize1 contains: 1 2 3 4 5 100 100 100 0 0 0 0
+===================== resize test end ===============
+===================== resize test end ===============
+===================== copy constructor test ====================
+===================== copy constructor test end =================
+===================== erase test ====================
+size: 10
+max_size: 768614336404564650
+
+Content is:
+- AAAAAAAAAA
+- BBBBBBBBB
+- CCCCCCCC
+- DDDDDDD
+- EEEEEE
+- FFFFF
+- GGGG
+- HHH
+- II
+- J
+###############################################
+[0] erase: 2
+size: 9
+max_size: 768614336404564650
+
+Content is:
+- AAAAAAAAAA
+- BBBBBBBBB
+- DDDDDDD
+- EEEEEE
+- FFFFF
+- GGGG
+- HHH
+- II
+- J
+###############################################
+[1] erase: 0
+size: 8
+max_size: 768614336404564650
+
+Content is:
+- BBBBBBBBB
+- DDDDDDD
+- EEEEEE
+- FFFFF
+- GGGG
+- HHH
+- II
+- J
+###############################################
+[2] erase: 7
+size: 7
+max_size: 768614336404564650
+
+Content is:
+- BBBBBBBBB
+- DDDDDDD
+- EEEEEE
+- FFFFF
+- GGGG
+- HHH
+- II
+###############################################
+[3] erase: 0
+size: 4
+max_size: 768614336404564650
+
+Content is:
+- FFFFF
+- GGGG
+- HHH
+- II
+###############################################
+[4] erase: 1
+size: 2
+max_size: 768614336404564650
+
+Content is:
+- FFFFF
+- II
+###############################################
+size: 4
+max_size: 768614336404564650
+
+Content is:
+- FFFFF
+- II
+- Hello
+- Hi there
+###############################################
+[5] erase: 1
+size: 1
+max_size: 768614336404564650
+
+Content is:
+- FFFFF
+###############################################
+size: 5
+max_size: 768614336404564650
+
+Content is:
+- FFFFF
+- ONE
+- TWO
+- THREE
+- FOUR
+###############################################
+[6] erase: 0
+size: 0
+max_size: 768614336404564650
+
+Content is:
+###############################################
+===================== erase test end ================
+===================== expand arr test ===============
+1 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99 
+===================== expand arr test end ===========

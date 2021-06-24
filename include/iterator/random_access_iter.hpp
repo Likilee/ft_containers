@@ -1,7 +1,7 @@
 #ifndef RANDOM_ACCESS_ITER_HPP
 # define RANDOM_ACCESS_ITER_HPP
 
-# include "iterator_traits.hpp"
+# include "iterator/iterator_traits.hpp"
 
 namespace ft
 {
