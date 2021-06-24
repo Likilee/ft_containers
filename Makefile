@@ -38,7 +38,7 @@ my :
 		cat $(TEST_RESULT)/$(CONT).diff;\
 		printf "\n======================++++++=======================\n";\
 	else\
-		printf "\n                   💧 $(BLUE)SUCCESS$(NC) 💧\n";\
+		printf "\n                   💧 $(BLUE)SUCCESS$(NC) 💧\n\n";\
 	fi
 
 diff:
