@@ -329,23 +329,7 @@ public:
 		while (first != last)
 			this->put(pos_idx++, *first++);
 	}
-
-	// template <class InputIterator>
-	// void insert(iterator position, InputIterator first, InputIterator last,
-	// 			typename ft::enable_if<ft::is_iter<InputIterator>::value>::yes = 1)
-	// {
-	// 	ft::vector<T> temp(position, this->end());
-	// 	size_type n = ft::distance(first, last); // 이거 계산하는 거 공용 함수 만들어야할 듯(iterate_traits에 맞춰서)
-	// 	size_type pos = position - this->begin();
-
-	// 	this->resize(this->_size + n);
-
-	// 	while (first != last)
-	// 		this->put(pos++, *first++);
-	// 	for (iterator itr = temp.begin(); itr != temp.end(); ++itr)
-	// 		this->put(pos++, *itr);
-	// }
-
+	 
 	iterator erase(iterator position) // 범위 밖의 이터레이터 들어오는거 테스트해보니 segfault, 디펜스 안해도 될듯.
 	{
 		iterator target = position;

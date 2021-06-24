@@ -12,6 +12,8 @@ NC=\033[0m
 GREEN=\033[0;32m
 BLUE=\033[0;34m
 
+.PHONY : all my mli my_unit mli_unit
+
 all :
 	@printf "\n\n$(BLUE) [*** START OWN TESTER ***] $(NC)\n\n"
 	@make my
@@ -33,6 +35,7 @@ mli :
 
 mli_unit :
 	@cd $(MLI_TESTER_DIR) && ./do.sh $(CONT)
+
 my_unit :
 	@printf "***************************************************\n"
 	@printf "**                                               **\n"
@@ -56,8 +59,3 @@ my_unit :
 	else\
 		printf "\n                   💧 $(BLUE)SUCCESS$(NC) 💧\n\n";\
 	fi
-
-small :
-	@c++ $(CXXFLAGS) $(INCLUDE) main.cpp -o main
-	./main
-diff:
